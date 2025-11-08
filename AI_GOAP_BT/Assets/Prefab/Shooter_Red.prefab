@@ -2029,6 +2029,7 @@ GameObject:
   - component: {fileID: 1696431717109204521}
   - component: {fileID: 6993082637007307203}
   - component: {fileID: 4571881758926040757}
+  - component: {fileID: 2582953516087713392}
   m_Layer: 0
   m_Name: Shooter_Red
   m_TagString: Untagged
@@ -2233,6 +2234,33 @@ MonoBehaviour:
   funnelSimplification: 0
   slowWhenNotFacingTarget: 1
   preventMovingBackwards: 0
+--- !u!114 &2582953516087713392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8480867171744423372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 560112f876f5746c780eca0d404e7139, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 1073741824
+  radiusBackingField: 0.5
+  heightBackingField: 2
+  centerBackingField: 1
+  locked: 0
+  lockWhenNotMoving: 0
+  agentTimeHorizon: 2
+  obstacleTimeHorizon: 0.5
+  maxNeighbours: 10
+  layer: 1
+  collidesWith: -1
+  wallAvoidForce: 1
+  wallAvoidFalloff: 1
+  priority: 0.5
+  debug: 0
 --- !u!1 &8504014108894463283
 GameObject:
   m_ObjectHideFlags: 0
