@@ -29550,7 +29550,7 @@ MonoBehaviour:
   desiredSimulationFPS: 20
   workerThreads: 2
   doubleBuffering: 0
-  hardCollisions: 1
+  hardCollisions: 0
   symmetryBreakingBias: 0.1
   movementPlane: 0
   useNavmeshAsObstacle: 0
