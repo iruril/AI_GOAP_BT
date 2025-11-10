@@ -46,13 +46,14 @@ namespace GOAP
         public ActionType CurrentAction { get; private set; } = ActionType.NONE;
         public GoalType CurrentGoal { get; private set; } = GoalType.NONE;
 
-        void Awake()
+        protected virtual void Awake()
         {
+
             RegisterActions();
             RegisterGoals();
         }
 
-        void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             Tick();
         }
