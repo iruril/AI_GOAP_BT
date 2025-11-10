@@ -33,7 +33,7 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
-            if (Vector3.Distance(ctx.transform.position, ctx.Navigator.AI.endOfPath) > 0.5f)
+            if (Vector3.Distance(ctx.transform.position, ctx.Navigator.AI.endOfPath) > 1f)
                 return AnimState.Start;
             return StateKey;
         }

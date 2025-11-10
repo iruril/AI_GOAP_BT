@@ -4,6 +4,8 @@ using System;
 
 public class AINavigator : MonoBehaviour
 {
+    public Action OnSetDestination;
+
     public RichAI AI { get; private set; }
     public Transform Destination { get; private set; }
 
@@ -62,5 +64,6 @@ public class AINavigator : MonoBehaviour
     public void SetDestination(Vector3 position)
     {
         Destination.position = position;
+        OnSetDestination?.Invoke();
     }
 }

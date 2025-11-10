@@ -4,7 +4,7 @@ namespace AnimControl.Assault
 {
     public class Start : AssaultAnimState
     {
-        private const float _exitTime = 0.93f;
+        private float exitTime = 0;
 
         public Start(AssaultAnimFSM ctx, AnimState key) : base(ctx, key)
         {
@@ -15,6 +15,22 @@ namespace AnimControl.Assault
         {
             base.EnterState();
             ctx.DecideAccelInitial();
+
+            switch (ctx.Accel)
+            {
+                case 1:
+                    exitTime = 1.37f;
+                    break;
+                case 2:
+                    exitTime = 1.37f;
+                    break;
+                case 3:
+                    exitTime = 1.1f;
+                    break;
+                case 4:
+                    exitTime = 0.9f;
+                    break;
+            }
 
             ctx.Navigator.AI.enableRotation = false;
             Vector3 desiredDir = ctx.Navigator.AI.steeringTarget - ctx.transform.position;
@@ -30,11 +46,11 @@ namespace AnimControl.Assault
 
             if (turnDir > 0)
             {
-                ctx.Anim.CrossFade(AnimHash.StartMove_R, 0.15f);
+                ctx.Anim.CrossFade(AnimHash.StartMove_R, 0.1f);
             }
             else
             {
-                ctx.Anim.CrossFade(AnimHash.StartMove_L, 0.15f);
+                ctx.Anim.CrossFade(AnimHash.StartMove_L, 0.1f);
             }
         }
 
@@ -55,7 +71,7 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
-            if (ctx.StateTime >= _exitTime) return AnimState.Move;
+            if (ctx.StateTime >= exitTime) return AnimState.Move;
             return StateKey;
         }
 

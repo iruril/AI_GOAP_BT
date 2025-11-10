@@ -30,6 +30,7 @@ namespace AnimControl.Assault
         {
             Anim = GetComponent<Animator>();
             Navigator = GetComponent<AINavigator>();
+            Navigator.OnSetDestination = () => DecideAccelInitial();
 
             InitializeStates();
             CurrentState = States[AnimState.Idle];
