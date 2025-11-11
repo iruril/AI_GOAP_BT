@@ -15,6 +15,7 @@ namespace AnimControl.Assault
         {
             base.EnterState();
             ctx.Navigator.AI.enableRotation = true;
+            ctx.RootRotation = false;
             ctx.Anim.CrossFade(AnimHash.Strafe, 0.15f);
         }
 
@@ -28,10 +29,10 @@ namespace AnimControl.Assault
             switch (ctx.Accel)
             {
                 case 3:
-                    stoppingDistance = 2.5f;
+                    stoppingDistance = 3;
                     break;
                 case 4:
-                    stoppingDistance = 4.0f;
+                    stoppingDistance = 4.5f;
                     break;
                 default:
                     stoppingDistance = 0.7f;

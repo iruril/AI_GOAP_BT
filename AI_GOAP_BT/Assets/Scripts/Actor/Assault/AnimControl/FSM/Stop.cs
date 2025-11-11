@@ -15,6 +15,7 @@ namespace AnimControl.Assault
         {
             base.EnterState();
             ctx.Navigator.AI.enableRotation = false;
+            ctx.RootRotation = false;
             int snapSpeed = Mathf.Clamp(Mathf.RoundToInt(ctx.Accel), 1, 4);
             ctx.Anim.SetFloat(AnimHash.SpeedOnStop, snapSpeed);
             ctx.Anim.CrossFade(AnimHash.Stop_R, 0.25f);

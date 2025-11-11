@@ -33,6 +33,8 @@ namespace AnimControl.Assault
             }
 
             ctx.Navigator.AI.enableRotation = false;
+            ctx.RootRotation = true;
+
             Vector3 desiredDir = ctx.Navigator.AI.steeringTarget - ctx.transform.position;
             desiredDir.y = 0f;
             desiredDir.Normalize();

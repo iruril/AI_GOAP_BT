@@ -26,6 +26,8 @@ namespace AnimControl.Assault
 
         public float StateTime { get; set; }
 
+        public bool RootRotation = false;
+
         void Awake()
         {
             Anim = GetComponent<Animator>();
@@ -46,7 +48,7 @@ namespace AnimControl.Assault
 
             Vector3 rootPosition = new Vector3(Anim.rootPosition.x, nextPosition.y, Anim.rootPosition.z);
 
-            if (!Navigator.AI.enableRotation)
+            if (!Navigator.AI.enableRotation && RootRotation)
             {
                 Navigator.AI.FinalizeMovement(rootPosition, nextRotation);
                 this.transform.rotation *= Anim.deltaRotation;

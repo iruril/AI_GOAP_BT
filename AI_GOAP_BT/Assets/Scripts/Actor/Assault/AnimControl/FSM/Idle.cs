@@ -13,6 +13,7 @@ namespace AnimControl.Assault
         {
             base.EnterState();
             ctx.Navigator.AI.enableRotation = false;
+            ctx.RootRotation = false;
             ctx.Anim.CrossFade(AnimHash.Idle, 0.15f);
         }
 
