@@ -2,11 +2,11 @@ using UnityEngine;
 
 namespace AnimControl.Assault
 {
-    public class Stop : AssaultAnimState
+    public class TurnOpposite : AssaultAnimState
     {
-        private float stopTime;
+        private float turnTime;
 
-        public Stop(AssaultAnimFSM ctx, AnimState key) : base(ctx, key)
+        public TurnOpposite(AssaultAnimFSM ctx, AnimState key) : base(ctx, key)
         {
             this.ctx = ctx;
         }
@@ -15,21 +15,21 @@ namespace AnimControl.Assault
         {
             base.EnterState();
             ctx.Navigator.AI.enableRotation = false;
-            ctx.RootRotation = false;
+            ctx.RootRotation = true;
             int snapSpeed = Mathf.Clamp(Mathf.RoundToInt(ctx.Accel), 1, 4);
             ctx.Anim.SetFloat(AnimHash.TransitionAccel, snapSpeed);
-            ctx.Anim.CrossFade(AnimHash.Stop_R, 0.1f);
+            ctx.Anim.CrossFade(AnimHash.Opposite_R, 0.1f);
 
             switch (snapSpeed)
             {
                 case 3:
-                    stopTime = 2.1f;
+                    turnTime = 1.9f;
                     break;
                 case 4:
-                    stopTime = 2.5f;
+                    turnTime = 1.1f;
                     break;
                 default:
-                    stopTime = 1.95f;
+                    turnTime = 1.3f;
                     break;
             }
         }
@@ -51,7 +51,7 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
-            if (ctx.StateTime >= stopTime) return AnimState.Idle;
+            if (ctx.StateTime >= turnTime) return AnimState.Move;
             return StateKey;
         }
 

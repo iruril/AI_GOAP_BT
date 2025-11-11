@@ -684,9 +684,9 @@ GameObject:
   - component: {fileID: 8632317303694075531}
   - component: {fileID: 2138821083941405857}
   - component: {fileID: 7073330851299046135}
+  - component: {fileID: 3199284078076192205}
   - component: {fileID: 2095484149871436001}
   - component: {fileID: 8638010724399878261}
-  - component: {fileID: 3199284078076192205}
   - component: {fileID: 5106131518366905819}
   - component: {fileID: 2621712713207012491}
   - component: {fileID: 6883628252706435882}
@@ -1285,6 +1285,21 @@ MonoBehaviour:
   spineBend: 2
   spineSpeed: 3
   spine: []
+--- !u!114 &3199284078076192205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2531024411289186008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9679e68a0f1144e79c664d9a11ca121, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 1073741824
+  target: {fileID: 5731365669230891020}
+  useRotation: 0
 --- !u!114 &2095484149871436001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1301,7 +1316,7 @@ MonoBehaviour:
   drawGizmos: 0
   detailedGizmos: 0
   startEndModifier:
-    addPoints: 0
+    addPoints: 1
     exactStartPoint: 3
     exactEndPoint: 3
     useRaycasting: 0
@@ -1382,8 +1397,8 @@ MonoBehaviour:
   autoRepath:
     mode: 2
     period: 0.5
-    sensitivity: 10
-    maximumPeriod: 2
+    sensitivity: 5
+    maximumPeriod: 1
     visualizeSensitivity: 0
   acceleration: 5
   rotationSpeed: 180
@@ -1393,21 +1408,6 @@ MonoBehaviour:
   funnelSimplification: 0
   slowWhenNotFacingTarget: 0
   preventMovingBackwards: 0
---- !u!114 &3199284078076192205
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2531024411289186008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9679e68a0f1144e79c664d9a11ca121, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 1073741824
-  target: {fileID: 5731365669230891020}
-  useRotation: 0
 --- !u!114 &5106131518366905819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1460,6 +1460,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentStateKey: 0
+  RootRotation: 0
 --- !u!114 &8444713658870570109
 MonoBehaviour:
   m_ObjectHideFlags: 0

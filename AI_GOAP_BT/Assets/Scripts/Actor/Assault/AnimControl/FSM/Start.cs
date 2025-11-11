@@ -14,7 +14,7 @@ namespace AnimControl.Assault
         public override void EnterState()
         {
             base.EnterState();
-            ctx.DecideAccelInitial();
+            ctx.RecalcAccelByDistance();
 
             switch (ctx.Accel)
             {

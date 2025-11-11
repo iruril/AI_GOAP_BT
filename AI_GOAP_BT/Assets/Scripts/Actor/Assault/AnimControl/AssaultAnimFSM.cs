@@ -11,7 +11,8 @@ namespace AnimControl.Assault
         Idle,
         Start,
         Move,
-        Stop
+        Stop,
+        TurnOpposite
     }
 
     public class AssaultAnimFSM : StateManager<AnimState>
@@ -22,17 +23,15 @@ namespace AnimControl.Assault
 
         public AnimState CurrentStateKey;
 
-        public float Accel { get; private set; } = 0f;
-
+        public float Accel { get; set; } = 0f;
         public float StateTime { get; set; }
-
         public bool RootRotation = false;
 
         void Awake()
         {
             Anim = GetComponent<Animator>();
             Navigator = GetComponent<AINavigator>();
-            Navigator.OnSetDestination = () => DecideAccelInitial();
+            Navigator.OnSetDestination = () => DecideAccelByDistance();
 
             InitializeStates();
             CurrentState = States[AnimState.Idle];
@@ -71,6 +70,7 @@ namespace AnimControl.Assault
             States.Add(AnimState.Start, new Start(_context, AnimState.Start));
             States.Add(AnimState.Move, new Move(_context, AnimState.Move));
             States.Add(AnimState.Stop, new Stop(_context, AnimState.Stop));
+            States.Add(AnimState.TurnOpposite, new TurnOpposite(_context, AnimState.TurnOpposite));
         }
 
         void UpdateMoveAxis()
@@ -84,7 +84,7 @@ namespace AnimControl.Assault
             Anim.SetFloat(AnimHash.Accelation, Accel);
         }
 
-        public void DecideAccelInitial()
+        private void DecideAccelByDistance()
         {
             float dist = Vector3.Distance(transform.position, Navigator.AI.endOfPath);
             if (dist <= 2f)
@@ -95,6 +95,11 @@ namespace AnimControl.Assault
                 Accel = 3f;
             else
                 Accel = 4f;
+        }
+
+        public void RecalcAccelByDistance()
+        {
+            DecideAccelByDistance();
         }
     }
 }

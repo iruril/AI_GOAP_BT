@@ -26,19 +26,8 @@ namespace AnimControl.Assault
 
         public override void UpdateState()
         {
-            switch (ctx.Accel)
-            {
-                case 3:
-                    stoppingDistance = 3;
-                    break;
-                case 4:
-                    stoppingDistance = 4.5f;
-                    break;
-                default:
-                    stoppingDistance = 0.7f;
-                    break;
-            }
             base.UpdateState();
+            DecideStopDistance();
         }
 
         public override void PhysicsUpdateState()
@@ -50,6 +39,8 @@ namespace AnimControl.Assault
         {
             if (Vector3.Distance(ctx.transform.position, ctx.Navigator.AI.endOfPath) <= stoppingDistance)
                 return AnimState.Stop;
+            if (IsOnTurnOppsiteCondition())
+                return AnimState.TurnOpposite;
             return StateKey;
         }
 
@@ -58,5 +49,38 @@ namespace AnimControl.Assault
         public override void OnTriggerStay(Collider other) { }
 
         public override void OnTriggerExit(Collider other) { }
+
+        void DecideStopDistance()
+        {
+            int snapAccel = Mathf.Clamp(Mathf.RoundToInt(ctx.Accel), 1, 4);
+            switch (snapAccel)
+            {
+                case 3:
+                    stoppingDistance = 3f;
+                    break;
+                case 4:
+                    stoppingDistance = 4.5f;
+                    break;
+                default:
+                    stoppingDistance = 0.7f;
+                    break;
+            }
+        }
+
+        bool IsOnTurnOppsiteCondition()
+        {
+            Vector3 vel = ctx.Navigator.AI.desiredVelocity;
+            Vector3 tgt = ctx.Navigator.AI.steeringTarget - ctx.transform.position;
+
+            vel.y = 0f;
+            tgt.y = 0f;
+
+            vel.Normalize();
+            tgt.Normalize();
+
+            if (Vector3.Angle(vel, tgt) >= 135f)
+                return true;
+            return false;
+        }
     }
 }
