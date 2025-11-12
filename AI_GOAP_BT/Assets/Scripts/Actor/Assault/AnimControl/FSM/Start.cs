@@ -73,7 +73,8 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
-            if (ctx.StateTime >= exitTime) return AnimState.Move;
+            if (ctx.StateTime >= exitTime) 
+                return AnimState.Move;
             return StateKey;
         }
 

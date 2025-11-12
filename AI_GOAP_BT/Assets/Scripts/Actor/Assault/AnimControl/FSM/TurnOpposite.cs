@@ -16,6 +16,13 @@ namespace AnimControl.Assault
             base.EnterState();
             ctx.Navigator.AI.enableRotation = false;
             ctx.RootRotation = true;
+
+            Vector3 tgt = ctx.transform.position - ctx.Navigator.AI.steeringTarget;
+            tgt.y = 0f;
+            tgt.Normalize();
+
+            ctx.transform.rotation = Quaternion.LookRotation(tgt);
+
             int snapSpeed = Mathf.Clamp(Mathf.RoundToInt(ctx.Accel), 1, 4);
             ctx.Anim.SetFloat(AnimHash.TransitionAccel, snapSpeed);
             ctx.Anim.CrossFade(AnimHash.Opposite_R, 0.1f);

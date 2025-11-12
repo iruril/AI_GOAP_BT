@@ -51,7 +51,10 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
-            if (ctx.StateTime >= stopTime) return AnimState.Idle;
+            if (ctx.StateTime >= stopTime) 
+                return AnimState.Idle;
+            if(IsOnTurnOppsiteCondition())
+                return AnimState.TurnOpposite;
             return StateKey;
         }
 
@@ -60,5 +63,25 @@ namespace AnimControl.Assault
         public override void OnTriggerStay(Collider other) { }
 
         public override void OnTriggerExit(Collider other) { }
+
+        bool IsOnTurnOppsiteCondition()
+        {
+            if (Vector3.Distance(ctx.Navigator.AI.steeringTarget, ctx.transform.position) <= 0.5f)
+                return false;
+
+            Vector3 vel = ctx.Navigator.AI.desiredVelocity;
+            if (vel.sqrMagnitude < 0.001f) return false;
+            Vector3 tgt = ctx.Navigator.AI.steeringTarget - ctx.transform.position;
+
+            vel.y = 0f;
+            tgt.y = 0f;
+
+            vel.Normalize();
+            tgt.Normalize();
+
+            if (Vector3.Angle(vel, tgt) >= 135f)
+                return true;
+            return false;
+        }
     }
 }
