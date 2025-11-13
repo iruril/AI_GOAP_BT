@@ -11,14 +11,5 @@ namespace CapturePoint
         {
             this.ctx = ctx;
         }
-        public override void EnterState()
-        {
-            ctx.StateTime = 0f;
-        }
-
-        public override void UpdateState()
-        {
-            ctx.StateTime += Time.deltaTime;
-        }
     }
 }

@@ -12,7 +12,6 @@ namespace CapturePoint
         public override void EnterState()
         {
             ctx.UpdateDecalColor(0);
-            base.EnterState();
         }
 
         public override void ExitState()
@@ -22,7 +21,6 @@ namespace CapturePoint
 
         public override void UpdateState()
         {
-            base.UpdateState();
         }
 
         public override void PhysicsUpdateState()
