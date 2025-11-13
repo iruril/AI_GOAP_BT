@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace AnimControl.Assault
 {
-    public class Idle : AssaultAnimState
+    public class Idle : BaseAssaultAnimState
     {
         public Idle(AssaultAnimFSM ctx, AnimState key) : base(ctx, key)
         {

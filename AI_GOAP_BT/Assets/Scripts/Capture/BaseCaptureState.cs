@@ -1,17 +1,16 @@
-using UnityEngine;
 using FSM;
+using UnityEngine;
 
-namespace AnimControl.Assault
+namespace CapturePoint
 {
-    public abstract class AssaultAnimState : BaseState<AnimState>
+    public abstract class BaseCaptureState : BaseState<CaptureState>
     {
-        protected AssaultAnimFSM ctx;
+        protected CapturePoint ctx;
 
-        protected AssaultAnimState(AssaultAnimFSM ctx, AnimState key) : base(key)
+        protected BaseCaptureState(CapturePoint ctx, CaptureState key) : base(key)
         {
             this.ctx = ctx;
         }
-
         public override void EnterState()
         {
             ctx.StateTime = 0f;

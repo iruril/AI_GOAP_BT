@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace AnimControl.Assault
 {
-    public class Stop : AssaultAnimState
+    public class Stop : BaseAssaultAnimState
     {
         private float stopTime;
 
@@ -66,11 +66,12 @@ namespace AnimControl.Assault
 
         bool IsOnTurnOppsiteCondition()
         {
-            if (Vector3.Distance(ctx.Navigator.AI.steeringTarget, ctx.transform.position) <= 0.5f)
+            if (Vector3.Distance(ctx.Navigator.AI.steeringTarget, ctx.transform.position) < 1.5f)
                 return false;
 
             Vector3 vel = ctx.Navigator.AI.desiredVelocity;
             if (vel.sqrMagnitude < 0.001f) return false;
+
             Vector3 tgt = ctx.Navigator.AI.steeringTarget - ctx.transform.position;
 
             vel.y = 0f;

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace AnimControl.Assault
 {
-    public class Start : AssaultAnimState
+    public class Start : BaseAssaultAnimState
     {
         private float exitTime = 0;
 

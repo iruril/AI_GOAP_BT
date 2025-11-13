@@ -1,10 +1,13 @@
+using RootMotion.Demos;
 using UnityEngine;
 
 namespace AnimControl.Assault
 {
-    public class Move : AssaultAnimState
+    public class Move : BaseAssaultAnimState
     {
         private float stoppingDistance;
+        private int obstacle;
+        private RaycastHit[] hits = new RaycastHit[1];
 
         public Move(AssaultAnimFSM ctx, AnimState key) : base(ctx, key)
         {
@@ -32,12 +35,21 @@ namespace AnimControl.Assault
 
         public override void PhysicsUpdateState()
         {
-
+            Vector3 origin = ctx.transform.position + Vector3.up * 1.4f;
+            Vector3 direction = ((ctx.Navigator.AI.endOfPath + Vector3.up * 1.4f) - origin).normalized;
+            obstacle = Physics.RaycastNonAlloc(
+                    ctx.transform.position + Vector3.up * 1.4f,
+                    direction,
+                    hits,
+                    stoppingDistance,
+                    WorldManager.Instance.GetLevelLayers()
+                );
         }
 
         public override AnimState GetNextState()
         {
-            if (Vector3.Distance(ctx.transform.position, ctx.Navigator.AI.endOfPath) <= stoppingDistance)
+            if (Vector3.Distance(ctx.transform.position, ctx.Navigator.AI.endOfPath) <= stoppingDistance
+                && obstacle == 0)
                 return AnimState.Stop;
             if (IsOnTurnOppsiteCondition())
                 return AnimState.TurnOpposite;
@@ -74,6 +86,7 @@ namespace AnimControl.Assault
 
             Vector3 vel = ctx.Navigator.AI.desiredVelocity;
             if (vel.sqrMagnitude < 0.001f) return false;
+
             Vector3 tgt = ctx.Navigator.AI.steeringTarget - ctx.transform.position;
 
             vel.y = 0f;
@@ -82,7 +95,7 @@ namespace AnimControl.Assault
             vel.Normalize();
             tgt.Normalize();
 
-            if (Vector3.Angle(vel, tgt) >= 135f)
+            if (Vector3.Angle(vel, tgt) >= 165f)
                 return true;
             return false;
         }

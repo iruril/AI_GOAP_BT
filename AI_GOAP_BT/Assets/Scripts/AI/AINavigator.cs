@@ -27,7 +27,7 @@ public class AINavigator : MonoBehaviour
         
     }
 
-    void FixedUpdate()
+    void Update()
     {
         UpdateMoveDirection();
     }
@@ -36,8 +36,7 @@ public class AINavigator : MonoBehaviour
     void UpdateMoveDirection()
     {
         Vector3 nextPosition;
-        Quaternion nextRotation;
-        AI.MovementUpdate(Time.fixedDeltaTime, out nextPosition, out nextRotation);
+        AI.MovementUpdate(Time.deltaTime, out nextPosition, out _);
 
         Vector3 deltaVelocity = nextPosition - this.transform.position;
         deltaVelocity.y = 0;
@@ -53,7 +52,7 @@ public class AINavigator : MonoBehaviour
             ref moveAxisVelocity,
             moveAxisSmoothTime,
             Mathf.Infinity,
-            Time.fixedDeltaTime
+            Time.deltaTime
         );
     }
 

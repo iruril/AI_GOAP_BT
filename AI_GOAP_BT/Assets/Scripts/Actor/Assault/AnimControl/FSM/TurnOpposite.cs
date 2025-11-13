@@ -1,8 +1,10 @@
+using MEC;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AnimControl.Assault
 {
-    public class TurnOpposite : AssaultAnimState
+    public class TurnOpposite : BaseAssaultAnimState
     {
         private float turnTime;
 
@@ -21,7 +23,9 @@ namespace AnimControl.Assault
             tgt.y = 0f;
             tgt.Normalize();
 
-            ctx.transform.rotation = Quaternion.LookRotation(tgt);
+            Quaternion startRot = ctx.transform.rotation;
+            Quaternion endRot = Quaternion.LookRotation(tgt);
+            Timing.RunCoroutine(SmoothRotate(startRot, endRot, 0.1f));
 
             int snapSpeed = Mathf.Clamp(Mathf.RoundToInt(ctx.Accel), 1, 4);
             ctx.Anim.SetFloat(AnimHash.TransitionAccel, snapSpeed);
@@ -67,5 +71,21 @@ namespace AnimControl.Assault
         public override void OnTriggerStay(Collider other) { }
 
         public override void OnTriggerExit(Collider other) { }
+
+        IEnumerator<float> SmoothRotate(Quaternion startRot, Quaternion endRot, float duration)
+        {
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+
+                ctx.transform.rotation = Quaternion.Slerp(startRot, endRot, t);
+                yield return Timing.WaitForOneFrame;
+            }
+
+            ctx.transform.rotation = endRot;
+        }
     }
 }

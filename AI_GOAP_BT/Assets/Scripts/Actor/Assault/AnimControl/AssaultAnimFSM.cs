@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using UnityEngine;
-using MEC;
-using System;
 using FSM;
 
 namespace AnimControl.Assault

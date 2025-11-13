@@ -599,7 +599,7 @@ SkinnedMeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 2
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 9f548486a0494bb418c69d9dcff086a1, type: 2}
@@ -1987,7 +1987,7 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 2
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: b6bf68e3580dc3d439e212fc250c85e8, type: 2}
@@ -2067,9 +2067,9 @@ GameObject:
   - component: {fileID: 5907054389595796612}
   - component: {fileID: 3022949711016103152}
   - component: {fileID: 8327779471062310252}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Shooter_Red
-  m_TagString: Untagged
+  m_TagString: TeamRed
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2761,7 +2761,7 @@ MonoBehaviour:
   endReachedDistance: 0.5
   whenCloseToDestination: 0
   rvoDensityBehavior:
-    enabled: 1
+    enabled: 0
     densityThreshold: 0.5
     returnAfterBeingPushedAway: 0
     progressAverage: 0
@@ -2801,7 +2801,7 @@ MonoBehaviour:
   heightBackingField: 2
   centerBackingField: 1
   locked: 0
-  lockWhenNotMoving: 0
+  lockWhenNotMoving: 1
   agentTimeHorizon: 2
   obstacleTimeHorizon: 0.5
   maxNeighbours: 10
@@ -2809,7 +2809,7 @@ MonoBehaviour:
   collidesWith: -1
   wallAvoidForce: 1
   wallAvoidFalloff: 1
-  priority: 0.25
+  priority: 0.5
   debug: 0
 --- !u!114 &5907054389595796612
 MonoBehaviour:

@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - TeamBlue
+  - TeamRed
   layers:
   - Default
   - TransparentFX
@@ -11,9 +13,9 @@ TagManager:
   - Level
   - Water
   - UI
-  - 
-  - 
-  - 
+  - HitBox
+  - CapturePoint
+  - Actor
   - 
   - 
   - 
