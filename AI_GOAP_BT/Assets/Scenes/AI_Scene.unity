@@ -86090,46 +86090,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CapturePoint (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
-      propertyPath: red.b
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
-      propertyPath: red.g
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
-      propertyPath: red.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
-      propertyPath: blue.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
-      propertyPath: blue.g
-      value: 0.45452842
-      objectReference: {fileID: 0}
-    - target: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
-      propertyPath: blue.r
-      value: 0.16509432
-      objectReference: {fileID: 0}
-    - target: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
-      propertyPath: redEmission.b
-      value: 0.2509804
-      objectReference: {fileID: 0}
-    - target: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
-      propertyPath: redEmission.g
-      value: 0.2509804
-      objectReference: {fileID: 0}
-    - target: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
-      propertyPath: blueEmission.g
-      value: 0.45490196
-      objectReference: {fileID: 0}
-    - target: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
-      propertyPath: blueEmission.r
-      value: 0.16470589
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
