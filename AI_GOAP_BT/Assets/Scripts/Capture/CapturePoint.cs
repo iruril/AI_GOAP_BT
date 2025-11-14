@@ -23,23 +23,14 @@ namespace CapturePoint
         [Header("Neutral Color")]
         [SerializeField]
         private Color def = Color.white;
-        [SerializeField]
-        [ColorUsage(false, hdr: true)]
-        private Color defEmission = Color.white;
 
         [Header("Blue Color")]
         [SerializeField]
         private Color blue = Color.blue;
-        [SerializeField]
-        [ColorUsage(false, hdr: true)]
-        private Color blueEmission = Color.blue;
 
         [Header("Red Color")]
         [SerializeField]
         private Color red = Color.red;
-        [SerializeField]
-        [ColorUsage(false, hdr: true)]
-        private Color redEmission = Color.red;
 
         [Header("Capture Amount/s of Agent")]
         [SerializeField] private float captureAmount = 1.666f;
@@ -115,22 +106,21 @@ namespace CapturePoint
             switch (value)
             {
                 case -1:
-                    colorHandle = Timing.RunCoroutine(DecalColorLerp(red, redEmission, 0.25f));
+                    colorHandle = Timing.RunCoroutine(DecalColorLerp(red, 0.25f));
                     break;
                 case 0:
-                    colorHandle = Timing.RunCoroutine(DecalColorLerp(def, defEmission, 0.25f));
+                    colorHandle = Timing.RunCoroutine(DecalColorLerp(def, 0.25f));
                     break;
                 case 1:
-                    colorHandle = Timing.RunCoroutine(DecalColorLerp(blue, blueEmission, 0.25f));
+                    colorHandle = Timing.RunCoroutine(DecalColorLerp(blue, 0.25f));
                     break;
             }
         }
 
-        private IEnumerator<float> DecalColorLerp(Color targetCol, Color targetEmit, float time)
+        private IEnumerator<float> DecalColorLerp(Color targetCol, float time)
         {
             float t = 0;
             Color currCol = decalMat.GetColor("_BaseColor");
-            Color currEmiss = decalMat.GetColor("_Emission");
 
             while(t < time)
             {
@@ -140,16 +130,13 @@ namespace CapturePoint
                 lerpT = lerpT * lerpT * lerpT * (lerpT * (6f * lerpT - 15f) + 10f); //5Â÷ SmoothStep
 
                 Color newCol = Color.Lerp(currCol, targetCol, lerpT);
-                Color newEmiss = Color.LerpUnclamped(currEmiss, targetEmit, lerpT);
 
                 decalMat.SetColor("_BaseColor", newCol);
-                decalMat.SetColor("_Emission", newEmiss);
 
                 yield return Timing.WaitForOneFrame;
             }
 
             decalMat.SetColor("_BaseColor", targetCol);
-            decalMat.SetColor("_Emission", targetEmit);
         }
 
         public bool NeedToCapture(Transform agent)

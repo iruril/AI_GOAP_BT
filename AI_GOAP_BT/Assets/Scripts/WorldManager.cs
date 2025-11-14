@@ -1,3 +1,4 @@
+using Pathfinding;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -48,15 +49,10 @@ public class WorldManager : MonoBehaviour
 
         foreach (var cp in captures)
         {
-            if (cp.GetCurrentState() == CapturePoint.CaptureState.CapturedByBlue 
-                && agent.CompareTag("TeamBlue"))
+            if (!cp.NeedToCapture(agent))
                 continue;
 
-            if (cp.GetCurrentState() == CapturePoint.CaptureState.CapturedByRed
-                && agent.CompareTag("TeamRed"))
-                continue;
-
-            float dist = Vector3.SqrMagnitude(cp.transform.position - origin);
+            float dist = CalculatePathDistance(origin, cp.transform.position);
 
             if (dist < bestDist)
             {
@@ -68,6 +64,21 @@ public class WorldManager : MonoBehaviour
 
         destination = AstarPath.active.GetNearest(GetRandomPointAround(bestPos, error)).position;
         return resultCap;
+    }
+
+    private float CalculatePathDistance(Vector3 start, Vector3 end)
+    {
+        var path = ABPath.Construct(start, end);
+        AstarPath.StartPath(path);
+        path.BlockUntilCalculated();
+
+        float total = 0f;
+        var pts = path.vectorPath;
+
+        for (int i = 1; i < pts.Count; i++)
+            total += Vector3.Distance(pts[i - 1], pts[i]);
+
+        return total;
     }
 
     private Vector3 GetRandomPointAround(Vector3 center, float radius)

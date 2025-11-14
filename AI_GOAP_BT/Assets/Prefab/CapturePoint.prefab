@@ -94,9 +94,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   def: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-  defEmission: {r: 0.7490197, g: 0.7490197, b: 0.7490197, a: 1}
-  blue: {r: 0, g: 0, b: 1, a: 1}
-  blueEmission: {r: 0, g: 0, b: 16, a: 1}
-  red: {r: 1, g: 0, b: 0, a: 1}
-  redEmission: {r: 15.999994, g: 0, b: 0, a: 1}
+  blue: {r: 0.36320752, g: 0.6913323, b: 1, a: 1}
+  red: {r: 1, g: 0.4198113, b: 0.4198113, a: 1}
   captureAmount: 2
