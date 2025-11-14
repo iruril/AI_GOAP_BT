@@ -5,52 +5,57 @@ using UnityEngine;
 
 namespace GOAP
 {
-    public enum ActionType
+    public class GoapAction<ActionType, GoalType> where ActionType : Enum where GoalType : Enum
     {
-        NONE,
-        MOVE_TO_CAPTURE,
-    }
-
-    public enum GoalType
-    {
-        NONE,
-        SURVIVE,
-        ENGAGE,
-        CAPTURE
-    } 
-
-    public class GoapAction
-    {
-        public ActionType Type = ActionType.NONE;
+        public ActionType Type;
         public int Cost = 1;
 
         public List<Func<bool>> Preconditions = new();
         public List<Action> Effects = new();
+
+        public Action OnStart;
+        public Action OnUpdate;
+        public Action OnExit;
+
+        public bool IsFinished;
+
+        public Func<GoalType, bool> IsUsefulForGoal;
     }
 
-    public class GoapGoal
+    public class GoapGoal<GoalType> where GoalType : Enum
     {
-        public GoalType Type = GoalType.NONE;
+        public GoalType Type;
         public int Priority = 0;
         public Func<bool> IsSatisfied;
+        public bool Repeatable = true;
     }
 
-    public class GoapBrain : MonoBehaviour
+    public class GoapBrain<ActionType, GoalType> : MonoBehaviour where ActionType : Enum where GoalType : Enum
     {
         //public AISensor sensor;
         //public AIBlackboard blackboard;
 
-        public Dictionary<ActionType, GoapAction> Actions = new();
-        public Dictionary<GoalType, GoapGoal> Goals = new();
+        public Dictionary<ActionType, GoapAction<ActionType, GoalType>> Actions = new();
+        public Dictionary<GoalType, GoapGoal<GoalType>> Goals = new();
 
-        public ActionType CurrentAction { get; private set; } = ActionType.NONE;
-        public GoalType CurrentGoal { get; private set; } = GoalType.NONE;
+        public GoapAction<ActionType, GoalType> CurrentAction { get; private set; }
+        public GoapGoal<GoalType> CurrentGoal { get; private set; }
+
+        protected ActionType DefaultActionType;
+        protected GoalType DefaultGoalType;
+
+        bool actionStarted = false;
 
         protected virtual void Awake()
         {
-
             RegisterActions();
             RegisterGoals();
+
+            if (Goals.TryGetValue(DefaultGoalType, out var goal)) CurrentGoal = goal;
+            else CurrentGoal = Goals.First().Value;
+
+            if (Actions.TryGetValue(DefaultActionType, out var action)) CurrentAction = action;
+            else CurrentAction = Actions.First().Value;
         }
 
         protected virtual void FixedUpdate()
@@ -61,101 +66,238 @@ namespace GOAP
         #region Register ACTION / GOAL Section
         protected virtual void RegisterActions()
         {
-            //등록 예시
-            //Actions.Add(ActionType.MOVE_TO_CAPTURE, new GoapAction
+            //// IDLE
+            //Actions.Add(ActionType.IDLE, new GoapAction<ActionType, GoalType>
             //{
-            //    Type = ActionType.MOVE_TO_CAPTURE,
-            //    Cost = 10,
+            //    Type = ActionType.IDLE,
+            //    Cost = 50, // 비용이 크면 다른 액션이 먼저 선택됨
+
             //    Preconditions =
             //    {
-            //        () => !sensor.HasTarget,
-            //        () => !blackboard.InRetreat
+            //        () => true // 항상 실행 가능
             //    },
-            //    Effects =
-            //    {
-            //        () => blackboard.AtCapturePoint = true
-            //    }
+
+            //    OnStart = () => Debug.Log("Idle Start"),
+            //    OnUpdate = () => { /* 가만히 있거나 혹은 Idle Loop */ },
+            //    OnExit = () => Debug.Log("Idle Exit"),
+
+            //    IsUsefulForGoal = goal => true, // 어떤 Goal에도 기본 Idle은 유효
+
+            //    IsFinished = false // Idle은 계속 유지됨
             //});
+
+            //Actions.Add(ActionType.PATROL, new GoapAction<ActionType, GoalType>
+            //{
+            //    Type = ActionType.PATROL,
+            //    Cost = 10,
+
+            //    Preconditions =
+            //    {
+            //        () => currentEnemy == null // 적이 없을 때만 정찰하기
+            //    },
+
+            //    OnStart = () =>
+            //    {
+            //        Debug.Log("Patrol Start");
+            //        StartPatrol();
+            //    },
+
+            //    OnUpdate = () => UpdatePatrol(),
+
+            //    OnExit = () => StopPatrol(),
+
+            //    IsUsefulForGoal = goal =>
+            //        goal == GoalType.FIND_ENEMY, // FIND_ENEMY Goal을 만족시키는 행동
+
+            //    IsFinished = false // Patrol은 외부에서 완료시키는 형태
+            //});
+
+            //Actions.Add(ActionType.MOVE_TO_ENEMY, new GoapAction<ActionType, GoalType>
+            //{
+            //    Type = ActionType.MOVE_TO_ENEMY,
+            //    Cost = 5,
+
+            //    Preconditions =
+            //    {
+            //        () => currentEnemy != null,
+            //        () => !enemyInAttackRange
+            //    },
+
+            //    OnStart = () =>
+            //    {
+            //        Debug.Log("MoveToEnemy Start");
+            //        navAgent.SetDestination(currentEnemy.position);
+            //    },
+
+            //    OnUpdate = () =>
+            //    {
+            //        navAgent.SetDestination(currentEnemy.position);
+            //        if (enemyInAttackRange)
+            //            Actions[ActionType.MOVE_TO_ENEMY].IsFinished = true;
+            //    },
+
+            //    OnExit = () => navAgent.ResetPath(),
+
+            //    IsUsefulForGoal = goal =>
+            //        goal == GoalType.ATTACK || goal == GoalType.FIND_ENEMY,
+
+            //    IsFinished = false
+            //});
+
+            //Actions.Add(ActionType.ATTACK, new GoapAction<ActionType, GoalType>
+            //{
+            //    Type = ActionType.ATTACK,
+            //    Cost = 1,
+
+            //    Preconditions =
+            //    {
+            //        () => currentEnemy != null,
+            //        () => enemyInAttackRange
+            //    },
+
+            //    OnStart = () =>
+            //    {
+            //        Debug.Log("Attack Start");
+            //        animator.Play("Attack");
+            //    },
+
+            //    OnUpdate = () =>
+            //    {
+            //        // 공격 애니메이션 끝나면 행동 종료 플래그를 세터
+            //        if (attackAnimationFinished)
+            //            Actions[ActionType.ATTACK].IsFinished = true;
+            //    },
+
+            //    OnExit = () =>
+            //    {
+            //        Debug.Log("Attack Exit");
+            //    },
+
+            //    IsUsefulForGoal = goal =>
+            //        goal == GoalType.ATTACK,
+
+            //    IsFinished = false
+            //});
+
+            //DefaultActionType = ActionType.IDLE;
         }
 
         protected virtual void RegisterGoals()
         {
-            //등록 예시
-            //Goals.Add(GoalType.SURVIVE, new GoapGoal
+            //Goals.Add(GoalType.SURVIVE, new GoapGoal<GoalType>
             //{
             //    Type = GoalType.SURVIVE,
-            //    Priority = 100,
-            //    IsSatisfied = () => { return true; }
+            //    Priority = 0,
+            //    IsSatisfied = () => health > 30f,   // 체력이 30 이상이면 생존 상태
+            //    Repeatable = true
             //});
 
-            //Goals.Add(GoalType.ENGAGE, new GoapGoal
+            //Goals.Add(GoalType.ATTACK, new GoapGoal<GoalType>
             //{
-            //    Type = GoalType.ENGAGE,
-            //    Priority = 60,
-            //    IsSatisfied = () => { return true; }
+            //    Type = GoalType.ATTACK,
+            //    Priority = 1,
+            //    IsSatisfied = () => enemyInAttackRange, // 사정거리 안에 적이 있다면 목표 달성됨
+            //    Repeatable = true
             //});
 
-            //Goals.Add(GoalType.CAPTURE, new GoapGoal
+            //Goals.Add(GoalType.FIND_ENEMY, new GoapGoal<GoalType>
             //{
-            //    Type = GoalType.CAPTURE,
-            //    Priority = 10,
-            //    IsSatisfied = () => { return true; }
+            //    Type = GoalType.FIND_ENEMY,
+            //    Priority = 2,
+            //    IsSatisfied = () => currentEnemy != null,
+            //    Repeatable = true
             //});
+
+            //// Default Goal 지정
+            //DefaultGoalType = GoalType.SURVIVE;
         }
         #endregion
 
-        private void Tick()
+        void Tick()
         {
-            var unsatisfied = Goals
-                .Where(g => !g.Value.IsSatisfied())
-                .OrderByDescending(g => g.Value.Priority);
-
-            if (!unsatisfied.Any())
-            {
-                CurrentGoal = GoalType.NONE;
-                CurrentAction = ActionType.NONE;
-                return;
-            }
-
-            var goal = unsatisfied.First();
-            CurrentGoal = goal.Key;
-
-            var current = CurrentAction != ActionType.NONE ? Actions[CurrentAction] : null;
-
-            // 현재 액션이 여전히 유효하면 유지
-            if (current != null && CheckPreconditions(current))
-                return;
-
-            // 아니면 새 액션 선택
-            CurrentAction = SelectBestAction(goal.Value);
+            SelectGoal();
+            RunAction();
         }
 
-        private ActionType SelectBestAction(GoapGoal goal)
+        void SelectGoal()
         {
-            ActionType best = ActionType.NONE;
+            var unsatisfied = Goals
+                .Where(g => g.Value.IsSatisfied() == false)
+                .OrderBy(g => g.Value.Priority);
+
+            CurrentGoal = unsatisfied.Any()
+                ? unsatisfied.First().Value
+                : Goals[DefaultGoalType];
+        }
+
+        void RunAction()
+        {
+            if (!CheckPreconditions(CurrentAction))
+            {
+                StopCurrentAction();
+            }
+            else if (CurrentAction.IsFinished)
+            {
+                FinishCurrentAction();
+            }
+
+            if (!actionStarted)
+            {
+                CurrentAction.OnStart?.Invoke();
+                actionStarted = true;
+            }
+
+            CurrentAction.OnUpdate?.Invoke();
+        }
+
+        protected virtual GoapAction<ActionType, GoalType> SelectBestAction(GoapGoal<GoalType> goal)
+        {
+            GoapAction<ActionType, GoalType> best = null;
             int bestScore = int.MinValue;
 
-            foreach (var action in Actions)
+            foreach (var pair in Actions)
             {
-                if (!CheckPreconditions(action.Value)) continue;
+                var action = pair.Value;
 
-                int score = -action.Value.Cost;
+                if (!CheckPreconditions(action))
+                    continue;
+
+                if (action.IsUsefulForGoal != null && !action.IsUsefulForGoal(goal.Type))
+                    continue;
+
+                int score = -action.Cost;
                 if (score > bestScore)
                 {
                     bestScore = score;
-                    best = action.Key;
+                    best = action;
                 }
             }
 
-            return best;
+            return best ?? Actions[DefaultActionType];
         }
 
-        private bool CheckPreconditions(GoapAction a)
+        bool CheckPreconditions(GoapAction<ActionType, GoalType> a)
         {
             foreach (var cond in a.Preconditions)
                 if (!cond()) return false;
 
             return true;
+        }
+
+        void StopCurrentAction()
+        {
+            CurrentAction.IsFinished = false;
+            CurrentAction.OnExit?.Invoke();
+            actionStarted = false;
+            CurrentAction = SelectBestAction(CurrentGoal);
+        }
+
+        void FinishCurrentAction()
+        {
+            foreach (var eff in CurrentAction.Effects)
+                eff?.Invoke();
+
+            StopCurrentAction();
         }
 
         /// <summary>
@@ -164,12 +306,7 @@ namespace GOAP
         /// </summary>
         public void CompleteCurrentAction()
         {
-            if (CurrentAction == ActionType.NONE) return;
-
-            foreach (var eff in Actions[CurrentAction].Effects)
-                eff?.Invoke();
-
-            CurrentAction = ActionType.NONE;
+            CurrentAction.IsFinished = true;
         }
     }
 }
