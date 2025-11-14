@@ -23,6 +23,16 @@ public class WorldManager : MonoBehaviour
         return levelLayers;
     }
 
+    public bool IsThereUncapturedPoint(Transform agent)
+    {
+        foreach (var cap in captures)
+        {
+            if (cap.NeedToCapture(agent))
+                return true;
+        }
+        return false;
+    }
+
     public CapturePoint.CapturePoint RequestClosestCapture(Transform agent, float error, out Vector3 destination)
     {
         CapturePoint.CapturePoint resultCap = null;
@@ -39,11 +49,11 @@ public class WorldManager : MonoBehaviour
         foreach (var cp in captures)
         {
             if (cp.GetCurrentState() == CapturePoint.CaptureState.CapturedByBlue 
-                && agent.CompareTag("Blue"))
+                && agent.CompareTag("TeamBlue"))
                 continue;
 
             if (cp.GetCurrentState() == CapturePoint.CaptureState.CapturedByRed
-                && agent.CompareTag("Red"))
+                && agent.CompareTag("TeamRed"))
                 continue;
 
             float dist = Vector3.SqrMagnitude(cp.transform.position - origin);

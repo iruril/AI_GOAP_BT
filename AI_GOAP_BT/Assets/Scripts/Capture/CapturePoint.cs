@@ -152,5 +152,18 @@ namespace CapturePoint
             decalMat.SetColor("_Emission", targetEmit);
         }
 
+        public bool NeedToCapture(Transform agent)
+        {
+            bool result = true;
+            if (agent.CompareTag("TeamBlue"))
+            {
+                if (CurrentState.StateKey == CaptureState.CapturedByBlue) result = false;
+            }
+            else
+            {
+                if (CurrentState.StateKey == CaptureState.CapturedByRed) result = false;
+            }
+            return result;
+        }
     }
 }

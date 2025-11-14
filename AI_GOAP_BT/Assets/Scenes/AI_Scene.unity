@@ -30517,6 +30517,17 @@ MonoBehaviour:
   m_SelectedFaces: 
   m_SelectedEdges: []
   m_SelectedVertices: 
+--- !u!114 &919392568 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
+  m_PrefabInstance: {fileID: 399334334}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d866994533875f44ea109756d84edaef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &921840229
 GameObject:
   m_ObjectHideFlags: 0
@@ -32157,6 +32168,11 @@ MonoBehaviour:
   levelLayers:
     serializedVersion: 2
     m_Bits: 8
+  captures:
+  - {fileID: 1427910638}
+  - {fileID: 1612766405}
+  - {fileID: 1602068541}
+  - {fileID: 919392568}
 --- !u!4 &962812511
 Transform:
   m_ObjectHideFlags: 0
@@ -55846,6 +55862,17 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!114 &1427910638 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
+  m_PrefabInstance: {fileID: 344125657}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d866994533875f44ea109756d84edaef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!43 &1429610940
 Mesh:
   m_ObjectHideFlags: 0
@@ -70118,6 +70145,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 401133537}
   m_LocalEulerAnglesHint: {x: 0, y: 134.917, z: 0}
+--- !u!114 &1602068541 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
+  m_PrefabInstance: {fileID: 1806237096}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d866994533875f44ea109756d84edaef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1602696984
 GameObject:
   m_ObjectHideFlags: 0
@@ -73232,6 +73270,17 @@ MonoBehaviour:
   m_SelectedFaces: 
   m_SelectedEdges: []
   m_SelectedVertices: 
+--- !u!114 &1612766405 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7428694438943795892, guid: 40e801a4ed59d544db41332f68c5645c, type: 3}
+  m_PrefabInstance: {fileID: 1463818539}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d866994533875f44ea109756d84edaef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!43 &1622035518
 Mesh:
   m_ObjectHideFlags: 0

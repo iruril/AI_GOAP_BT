@@ -223,7 +223,7 @@ namespace GOAP
         {
             var unsatisfied = Goals
                 .Where(g => g.Value.IsSatisfied() == false)
-                .OrderBy(g => g.Value.Priority);
+                .OrderByDescending(g => g.Value.Priority);
 
             CurrentGoal = unsatisfied.Any()
                 ? unsatisfied.First().Value
@@ -232,6 +232,16 @@ namespace GOAP
 
         void RunAction()
         {
+            var best = SelectBestAction(CurrentGoal);
+            if (!ReferenceEquals(best, CurrentAction))
+            {
+                CurrentAction.IsFinished = false;
+                CurrentAction?.OnExit?.Invoke();
+                actionStarted = false;
+
+                CurrentAction = best;
+            }
+
             if (!CheckPreconditions(CurrentAction))
             {
                 StopCurrentAction();
@@ -289,7 +299,7 @@ namespace GOAP
             CurrentAction.IsFinished = false;
             CurrentAction.OnExit?.Invoke();
             actionStarted = false;
-            CurrentAction = SelectBestAction(CurrentGoal);
+            //CurrentAction = SelectBestAction(CurrentGoal);
         }
 
         void FinishCurrentAction()
