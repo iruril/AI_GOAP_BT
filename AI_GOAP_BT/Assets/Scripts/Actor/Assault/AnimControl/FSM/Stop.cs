@@ -80,7 +80,7 @@ namespace AnimControl.Assault
             vel.Normalize();
             tgt.Normalize();
 
-            if (Vector3.Angle(vel, tgt) >= 135f)
+            if (Vector3.Angle(vel, tgt) >= 150f)
                 return true;
             return false;
         }

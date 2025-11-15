@@ -63,7 +63,7 @@ namespace GOAP.Assualt
 
                 OnStart = () =>
                 {
-                    currentCap = WorldManager.Instance.RequestClosestCapture(transform, 5f, out var dest);
+                    currentCap = WorldManager.Instance.RequestClosestCapture(transform, 4f, out var dest);
                     Navigator.SetDestination(dest);
                 },
                 OnUpdate = () =>
