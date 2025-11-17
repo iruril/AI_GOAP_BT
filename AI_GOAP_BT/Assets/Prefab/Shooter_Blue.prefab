@@ -688,9 +688,10 @@ GameObject:
   - component: {fileID: 2095484149871436001}
   - component: {fileID: 8638010724399878261}
   - component: {fileID: 5106131518366905819}
+  - component: {fileID: 8444713658870570109}
   - component: {fileID: 2621712713207012491}
   - component: {fileID: 6883628252706435882}
-  - component: {fileID: 8444713658870570109}
+  - component: {fileID: -2168579121952372337}
   m_Layer: 8
   m_Name: Shooter_Blue
   m_TagString: TeamBlue
@@ -1435,6 +1436,19 @@ MonoBehaviour:
   wallAvoidFalloff: 1
   priority: 0.5
   debug: 0
+--- !u!114 &8444713658870570109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2531024411289186008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7df87c0aeb7e1fb448590c9847c6b30c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveAxisSmoothTime: 0.08
 --- !u!114 &2621712713207012491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1461,7 +1475,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CurrentStateKey: 0
   RootRotation: 0
---- !u!114 &8444713658870570109
+--- !u!114 &-2168579121952372337
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1470,10 +1484,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 2531024411289186008}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7df87c0aeb7e1fb448590c9847c6b30c, type: 3}
+  m_Script: {fileID: 11500000, guid: dcc5bb94738aae449a01c84cfa62b061, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveAxisSmoothTime: 0.08
+  CurrentTarget: {fileID: 0}
+  TargetVisible: 0
+  TargetDistance: Infinity
+  CoverDistance: Infinity
+  UnderAttack: 0
+  CoverAvailable: 0
+  captureOffsetRadius: 4
+  MaxHP: 100
+  IsDead: 0
+  MaximunRange: 30
+  EffectiveRange: 15
+  FindTargetTimeWhenLost: 10
 --- !u!1 &2536883339120134852
 GameObject:
   m_ObjectHideFlags: 0

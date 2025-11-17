@@ -30,7 +30,7 @@ namespace GOAP
         public bool Repeatable = true;
     }
 
-    public class GoapBrain<ActionType, GoalType> : MonoBehaviour where ActionType : Enum where GoalType : Enum
+    public abstract class GoapBrain<ActionType, GoalType> : MonoBehaviour where ActionType : Enum where GoalType : Enum
     {
         //public AISensor sensor;
         //public AIBlackboard blackboard;
@@ -260,7 +260,7 @@ namespace GOAP
             CurrentAction.OnUpdate?.Invoke();
         }
 
-        protected virtual GoapAction<ActionType, GoalType> SelectBestAction(GoapGoal<GoalType> goal)
+        GoapAction<ActionType, GoalType> SelectBestAction(GoapGoal<GoalType> goal)
         {
             GoapAction<ActionType, GoalType> best = null;
             int bestScore = int.MinValue;
@@ -299,7 +299,6 @@ namespace GOAP
             CurrentAction.IsFinished = false;
             CurrentAction.OnExit?.Invoke();
             actionStarted = false;
-            //CurrentAction = SelectBestAction(CurrentGoal);
         }
 
         void FinishCurrentAction()

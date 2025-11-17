@@ -18,11 +18,12 @@ namespace GOAP.Assualt
     {
         public AINavigator Navigator { get; private set; }
 
-        CapturePoint.CapturePoint currentCap; //임시. Sensor에 들어갈 것임.
+        public Sensor.Assualt.AssaultSensor Sensor { get; private set; }
 
         protected override void Awake()
         {
             Navigator = GetComponent<AINavigator>();
+            Sensor = GetComponent<Sensor.Assualt.AssaultSensor>();
             base.Awake();
         }
 
@@ -63,18 +64,20 @@ namespace GOAP.Assualt
 
                 OnStart = () =>
                 {
-                    currentCap = WorldManager.Instance.RequestClosestCapture(transform, 4f, out var dest);
-                    Navigator.SetDestination(dest);
+                    Sensor.GetClosestCapture(out var destination);
+                    Navigator.SetDestination(destination);
                 },
                 OnUpdate = () =>
                 {
-                    if (!currentCap.NeedToCapture(transform))
+                    if (Sensor.IsCurrentCapCapturerd())
                     {
-                        currentCap = null;
-                        Actions[AssualtAction.MOVE_TO_CAPTURE].IsFinished = true;
+                        CompleteCurrentAction();
                     }
                 },
-                OnExit = () => { },
+                OnExit = () => 
+                {
+                    Sensor.ResetCapture();
+                },
 
                 IsUsefulForGoal = goal => goal == AssaultGoal.CAPTURE,
                 IsFinished = false
