@@ -689,6 +689,7 @@ GameObject:
   - component: {fileID: 8638010724399878261}
   - component: {fileID: 5106131518366905819}
   - component: {fileID: 8444713658870570109}
+  - component: {fileID: 3699196231931490860}
   - component: {fileID: 2621712713207012491}
   - component: {fileID: 6883628252706435882}
   - component: {fileID: -2168579121952372337}
@@ -1449,6 +1450,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveAxisSmoothTime: 0.08
+--- !u!114 &3699196231931490860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2531024411289186008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad5e5a7ba8f1b014da22637a3c01d372, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxHP: 100
 --- !u!114 &2621712713207012491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1495,10 +1509,6 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 512
-  maxHP: 100
-  MaximunRange: 30
-  EffectiveRange: 15
-  FindTargetTimeWhenLost: 10
 --- !u!1 &2536883339120134852
 GameObject:
   m_ObjectHideFlags: 0

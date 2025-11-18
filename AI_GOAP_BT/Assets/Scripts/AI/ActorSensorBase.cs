@@ -4,14 +4,17 @@ using UnityEngine;
 
 namespace Sensor
 {
-    public abstract class ActorSensorBase : MonoBehaviour, IDamageable
+    public abstract class ActorSensorBase : MonoBehaviour
     {
+        public Stat MyStat { get; private set; }
+
         [Header("Target Info")]
-        public Transform CurrentTarget { get; set; }
+        public Transform CurrentTarget { get; private set; }
+        public Stat CurrentTargetStat { get; private set; }
         public bool HasTarget => CurrentTarget != null;
 
-        public bool TargetVisible { get; set; } = false;
-        public float TargetDistance { get; set; } = Mathf.Infinity;
+        public bool TargetVisible { get; private set; } = false;
+        public float TargetDistance { get; private set; } = Mathf.Infinity;
         [Header("Target Memory")]
         public Vector3 LastSeenPosition { get; private set; }
         public bool HasLastSeenPosition { get; private set; } = false;
@@ -38,15 +41,12 @@ namespace Sensor
 
         [Header("Combat Info")]
         [SerializeField] private LayerMask enemyLayer;
-        [SerializeField] private float maxHP = 100f;
-        protected float currentHP;
-        public bool IsDead { get; set; } = false;
 
         protected CoroutineHandle underAttackHandle;
 
         protected virtual void Awake()
         {
-            currentHP = maxHP;
+            MyStat = GetComponent<Stat>();
             cosHalfFov = Mathf.Cos((sightAngle * 0.5f) * Mathf.Deg2Rad);
         }
 
@@ -96,12 +96,16 @@ namespace Sensor
         protected virtual void SetTarget(Transform target)
         {
             CurrentTarget = target;
+            if (target.TryGetComponent<Stat>(out var stat)) 
+                CurrentTargetStat = stat;
             targetLostTimer = 0f;
         }
 
         protected virtual void ResetTarget()
         {
             CurrentTarget = null;
+            CurrentTargetStat = null;
+            TargetVisible = false;
         }
 
         protected virtual void NotifySuppressed()
@@ -124,19 +128,6 @@ namespace Sensor
 
             CoverAvailable = result;
         }
-
-        #region Damageable Field
-        public virtual void ApplyDamage(float dmg)
-        {
-            currentHP -= dmg;
-
-            if (currentHP <= 0f)
-            {
-                currentHP = 0f;
-                IsDead = true;
-            }
-        }
-        #endregion
 
         #region Capture Field
         public void ResetCapture()
@@ -268,7 +259,7 @@ namespace Sensor
         {
             if (!HasTarget)
             {
-                TargetVisible = false;
+                ResetTarget();
                 return;
             }
 
@@ -295,6 +286,13 @@ namespace Sensor
                 LastSeenPosition = CurrentTarget.position;
                 HasLastSeenPosition = true;
             }
+        }
+
+        private void CheckTargetIsValid()
+        {
+            if (!HasTarget) return;
+
+            if (CurrentTargetStat.IsDead) ResetTarget();
         }
         #endregion
 
