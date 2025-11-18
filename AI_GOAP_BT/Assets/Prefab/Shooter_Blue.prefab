@@ -1487,15 +1487,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcc5bb94738aae449a01c84cfa62b061, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentTarget: {fileID: 0}
-  TargetVisible: 0
-  TargetDistance: Infinity
-  CoverDistance: Infinity
-  UnderAttack: 0
-  CoverAvailable: 0
+  loseTargetAfter: 2
   captureOffsetRadius: 4
-  MaxHP: 100
-  IsDead: 0
+  sightRange: 50
+  sightAngle: 160
+  visibleOffesetHight: 1.4
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  maxHP: 100
   MaximunRange: 30
   EffectiveRange: 15
   FindTargetTimeWhenLost: 10

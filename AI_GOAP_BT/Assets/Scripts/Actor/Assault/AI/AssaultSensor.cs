@@ -13,5 +13,9 @@ namespace Sensor.Assualt
         { 
             base.Update();
         }
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+        }
     }
 }
