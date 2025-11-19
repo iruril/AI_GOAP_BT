@@ -15,6 +15,7 @@ namespace Sensor
 
         public bool TargetVisible { get; private set; } = false;
         public float TargetDistance { get; private set; } = Mathf.Infinity;
+
         [Header("Target Memory")]
         public Vector3 LastSeenPosition { get; private set; }
         public bool HasLastSeenPosition { get; private set; } = false;
@@ -28,7 +29,7 @@ namespace Sensor
         public bool CoverAvailable { get; set; } = false;
 
         [Header("Capture Info")]
-        public CapturePoint.CapturePoint CurrentCap { get; private set; }
+        public CapturePoint.CapturePoint CaptureTarget { get; private set; }
         [SerializeField] private float captureOffsetRadius = 4f;
 
         [Header("Sight Info")]
@@ -50,6 +51,15 @@ namespace Sensor
             cosHalfFov = Mathf.Cos((sightAngle * 0.5f) * Mathf.Deg2Rad);
         }
 
+        protected virtual void Start()
+        {
+            MyStat.OnDead += () =>
+            {
+                ResetTarget();
+                ResetCapture();
+            };
+        }
+
         protected virtual void Update()
         {
             UpdateTargetDistance();
@@ -60,6 +70,7 @@ namespace Sensor
         {
             CheckHostileInSight();
             CheckTargetInSight();
+            CheckTargetIsValid();
         }
 
         private void UpdateTargetDistance()
@@ -132,17 +143,17 @@ namespace Sensor
         #region Capture Field
         public void ResetCapture()
         {
-            CurrentCap = null;
+            CaptureTarget = null;
         }
 
         public void GetClosestCapture(out Vector3 destination)
         {
-            CurrentCap = WorldManager.Instance.RequestClosestCapture(transform, captureOffsetRadius, out destination);
+            CaptureTarget = WorldManager.Instance.RequestClosestCapture(transform, captureOffsetRadius, out destination);
         }
 
         public bool IsCurrentCapCapturerd()
         {
-            return !CurrentCap.NeedToCapture(transform);
+            return !CaptureTarget.NeedToCapture(transform);
         }
         #endregion
 
@@ -300,15 +311,29 @@ namespace Sensor
         {
             if (HasTarget)
             {
-                if (transform.CompareTag("TeamBlue")) Gizmos.color = Color.cyan;
-                else Gizmos.color = Color.magenta;
+                if (transform.CompareTag("TeamBlue"))
+                {
+                    Gizmos.color = Color.cyan;
 
-                Vector3 originEye = transform.position + Vector3.up * visibleOffesetHight;
-                Vector3 targetEye = CurrentTarget.position + Vector3.up * visibleOffesetHight;
+                    Vector3 originEye = transform.position + Vector3.up * visibleOffesetHight;
+                    Vector3 targetEye = CurrentTarget.position + Vector3.up * visibleOffesetHight;
 
-                Gizmos.DrawWireSphere(originEye, 0.3f);
-                Gizmos.DrawWireSphere(targetEye, 0.3f);
-                Gizmos.DrawLine(originEye, targetEye);
+                    Gizmos.DrawWireSphere(originEye, 0.3f);
+                    Gizmos.DrawWireSphere(targetEye, 0.3f);
+                    Gizmos.DrawLine(originEye, targetEye);
+
+                }
+                else
+                {
+                    Gizmos.color = Color.magenta;
+
+                    Vector3 originEye = transform.position + Vector3.up * (visibleOffesetHight - 0.05f);
+                    Vector3 targetEye = CurrentTarget.position + Vector3.up * (visibleOffesetHight - 0.05f);
+
+                    Gizmos.DrawWireSphere(originEye, 0.25f);
+                    Gizmos.DrawWireSphere(targetEye, 0.25f);
+                    Gizmos.DrawLine(originEye, targetEye);
+                }
             }
         }
     }

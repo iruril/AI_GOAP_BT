@@ -16,8 +16,8 @@ namespace CapturePoint
     public class CapturePoint : StateManager<CaptureState>
     {
         private CapturePoint _context => this;
-        private HashSet<Transform> blues = new(32);
-        private HashSet<Transform> reds = new(32);
+        private HashSet<Stat> blues = new(32);
+        private HashSet<Stat> reds = new(32);
         private Material decalMat;
 
         [Header("Neutral Color")]
@@ -66,7 +66,7 @@ namespace CapturePoint
             return Mathf.Clamp(blues.Count - reds.Count, -5, 5);
         }
 
-        public void AddIntruder(Transform intruder)
+        public void AddIntruder(Stat intruder)
         {
             if (intruder.CompareTag("TeamBlue"))
             {
@@ -78,7 +78,7 @@ namespace CapturePoint
             }
         }
 
-        public void RemoveIntruder(Transform intruder)
+        public void RemoveIntruder(Stat intruder)
         {
             if (intruder.CompareTag("TeamBlue"))
             {

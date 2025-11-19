@@ -96,4 +96,4 @@ MonoBehaviour:
   def: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
   blue: {r: 0.36320752, g: 0.6913323, b: 1, a: 1}
   red: {r: 1, g: 0.4198113, b: 0.4198113, a: 1}
-  captureAmount: 2
+  captureAmount: 5

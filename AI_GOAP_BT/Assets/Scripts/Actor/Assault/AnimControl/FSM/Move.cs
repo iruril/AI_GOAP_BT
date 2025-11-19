@@ -1,4 +1,3 @@
-using RootMotion.Demos;
 using UnityEngine;
 
 namespace AnimControl.Assault
@@ -48,6 +47,8 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
+            if (ctx.MySensor.HasTarget)
+                return AnimState.LookAtMove;
             if (Vector3.Distance(ctx.transform.position, ctx.Navigator.AI.endOfPath) <= stoppingDistance
                 && obstacle == 0)
                 return AnimState.Stop;

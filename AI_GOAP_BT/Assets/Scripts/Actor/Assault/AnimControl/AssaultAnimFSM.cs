@@ -9,7 +9,8 @@ namespace AnimControl.Assault
         Start,
         Move,
         Stop,
-        TurnOpposite
+        TurnOpposite,
+        LookAtMove
     }
 
     public class AssaultAnimFSM : StateManager<AnimState>
@@ -17,6 +18,8 @@ namespace AnimControl.Assault
         private AssaultAnimFSM _context => this;
         public Animator Anim { get; private set; }
         public AINavigator Navigator { get; private set; }
+        public Sensor.Assualt.AssaultSensor MySensor { get; private set; }
+        public Rigidbody MyRigid { get; private set; }
 
         public AnimState CurrentStateKey;
 
@@ -24,11 +27,15 @@ namespace AnimControl.Assault
         public float StateTime { get; set; }
         public bool RootRotation = false;
 
+        float aimWeight;
+
         void Awake()
         {
             Anim = GetComponent<Animator>();
             Navigator = GetComponent<AINavigator>();
             Navigator.OnSetDestination = () => DecideAccelByDistance();
+            MySensor = GetComponent<Sensor.Assualt.AssaultSensor>();
+            MyRigid = GetComponent<Rigidbody>();
 
             InitializeStates();
             CurrentState = States[AnimState.Idle];
@@ -59,6 +66,7 @@ namespace AnimControl.Assault
             CurrentStateKey = CurrentState.StateKey;
             UpdateMoveAxis();
             UpdateAccelation();
+            UpdateAimWeight();
         }
 
         private void InitializeStates()
@@ -66,6 +74,7 @@ namespace AnimControl.Assault
             States.Add(AnimState.Idle, new Idle(_context, AnimState.Idle));
             States.Add(AnimState.Start, new Start(_context, AnimState.Start));
             States.Add(AnimState.Move, new Move(_context, AnimState.Move));
+            States.Add(AnimState.LookAtMove, new LookAtMove(_context, AnimState.LookAtMove));
             States.Add(AnimState.Stop, new Stop(_context, AnimState.Stop));
             States.Add(AnimState.TurnOpposite, new TurnOpposite(_context, AnimState.TurnOpposite));
         }
@@ -81,17 +90,29 @@ namespace AnimControl.Assault
             Anim.SetFloat(AnimHash.Accelation, Accel);
         }
 
+        float _refAimValue;
+        void UpdateAimWeight()
+        {
+            float _targetVaule = MySensor.TargetVisible ? 1f : 0f;
+            aimWeight = Mathf.SmoothDamp(aimWeight, _targetVaule, ref _refAimValue, 0.1f);
+            Anim.SetFloat(AnimHash.AimWeight, aimWeight);
+        }
+
         private void DecideAccelByDistance()
         {
             float dist = Vector3.Distance(transform.position, Navigator.AI.endOfPath);
-            if (dist <= 2f)
-                Accel = 1f;
-            else if (dist <= 4f)
-                Accel = 2f;
-            else if (dist <= 8f)
-                Accel = 3f;
-            else
-                Accel = 4f;
+            if (!MySensor.HasTarget)
+            {
+                if (dist <= 2f)
+                    Accel = 1f;
+                else if (dist <= 4f)
+                    Accel = 2f;
+                else if (dist <= 8f)
+                    Accel = 3f;
+                else
+                    Accel = 4f;
+            }
+            else Accel = 2f;
         }
 
         public void RecalcAccelByDistance()

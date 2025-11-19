@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace AnimControl.Assault
 {
-    public class Idle : BaseAssaultAnimState
+    public class LookAtMove : BaseAssaultAnimState
     {
-        public Idle(AssaultAnimFSM ctx, AnimState key) : base(ctx, key)
+        public LookAtMove(AssaultAnimFSM ctx, AnimState key) : base(ctx, key)
         {
             this.ctx = ctx;
         }
@@ -12,10 +12,9 @@ namespace AnimControl.Assault
         public override void EnterState()
         {
             base.EnterState();
-            ctx.Accel = 0f;
+            ctx.Accel = 2f;
             ctx.Navigator.AI.enableRotation = false;
             ctx.RootRotation = false;
-            ctx.Anim.CrossFade(AnimHash.Strafe, 0.15f);
         }
 
         public override void ExitState()
@@ -35,12 +34,15 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
-            if (Vector3.Distance(ctx.transform.position, ctx.Navigator.AI.endOfPath) > 1.5f)
+            if (!ctx.MySensor.HasTarget)
             {
-                if (!ctx.MySensor.HasTarget)
-                    return AnimState.Start;
-                else
-                    return AnimState.LookAtMove;
+                if (ctx.Navigator.AI.velocity.sqrMagnitude > 0.001f)
+                    return AnimState.Move;
+                else return AnimState.Idle;
+            }
+            if(Vector3.Distance(ctx.transform.position, ctx.Navigator.AI.endOfPath) <= 0.7f)
+            {
+                return AnimState.Idle;
             }
             return StateKey;
         }
@@ -53,7 +55,7 @@ namespace AnimControl.Assault
 
         void LookAtTarget()
         {
-            if (!ctx.MySensor.HasTarget) return;
+            if(!ctx.MySensor.HasTarget) return;
 
             Vector3 targetDir = ctx.MySensor.CurrentTarget.position - ctx.transform.position;
             targetDir.y = 0f;

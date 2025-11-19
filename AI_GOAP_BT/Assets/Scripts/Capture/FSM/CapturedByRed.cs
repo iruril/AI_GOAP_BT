@@ -46,12 +46,20 @@ namespace CapturePoint
 
         public override void OnTriggerEnter(Collider other)
         {
-            ctx.AddIntruder(other.transform);
+            if (other.TryGetComponent<Stat>(out var stat))
+            {
+                stat.CurrentCapture = ctx;
+                ctx.AddIntruder(stat);
+            }
         }
 
         public override void OnTriggerExit(Collider other)
         {
-            ctx.RemoveIntruder(other.transform);
+            if (other.TryGetComponent<Stat>(out var stat))
+            {
+                stat.CurrentCapture = null;
+                ctx.RemoveIntruder(stat);
+            }
         }
 
         public override void OnTriggerStay(Collider other)

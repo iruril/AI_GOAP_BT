@@ -5,13 +5,15 @@ namespace GOAP.Assualt
     public enum AssualtAction
     {
         IDLE,
-        MOVE_TO_CAPTURE
+        MOVE_TO_CAPTURE,
+        COMBAT
     }
 
     public enum AssaultGoal
     {
         SURVIVE,
-        CAPTURE
+        CAPTURE,
+        ENGAGE_ENEMY
     }
 
     public class AssaultBrain : GoapBrain<AssualtAction, AssaultGoal>
@@ -22,9 +24,17 @@ namespace GOAP.Assualt
 
         protected override void Awake()
         {
+            base.Awake();
             Navigator = GetComponent<AINavigator>();
             Sensor = GetComponent<Sensor.Assualt.AssaultSensor>();
-            base.Awake();
+        }
+
+        protected override void Start()
+        {
+            Sensor.MyStat.OnDead += () =>
+            {
+                InitGOAP();
+            };
         }
 
         protected override void FixedUpdate()
@@ -74,12 +84,36 @@ namespace GOAP.Assualt
                         CompleteCurrentAction();
                     }
                 },
-                OnExit = () => 
+                OnExit = () =>
                 {
                     Sensor.ResetCapture();
                 },
 
                 IsUsefulForGoal = goal => goal == AssaultGoal.CAPTURE,
+                IsFinished = false
+            });
+
+            Actions.Add(AssualtAction.COMBAT, new GoapAction<AssualtAction, AssaultGoal>
+            {
+                Type = AssualtAction.COMBAT,
+                Cost = 10,
+
+                Preconditions =
+                {
+                    () => Sensor.HasTarget
+                },
+
+                OnStart = () => { },
+                OnUpdate = () =>
+                {
+                    if (!Sensor.HasTarget)
+                    {
+                        CompleteCurrentAction();
+                    }
+                },
+                OnExit = () => { },
+
+                IsUsefulForGoal = goal => goal == AssaultGoal.CAPTURE || goal == AssaultGoal.ENGAGE_ENEMY,
                 IsFinished = false
             });
 
@@ -92,7 +126,10 @@ namespace GOAP.Assualt
             {
                 Type = AssaultGoal.SURVIVE,
                 Priority = 100,
-                IsSatisfied = () => true,   // 체력이 30 이상이면 생존 상태 //구현 필요
+                IsSatisfied = () => 
+                {
+                    return true; //Sensor.MyStat.CurrentHP >= 30f;
+                },
                 Repeatable = true
             });
 
@@ -103,6 +140,17 @@ namespace GOAP.Assualt
                 IsSatisfied = () =>
                 {
                     return !WorldManager.Instance.IsThereUncapturedPoint(transform);
+                },
+                Repeatable = true
+            });
+
+            Goals.Add(AssaultGoal.ENGAGE_ENEMY, new GoapGoal<AssaultGoal>
+            {
+                Type = AssaultGoal.ENGAGE_ENEMY,
+                Priority = 50,
+                IsSatisfied = () =>
+                {
+                    return Sensor.CurrentTarget == null;
                 },
                 Repeatable = true
             });

@@ -50,12 +50,12 @@ namespace GOAP
         {
             RegisterActions();
             RegisterGoals();
+            InitGOAP();
+        }
 
-            if (Goals.TryGetValue(DefaultGoalType, out var goal)) CurrentGoal = goal;
-            else CurrentGoal = Goals.First().Value;
+        protected virtual void Start()
+        {
 
-            if (Actions.TryGetValue(DefaultActionType, out var action)) CurrentAction = action;
-            else CurrentAction = Actions.First().Value;
         }
 
         protected virtual void FixedUpdate()
@@ -210,6 +210,15 @@ namespace GOAP
 
             //// Default Goal ÁöÁ¤
             //DefaultGoalType = GoalType.SURVIVE;
+        }
+
+        protected virtual void InitGOAP()
+        {
+            if (Goals.TryGetValue(DefaultGoalType, out var goal)) CurrentGoal = goal;
+            else CurrentGoal = Goals.First().Value;
+
+            if (Actions.TryGetValue(DefaultActionType, out var action)) CurrentAction = action;
+            else CurrentAction = Actions.First().Value;
         }
         #endregion
 
