@@ -1,4 +1,6 @@
+using BehaviorDesigner.Runtime.Tasks.Unity.UnityQuaternion;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace AnimControl.Assault
 {
@@ -12,7 +14,7 @@ namespace AnimControl.Assault
         public override void EnterState()
         {
             base.EnterState();
-            ctx.Accel = 0f;
+            ctx.SetTargetAccel(0f);
             ctx.Navigator.AI.enableRotation = false;
             ctx.RootRotation = false;
             ctx.Anim.CrossFade(AnimHash.Strafe, 0.15f);
@@ -31,6 +33,7 @@ namespace AnimControl.Assault
         public override void PhysicsUpdateState()
         {
             LookAtTarget();
+            ctx.LookHitDirection();
         }
 
         public override AnimState GetNextState()
@@ -59,11 +62,10 @@ namespace AnimControl.Assault
             targetDir.y = 0f;
             targetDir.Normalize();
 
-            Quaternion currentRot = ctx.MyRigid.rotation;
             Quaternion targetRot = Quaternion.LookRotation(targetDir);
 
             float maxStep = ctx.MySensor.MyStat.RotateSpeedToTarget * Time.fixedDeltaTime;
-            Quaternion newRot = Quaternion.RotateTowards(currentRot, targetRot, maxStep);
+            Quaternion newRot = Quaternion.RotateTowards(ctx.MyRigid.rotation, targetRot, maxStep);
 
             ctx.MyRigid.MoveRotation(newRot);
         }

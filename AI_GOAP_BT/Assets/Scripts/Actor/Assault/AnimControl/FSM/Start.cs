@@ -14,9 +14,9 @@ namespace AnimControl.Assault
         public override void EnterState()
         {
             base.EnterState();
-            ctx.RecalcAccelByDistance();
+            ctx.DecideAccelByDistance();
 
-            switch (ctx.Accel)
+            switch (ctx.TargetAccel)
             {
                 case 1:
                     exitTime = 1.37f;

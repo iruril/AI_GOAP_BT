@@ -14,6 +14,7 @@ namespace AnimControl.Assault
         public override void EnterState()
         {
             base.EnterState();
+            ctx.SetTargetAccel(0f);
             ctx.Navigator.AI.enableRotation = false;
             ctx.RootRotation = false;
             int snapSpeed = Mathf.Clamp(Mathf.RoundToInt(ctx.Accel), 1, 4);
@@ -51,6 +52,8 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
+            if (ctx.MySensor.HasTarget)
+                return AnimState.LookAtMove;
             if (ctx.StateTime >= stopTime) 
                 return AnimState.Idle;
             if(IsOnTurnOppsiteCondition())

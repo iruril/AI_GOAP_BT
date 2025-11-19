@@ -29,6 +29,12 @@ namespace AnimControl.Assault
         public override void UpdateState()
         {
             base.UpdateState();
+
+            float speed = ctx.Navigator.AI.velocity.magnitude;
+            float normalized = Mathf.InverseLerp(0f, ctx.Navigator.AI.maxSpeed, speed);
+
+            ctx.SetTargetAccel(normalized * 4f);
+
             DecideStopDistance();
         }
 
@@ -43,6 +49,8 @@ namespace AnimControl.Assault
                     stoppingDistance,
                     WorldManager.Instance.GetLevelLayers()
                 );
+
+            ctx.LookHitDirection();
         }
 
         public override AnimState GetNextState()

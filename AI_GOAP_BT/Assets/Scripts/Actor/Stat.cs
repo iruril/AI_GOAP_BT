@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using MEC;
+using AnimControl.Assault;
 
 public class Stat : MonoBehaviour, IDamageable
 {
@@ -44,11 +45,15 @@ public class Stat : MonoBehaviour, IDamageable
     }
 
     #region Damageable Field
-    public virtual void ApplyDamage(float dmg)
+    public virtual void ApplyDamage(float dmg, Vector3 hitSourcePosition)
     {
         if (IsDead) return;
 
         CurrentHP -= dmg;
+
+        Vector3 hitDir = hitSourcePosition - transform.position;
+        hitDir.y = 0f;
+        GetComponent<AssaultAnimFSM>()?.OnHit(hitDir.normalized);
 
         if (CurrentHP <= 0f)
         {

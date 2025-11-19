@@ -23,11 +23,16 @@ namespace AnimControl.Assault
 
         public AnimState CurrentStateKey;
 
-        public float Accel { get; set; } = 0f;
+        public float Accel { get; private set; } = 0f;
+        public float TargetAccel { get; private set; } = 0f;
+        [SerializeField] private float accelSmoothSpeed = 4f;
         public float StateTime { get; set; }
         public bool RootRotation = false;
 
-        float aimWeight;
+        private float aimWeight;
+
+        private Vector3? hitDir = null;
+        private float hitRotateRemain = 0f;
 
         void Awake()
         {
@@ -39,6 +44,16 @@ namespace AnimControl.Assault
 
             InitializeStates();
             CurrentState = States[AnimState.Idle];
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+            MySensor.MyStat.OnDead += () =>
+            {
+                hitDir = null;
+                hitRotateRemain = 0f;
+            };
         }
 
         void OnAnimatorMove()
@@ -65,8 +80,21 @@ namespace AnimControl.Assault
             base.Update();
             CurrentStateKey = CurrentState.StateKey;
             UpdateMoveAxis();
-            UpdateAccelation();
+            UpdateAcceleration();
             UpdateAimWeight();
+            AttackTest();
+        }
+
+        float timer = 0f;
+        void AttackTest()
+        {
+            timer += Time.deltaTime;
+
+            if (timer >= 1f && aimWeight >= 0.99f)
+            {
+                MySensor.CurrentTargetStat.ApplyDamage(10f, transform.position);
+                timer = 0f;
+            }
         }
 
         private void InitializeStates()
@@ -85,8 +113,9 @@ namespace AnimControl.Assault
             Anim.SetFloat(AnimHash.YAxis, Navigator.MoveAxis.y);
         }
 
-        void UpdateAccelation()
+        void UpdateAcceleration()
         {
+            Accel = Mathf.Lerp(Accel, TargetAccel, Time.deltaTime * accelSmoothSpeed);
             Anim.SetFloat(AnimHash.Accelation, Accel);
         }
 
@@ -98,26 +127,66 @@ namespace AnimControl.Assault
             Anim.SetFloat(AnimHash.AimWeight, aimWeight);
         }
 
-        private void DecideAccelByDistance()
+        public void SetTargetAccel(float v)
+        {
+            TargetAccel = Mathf.Clamp(v, 0f, 4f);
+        }
+
+        public void DecideAccelByDistance()
         {
             float dist = Vector3.Distance(transform.position, Navigator.AI.endOfPath);
             if (!MySensor.HasTarget)
             {
-                if (dist <= 2f)
-                    Accel = 1f;
+                if (dist <= 1f)
+                    SetTargetAccel(0f);
+                else if (dist <= 2f)
+                    SetTargetAccel(1f);
                 else if (dist <= 4f)
-                    Accel = 2f;
+                    SetTargetAccel(2f);
                 else if (dist <= 8f)
-                    Accel = 3f;
+                    SetTargetAccel(3f);
                 else
-                    Accel = 4f;
+                    SetTargetAccel(4f);
             }
-            else Accel = 2f;
+            else
+                SetTargetAccel(2f);
         }
 
-        public void RecalcAccelByDistance()
+        public void OnHit(Vector3 dir)
         {
-            DecideAccelByDistance();
+            hitDir = dir;
+            hitRotateRemain = 0.5f;
+        }
+
+        public void LookHitDirection()
+        {
+            if (MySensor.HasTarget)
+            {
+                hitDir = null;
+                return;
+            }
+
+            if (hitDir.HasValue)
+            {
+                if (!RootRotation)
+                {
+                    Navigator.AI.enableRotation = false;
+                    Quaternion targetRot = Quaternion.LookRotation(hitDir.Value);
+
+                    float maxStep = MySensor.MyStat.RotateSpeedToTarget * Time.fixedDeltaTime;
+                    Quaternion newRot = Quaternion.RotateTowards(MyRigid.rotation, targetRot, maxStep);
+
+                    MyRigid.MoveRotation(newRot);
+                }
+
+                hitRotateRemain -= Time.fixedDeltaTime;
+
+                if (hitRotateRemain <= 0f)
+                {
+                    Navigator.AI.enableRotation = true;
+                    hitDir = null;
+                }
+            }
         }
     }
 }

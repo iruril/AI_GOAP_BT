@@ -12,7 +12,7 @@ namespace AnimControl.Assault
         public override void EnterState()
         {
             base.EnterState();
-            ctx.Accel = 2f;
+            ctx.SetTargetAccel(2f);
             ctx.Navigator.AI.enableRotation = false;
             ctx.RootRotation = false;
         }
@@ -61,11 +61,10 @@ namespace AnimControl.Assault
             targetDir.y = 0f;
             targetDir.Normalize();
 
-            Quaternion currentRot = ctx.MyRigid.rotation;
             Quaternion targetRot = Quaternion.LookRotation(targetDir);
 
             float maxStep = ctx.MySensor.MyStat.RotateSpeedToTarget * Time.fixedDeltaTime;
-            Quaternion newRot = Quaternion.RotateTowards(currentRot, targetRot, maxStep);
+            Quaternion newRot = Quaternion.RotateTowards(ctx.MyRigid.rotation, targetRot, maxStep);
 
             ctx.MyRigid.MoveRotation(newRot);
         }
