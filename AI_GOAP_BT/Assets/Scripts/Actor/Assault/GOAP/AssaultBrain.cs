@@ -113,7 +113,11 @@ namespace GOAP.Assualt
                 },
                 OnExit = () => { },
 
-                IsUsefulForGoal = goal => goal == AssaultGoal.CAPTURE || goal == AssaultGoal.ENGAGE_ENEMY,
+                IsUsefulForGoal = goal => {
+                    return
+                    goal == AssaultGoal.ENGAGE_ENEMY
+                    || goal == AssaultGoal.SURVIVE;
+                    },
                 IsFinished = false
             });
 

@@ -89,7 +89,7 @@ namespace AnimControl.Assault
         void AttackTest()
         {
             timer += Time.deltaTime;
-
+            if (!MySensor.HasTarget) return;
             if (timer >= 1f && aimWeight >= 0.99f)
             {
                 MySensor.CurrentTargetStat.ApplyDamage(10f, transform.position);
