@@ -1,0 +1,24 @@
+{
+  "GunList": [
+    {
+      "GunID": "weapon_ar_ak12",
+      "GunName": "AK-12",
+      "GunStat": {
+        "AimSpeed": 0.25,
+        "RoundDamage": 35,
+        "WeaponStablility": 6,
+        "WeaponSpread": 1.0,
+        "MagazineCapacity": 30,
+        "RoundsPerMinute": 650,
+        "ShootingModes": [
+          0,
+          2
+        ],
+        "WeaponPosition": [ 0, 0, 0 ],
+        "GunEndPosition": [ 0, 0, 0 ],
+        "LeftHandIKTargetPosition": [ 0, 0, 0 ],
+        "LeftHandIKTargetRotation": [ 0, 0, 0 ]
+      }
+    }
+  ]
+}
