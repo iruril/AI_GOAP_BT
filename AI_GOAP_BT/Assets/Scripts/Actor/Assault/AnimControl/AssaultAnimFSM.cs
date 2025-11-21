@@ -29,6 +29,8 @@ namespace AnimControl.Assault
         public float StateTime { get; set; }
         public bool RootRotation = false;
 
+        private float shootableWeight;
+        public bool Shootable { get; private set; }
         public float AimWeight { get; private set; }
 
         private Vector3? hitDir = null;
@@ -82,6 +84,7 @@ namespace AnimControl.Assault
             UpdateMoveAxis();
             UpdateAcceleration();
             UpdateAimWeight();
+            UpdateShootableCondition();
         }
 
         private void InitializeStates()
@@ -112,6 +115,12 @@ namespace AnimControl.Assault
             float _targetVaule = MySensor.TargetVisible ? 1f : 0f;
             AimWeight = Mathf.SmoothDamp(AimWeight, _targetVaule, ref _refAimValue, 0.1f);
             Anim.SetFloat(AnimHash.AimWeight, AimWeight);
+        }
+
+        void UpdateShootableCondition()
+        {
+            shootableWeight = Anim.GetFloat(AnimHash.Shootable);
+            Shootable = shootableWeight >= 0.99f && AimWeight >= 0.99f;
         }
 
         public void SetTargetAccel(float v)

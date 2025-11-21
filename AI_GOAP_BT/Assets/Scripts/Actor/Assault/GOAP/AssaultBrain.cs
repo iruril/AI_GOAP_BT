@@ -20,16 +20,16 @@ namespace GOAP.Assualt
     {
         public AINavigator Navigator { get; private set; }
         public Sensor.Assualt.AssaultSensor Sensor { get; private set; }
-        AnimControl.Assault.AssaultAnimFSM animStatus;
-        GunHandler gunHandler;
+        public AnimControl.Assault.AssaultAnimFSM MotionController { get; private set; }
+        public GunHandler GunController { get; private set; }
 
         protected override void Awake()
         {
             base.Awake();
             Navigator = GetComponent<AINavigator>();
             Sensor = GetComponent<Sensor.Assualt.AssaultSensor>();
-            animStatus = GetComponent<AnimControl.Assault.AssaultAnimFSM>();
-            gunHandler = GetComponent<GunHandler>();
+            MotionController = GetComponent<AnimControl.Assault.AssaultAnimFSM>();
+            GunController = GetComponent<GunHandler>();
         }
 
         protected override void Start()
@@ -116,9 +116,9 @@ namespace GOAP.Assualt
                     }
 
                     timer += Time.fixedDeltaTime;
-                    if (timer >= 0.08f && animStatus.AimWeight >= 0.99f)
+                    if (timer >= 0.08f && MotionController.Shootable)
                     {
-                        gunHandler.Fire();
+                        GunController.Fire();
                         Sensor.CurrentTargetStat.ApplyDamage(4f, transform.position);
                         timer = 0f;
                     }

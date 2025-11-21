@@ -6,6 +6,7 @@ public static class AnimHash
     public static readonly int YAxis = Animator.StringToHash("YAxis");
     public static readonly int Accelation = Animator.StringToHash("Accelation");
     public static readonly int AimWeight = Animator.StringToHash("AimWeight");
+    public static readonly int Shootable = Animator.StringToHash("Shootable");
     public static readonly int AngleLerp = Animator.StringToHash("AngleLerp");
     public static readonly int TransitionAccel = Animator.StringToHash("TransitionAccel");
 
