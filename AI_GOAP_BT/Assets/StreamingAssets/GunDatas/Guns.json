@@ -1,24 +1,24 @@
 {
   "GunList": [
     {
-      "GunID": "weapon_ar_ak12",
-      "GunName": "AK-12",
-      "GunStat": {
-        "AimSpeed": 0.25,
+      "GunID": "weapon_ar_ak15",
+      "GunName": "AK-15",
+      "GunInfo": {
+        "TimeToADS": 0.25,
         "RoundDamage": 35,
-        "WeaponStablility": 6,
-        "WeaponSpread": 1.0,
+        "Stability": 6,
+        "Spread": 1.0,
         "MagazineCapacity": 30,
-        "RoundsPerMinute": 650,
-        "ShootingModes": [
+        "RPM": 650,
+        "FireModes": [
           0,
           2
-        ],
-        "WeaponPosition": [ 0, 0, 0 ],
-        "GunEndPosition": [ 0, 0, 0 ],
-        "LeftHandIKTargetPosition": [ 0, 0, 0 ],
-        "LeftHandIKTargetRotation": [ 0, 0, 0 ]
-      }
+        ]
+      },
+      "GunPosition": [ 0, 0, 0 ],
+      "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
+      "LeftHandIKPosition": [ -0.249, 0.063, 0.025 ],
+      "LeftHandIKRotation": [ 0, 0, 0 ]
     }
   ]
 }

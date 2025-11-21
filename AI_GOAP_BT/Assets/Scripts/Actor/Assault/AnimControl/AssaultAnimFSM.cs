@@ -29,7 +29,7 @@ namespace AnimControl.Assault
         public float StateTime { get; set; }
         public bool RootRotation = false;
 
-        private float aimWeight;
+        public float AimWeight { get; private set; }
 
         private Vector3? hitDir = null;
         private float hitRotateRemain = 0f;
@@ -82,19 +82,6 @@ namespace AnimControl.Assault
             UpdateMoveAxis();
             UpdateAcceleration();
             UpdateAimWeight();
-            AttackTest();
-        }
-
-        float timer = 0f;
-        void AttackTest()
-        {
-            timer += Time.deltaTime;
-            if (!MySensor.HasTarget) return;
-            if (timer >= 1f && aimWeight >= 0.99f)
-            {
-                MySensor.CurrentTargetStat.ApplyDamage(10f, transform.position);
-                timer = 0f;
-            }
         }
 
         private void InitializeStates()
@@ -122,9 +109,12 @@ namespace AnimControl.Assault
         float _refAimValue;
         void UpdateAimWeight()
         {
-            float _targetVaule = MySensor.TargetVisible ? 1f : 0f;
-            aimWeight = Mathf.SmoothDamp(aimWeight, _targetVaule, ref _refAimValue, 0.1f);
-            Anim.SetFloat(AnimHash.AimWeight, aimWeight);
+            float _targetVaule = MySensor.TargetVisible
+                && CurrentStateKey != AnimState.Start
+                && CurrentStateKey != AnimState.Stop
+                && CurrentStateKey != AnimState.TurnOpposite ? 1f : 0f;
+            AimWeight = Mathf.SmoothDamp(AimWeight, _targetVaule, ref _refAimValue, 0.1f);
+            Anim.SetFloat(AnimHash.AimWeight, AimWeight);
         }
 
         public void SetTargetAccel(float v)

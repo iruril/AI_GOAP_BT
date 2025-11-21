@@ -10,8 +10,7 @@ public class GameManager : MonoBehaviour
 
     private byte[] _connectionToken;
 
-    public List<Gun.Gun> GunList = new();
-    public Dictionary<string, GameObject> GunTable = new();
+    public Dictionary<string, (Gun gun, GameObject prefab)> GunTable = new();
 
     public bool GunListReady = false;
 
@@ -19,11 +18,6 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (_connectionToken == null)
-        {
-            _connectionToken = TokenUtility.NewToken();
-        }
-
         if (Instance == null)
         {
             Instance = this;
@@ -33,12 +27,14 @@ public class GameManager : MonoBehaviour
         {
             Destroy(this);
         }
-        BetterStreamingAssets.Initialize();
-    }
 
-    private void Start()
-    {
-        WeaponDataLoad();
+        if (_connectionToken == null)
+        {
+            _connectionToken = TokenUtility.NewToken();
+        }
+
+        BetterStreamingAssets.Initialize();
+        WeaponDataLoad(); 
     }
 
     public void SetConnectionToken(byte[] token)
@@ -54,12 +50,11 @@ public class GameManager : MonoBehaviour
     private void WeaponDataLoad()
     {
         string jsonData = FileUtility.LoadFile(_gunDataPath);
-        Dictionary<string, List<Gun.Gun>> weaponList = JsonConvert.DeserializeObject<Dictionary<string, List<Gun.Gun>>>(jsonData);
+        Dictionary<string, List<Gun>> weaponList = JsonConvert.DeserializeObject<Dictionary<string, List<Gun>>>(jsonData);
         foreach (var item in weaponList["GunList"])
         {
-            this.GunList.Add(item);
-            GameObject weaponTemp = Resources.Load<GameObject>("Guns/" + item.WeaponName);
-            this.GunTable.Add(item.WeaponName, weaponTemp);
+            GameObject gunResource = Resources.Load<GameObject>("Guns/" + item.GunName);
+            GunTable.Add(item.GunName, (item, gunResource));
         }
         GunListReady = true;
     }
