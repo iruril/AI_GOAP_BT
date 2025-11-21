@@ -14,7 +14,7 @@ namespace GOAP
         public List<Action> Effects = new();
 
         public Action OnStart;
-        public Action OnUpdate;
+        public Action OnPhysicsUpdate;
         public Action OnExit;
 
         public bool IsFinished;
@@ -266,7 +266,7 @@ namespace GOAP
                 actionStarted = true;
             }
 
-            CurrentAction.OnUpdate?.Invoke();
+            CurrentAction.OnPhysicsUpdate?.Invoke();
         }
 
         GoapAction<ActionType, GoalType> SelectBestAction(GoapGoal<GoalType> goal)

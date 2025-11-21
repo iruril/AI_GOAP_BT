@@ -19,14 +19,17 @@ namespace GOAP.Assualt
     public class AssaultBrain : GoapBrain<AssualtAction, AssaultGoal>
     {
         public AINavigator Navigator { get; private set; }
-
         public Sensor.Assualt.AssaultSensor Sensor { get; private set; }
+        AnimControl.Assault.AssaultAnimFSM animStatus;
+        GunHandler gunHandler;
 
         protected override void Awake()
         {
             base.Awake();
             Navigator = GetComponent<AINavigator>();
             Sensor = GetComponent<Sensor.Assualt.AssaultSensor>();
+            animStatus = GetComponent<AnimControl.Assault.AssaultAnimFSM>();
+            gunHandler = GetComponent<GunHandler>();
         }
 
         protected override void Start()
@@ -42,6 +45,7 @@ namespace GOAP.Assualt
             base.FixedUpdate();
         }
 
+        float timer = 0f;
         protected override void RegisterActions()
         {
             Actions.Add(AssualtAction.IDLE, new GoapAction<AssualtAction, AssaultGoal>
@@ -55,7 +59,7 @@ namespace GOAP.Assualt
                 },
 
                 OnStart = () => { },
-                OnUpdate = () => { },
+                OnPhysicsUpdate = () => { },
                 OnExit = () => { },
 
                 IsUsefulForGoal = goal => true, // 어떤 Goal에도 기본 Idle은 유효
@@ -77,7 +81,7 @@ namespace GOAP.Assualt
                     Sensor.GetClosestCapture(out var destination);
                     Navigator.SetDestination(destination);
                 },
-                OnUpdate = () =>
+                OnPhysicsUpdate = () =>
                 {
                     if (Sensor.IsCurrentCapCapturerd())
                     {
@@ -104,11 +108,19 @@ namespace GOAP.Assualt
                 },
 
                 OnStart = () => { },
-                OnUpdate = () =>
+                OnPhysicsUpdate = () =>
                 {
                     if (!Sensor.HasTarget)
                     {
                         CompleteCurrentAction();
+                    }
+
+                    timer += Time.fixedDeltaTime;
+                    if (timer >= 0.08f && animStatus.AimWeight >= 0.99f)
+                    {
+                        gunHandler.Fire();
+                        Sensor.CurrentTargetStat.ApplyDamage(4f, transform.position);
+                        timer = 0f;
                     }
                 },
                 OnExit = () => { },

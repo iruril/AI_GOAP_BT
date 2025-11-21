@@ -109,10 +109,7 @@ namespace AnimControl.Assault
         float _refAimValue;
         void UpdateAimWeight()
         {
-            float _targetVaule = MySensor.TargetVisible
-                && CurrentStateKey != AnimState.Start
-                && CurrentStateKey != AnimState.Stop
-                && CurrentStateKey != AnimState.TurnOpposite ? 1f : 0f;
+            float _targetVaule = MySensor.TargetVisible ? 1f : 0f;
             AimWeight = Mathf.SmoothDamp(AimWeight, _targetVaule, ref _refAimValue, 0.1f);
             Anim.SetFloat(AnimHash.AimWeight, AimWeight);
         }
