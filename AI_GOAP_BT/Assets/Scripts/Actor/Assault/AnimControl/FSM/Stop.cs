@@ -15,7 +15,7 @@ namespace AnimControl.Assault
         {
             base.EnterState();
             ctx.SetTargetAccel(0f);
-            ctx.Navigator.AI.enableRotation = false;
+            ctx.MyBrain.Navigator.AI.enableRotation = false;
             ctx.RootRotation = false;
             int snapSpeed = Mathf.Clamp(Mathf.RoundToInt(ctx.Accel), 1, 4);
             ctx.Anim.SetFloat(AnimHash.TransitionAccel, snapSpeed);
@@ -52,7 +52,7 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
-            if (ctx.MySensor.HasTarget)
+            if (ctx.MyBrain.Sensor.HasTarget)
                 return AnimState.LookAtMove;
             if (ctx.StateTime >= stopTime) 
                 return AnimState.Idle;
@@ -69,13 +69,13 @@ namespace AnimControl.Assault
 
         bool IsOnTurnOppsiteCondition()
         {
-            if (Vector3.Distance(ctx.Navigator.AI.steeringTarget, ctx.transform.position) < 1.5f)
+            if (Vector3.Distance(ctx.MyBrain.Navigator.AI.steeringTarget, ctx.transform.position) < 1.5f)
                 return false;
 
-            Vector3 vel = ctx.Navigator.AI.desiredVelocity;
+            Vector3 vel = ctx.MyBrain.Navigator.AI.desiredVelocity;
             if (vel.sqrMagnitude < 0.001f) return false;
 
-            Vector3 tgt = ctx.Navigator.AI.steeringTarget - ctx.transform.position;
+            Vector3 tgt = ctx.MyBrain.Navigator.AI.steeringTarget - ctx.transform.position;
 
             vel.y = 0f;
             tgt.y = 0f;

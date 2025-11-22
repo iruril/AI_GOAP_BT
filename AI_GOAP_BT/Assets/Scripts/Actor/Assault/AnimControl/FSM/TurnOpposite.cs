@@ -16,10 +16,10 @@ namespace AnimControl.Assault
         public override void EnterState()
         {
             base.EnterState();
-            ctx.Navigator.AI.enableRotation = false;
+            ctx.MyBrain.Navigator.AI.enableRotation = false;
             ctx.RootRotation = true;
 
-            Vector3 tgt = ctx.transform.position - ctx.Navigator.AI.steeringTarget;
+            Vector3 tgt = ctx.transform.position - ctx.MyBrain.Navigator.AI.steeringTarget;
             tgt.y = 0f;
             tgt.Normalize();
 

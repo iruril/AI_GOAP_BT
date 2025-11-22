@@ -27,16 +27,18 @@ public class Stat : MonoBehaviour, IDamageable
         spawnRotation = transform.rotation;
 
         InitHP();
+    }
 
-        OnDead += () =>
-        {
-            CurrentCapture?.RemoveIntruder(this);
-        };
-        OnRevive += () =>
-        {
-            InitHP();
-            IsDead = false;
-        };
+    private void Start()
+    {
+        OnDead += ReleaseCapturePoint;
+        OnRevive += Revive;
+    }
+
+    private void OnDestroy()
+    {
+        OnDead -= ReleaseCapturePoint;
+        OnRevive -= Revive;
     }
 
     private void InitHP()
@@ -65,6 +67,17 @@ public class Stat : MonoBehaviour, IDamageable
         }
     }
     #endregion
+
+    private void ReleaseCapturePoint()
+    {
+        CurrentCapture?.RemoveIntruder(this);
+    }
+
+    private void Revive()
+    {
+        InitHP();
+        IsDead = false;
+    }
 
     private IEnumerator<float> Respawn()
     {

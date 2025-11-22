@@ -5,12 +5,12 @@
       "GunName": "AK-15",
       "GunInfo": {
         "TimeToADS": 0.25,
-        "RoundDamage": 35,
+        "RoundDamage": 20,
         "Stability": 6,
         "Spread": 1.0,
         "MagazineCapacity": 30,
-        "RPM": 650,
-        "ProjectileSpeed": 150,
+        "RPM": 550,
+        "ProjectileSpeed": 350,
         "FireModes": [
           0,
           2

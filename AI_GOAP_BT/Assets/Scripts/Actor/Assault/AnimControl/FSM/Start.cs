@@ -32,10 +32,10 @@ namespace AnimControl.Assault
                     break;
             }
 
-            ctx.Navigator.AI.enableRotation = false;
+            ctx.MyBrain.Navigator.AI.enableRotation = false;
             ctx.RootRotation = true;
 
-            Vector3 desiredDir = ctx.Navigator.AI.steeringTarget - ctx.transform.position;
+            Vector3 desiredDir = ctx.MyBrain.Navigator.AI.steeringTarget - ctx.transform.position;
             desiredDir.y = 0f;
             desiredDir.Normalize();
 

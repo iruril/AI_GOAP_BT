@@ -96790,10 +96790,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _pools:
   - Tag: MuzzleFlash
-    PoolObject: {fileID: 5964926015556990157, guid: ffc81ee0a498559449888baf8451558f, type: 3}
+    PoolObject: {fileID: 1361203475981757967, guid: ffc81ee0a498559449888baf8451558f, type: 3}
     Size: 10
   - Tag: Hit
-    PoolObject: {fileID: 1370874438154576190, guid: c02083b1627cc40449e4e7c3ed1f2a65, type: 3}
+    PoolObject: {fileID: 2260296087517024354, guid: c02083b1627cc40449e4e7c3ed1f2a65, type: 3}
     Size: 10
 --- !u!4 &1984013631
 Transform:

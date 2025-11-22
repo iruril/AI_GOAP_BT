@@ -15,10 +15,9 @@ namespace AnimControl.Assault
 
     public class AssaultAnimFSM : StateManager<AnimState>
     {
+        public GOAP.Assualt.AssaultBrain MyBrain { get; private set; }
         private AssaultAnimFSM _context => this;
         public Animator Anim { get; private set; }
-        public AINavigator Navigator { get; private set; }
-        public Sensor.Assualt.AssaultSensor MySensor { get; private set; }
         public Rigidbody MyRigid { get; private set; }
 
         public AnimState CurrentStateKey;
@@ -38,10 +37,8 @@ namespace AnimControl.Assault
 
         void Awake()
         {
+            MyBrain = GetComponent<GOAP.Assualt.AssaultBrain>();
             Anim = GetComponent<Animator>();
-            Navigator = GetComponent<AINavigator>();
-            Navigator.OnSetDestination = () => DecideAccelByDistance();
-            MySensor = GetComponent<Sensor.Assualt.AssaultSensor>();
             MyRigid = GetComponent<Rigidbody>();
 
             InitializeStates();
@@ -51,11 +48,14 @@ namespace AnimControl.Assault
         protected override void Start()
         {
             base.Start();
-            MySensor.MyStat.OnDead += () =>
-            {
-                hitDir = null;
-                hitRotateRemain = 0f;
-            };
+            MyBrain.Sensor.MyStat.OnDead += OnDead;
+            MyBrain.Navigator.OnSetDestination += DecideAccelByDistance;
+        }
+
+        private void OnDestroy()
+        {
+            MyBrain.Sensor.MyStat.OnDead -= OnDead;
+            MyBrain.Navigator.OnSetDestination -= DecideAccelByDistance;
         }
 
         void OnAnimatorMove()
@@ -64,17 +64,17 @@ namespace AnimControl.Assault
 
             Vector3 nextPosition;
             Quaternion nextRotation;
-            Navigator.AI.MovementUpdate(Time.fixedDeltaTime, out nextPosition, out nextRotation);
+            MyBrain.Navigator.AI.MovementUpdate(Time.fixedDeltaTime, out nextPosition, out nextRotation);
 
             Vector3 rootPosition = new Vector3(Anim.rootPosition.x, nextPosition.y, Anim.rootPosition.z);
 
-            if (!Navigator.AI.enableRotation && RootRotation)
+            if (!MyBrain.Navigator.AI.enableRotation && RootRotation)
             {
-                Navigator.AI.FinalizeMovement(rootPosition, nextRotation);
+                MyBrain.Navigator.AI.FinalizeMovement(rootPosition, nextRotation);
                 this.transform.rotation *= Anim.deltaRotation;
             }
             else
-                Navigator.AI.FinalizeMovement(rootPosition, nextRotation);
+                MyBrain.Navigator.AI.FinalizeMovement(rootPosition, nextRotation);
         }
 
         protected override void Update()
@@ -99,8 +99,8 @@ namespace AnimControl.Assault
 
         void UpdateMoveAxis()
         {
-            Anim.SetFloat(AnimHash.XAxis, Navigator.MoveAxis.x);
-            Anim.SetFloat(AnimHash.YAxis, Navigator.MoveAxis.y);
+            Anim.SetFloat(AnimHash.XAxis, MyBrain.Navigator.MoveAxis.x);
+            Anim.SetFloat(AnimHash.YAxis, MyBrain.Navigator.MoveAxis.y);
         }
 
         void UpdateAcceleration()
@@ -112,7 +112,7 @@ namespace AnimControl.Assault
         float _refAimValue;
         void UpdateAimWeight()
         {
-            float _targetVaule = MySensor.TargetVisible ? 1f : 0f;
+            float _targetVaule = MyBrain.Sensor.TargetVisible ? 1f : 0f;
             AimWeight = Mathf.SmoothDamp(AimWeight, _targetVaule, ref _refAimValue, 0.1f);
             Anim.SetFloat(AnimHash.AimWeight, AimWeight);
         }
@@ -130,8 +130,8 @@ namespace AnimControl.Assault
 
         public void DecideAccelByDistance()
         {
-            float dist = Vector3.Distance(transform.position, Navigator.AI.endOfPath);
-            if (!MySensor.HasTarget)
+            float dist = Vector3.Distance(transform.position, MyBrain.Navigator.AI.endOfPath);
+            if (!MyBrain.Sensor.HasTarget)
             {
                 if (dist <= 1f)
                     SetTargetAccel(0f);
@@ -156,7 +156,7 @@ namespace AnimControl.Assault
 
         public void LookHitDirection()
         {
-            if (MySensor.HasTarget)
+            if (MyBrain.Sensor.HasTarget)
             {
                 hitDir = null;
                 return;
@@ -166,10 +166,10 @@ namespace AnimControl.Assault
             {
                 if (!RootRotation)
                 {
-                    Navigator.AI.enableRotation = false;
+                    MyBrain.Navigator.AI.enableRotation = false;
                     Quaternion targetRot = Quaternion.LookRotation(hitDir.Value);
 
-                    float maxStep = MySensor.MyStat.RotateSpeedToTarget * Time.fixedDeltaTime;
+                    float maxStep = MyBrain.Sensor.MyStat.RotateSpeedToTarget * Time.fixedDeltaTime;
                     Quaternion newRot = Quaternion.RotateTowards(MyRigid.rotation, targetRot, maxStep);
 
                     MyRigid.MoveRotation(newRot);
@@ -179,10 +179,16 @@ namespace AnimControl.Assault
 
                 if (hitRotateRemain <= 0f)
                 {
-                    Navigator.AI.enableRotation = true;
+                    MyBrain.Navigator.AI.enableRotation = true;
                     hitDir = null;
                 }
             }
+        }
+
+        private void OnDead()
+        {
+            hitDir = null;
+            hitRotateRemain = 0f;
         }
     }
 }

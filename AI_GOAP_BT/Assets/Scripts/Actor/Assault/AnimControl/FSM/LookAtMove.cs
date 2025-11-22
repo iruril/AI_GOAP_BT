@@ -13,7 +13,7 @@ namespace AnimControl.Assault
         {
             base.EnterState();
             ctx.SetTargetAccel(2f);
-            ctx.Navigator.AI.enableRotation = false;
+            ctx.MyBrain.Navigator.AI.enableRotation = false;
             ctx.RootRotation = false;
         }
 
@@ -34,13 +34,13 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
-            if (!ctx.MySensor.HasTarget)
+            if (!ctx.MyBrain.Sensor.HasTarget)
             {
-                if (ctx.Navigator.AI.velocity.sqrMagnitude > 0.001f)
+                if (ctx.MyBrain.Navigator.AI.velocity.sqrMagnitude > 0.001f)
                     return AnimState.Move;
                 else return AnimState.Idle;
             }
-            if(Vector3.Distance(ctx.transform.position, ctx.Navigator.AI.endOfPath) <= 0.7f)
+            if(Vector3.Distance(ctx.transform.position, ctx.MyBrain.Navigator.AI.endOfPath) <= 0.7f)
             {
                 return AnimState.Idle;
             }
@@ -55,15 +55,15 @@ namespace AnimControl.Assault
 
         void LookAtTarget()
         {
-            if(!ctx.MySensor.HasTarget) return;
+            if(!ctx.MyBrain.Sensor.HasTarget) return;
 
-            Vector3 targetDir = ctx.MySensor.CurrentTarget.position - ctx.transform.position;
+            Vector3 targetDir = ctx.MyBrain.Sensor.CurrentTarget.position - ctx.transform.position;
             targetDir.y = 0f;
             targetDir.Normalize();
 
             Quaternion targetRot = Quaternion.LookRotation(targetDir);
 
-            float maxStep = ctx.MySensor.MyStat.RotateSpeedToTarget * Time.fixedDeltaTime;
+            float maxStep = ctx.MyBrain.Sensor.MyStat.RotateSpeedToTarget * Time.fixedDeltaTime;
             Quaternion newRot = Quaternion.RotateTowards(ctx.MyRigid.rotation, targetRot, maxStep);
 
             ctx.MyRigid.MoveRotation(newRot);

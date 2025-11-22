@@ -16,7 +16,7 @@ namespace AnimControl.Assault
         public override void EnterState()
         {
             base.EnterState();
-            ctx.Navigator.AI.enableRotation = true;
+            ctx.MyBrain.Navigator.AI.enableRotation = true;
             ctx.RootRotation = false;
             ctx.Anim.CrossFade(AnimHash.Strafe, 0.15f);
         }
@@ -30,8 +30,8 @@ namespace AnimControl.Assault
         {
             base.UpdateState();
 
-            float speed = ctx.Navigator.AI.velocity.magnitude;
-            float normalized = Mathf.InverseLerp(0f, ctx.Navigator.AI.maxSpeed, speed);
+            float speed = ctx.MyBrain.Navigator.AI.velocity.magnitude;
+            float normalized = Mathf.InverseLerp(0f, ctx.MyBrain.Navigator.AI.maxSpeed, speed);
 
             ctx.SetTargetAccel(normalized * 4f);
 
@@ -41,7 +41,7 @@ namespace AnimControl.Assault
         public override void PhysicsUpdateState()
         {
             Vector3 origin = ctx.transform.position + Vector3.up * 1.4f;
-            Vector3 direction = ((ctx.Navigator.AI.endOfPath + Vector3.up * 1.4f) - origin).normalized;
+            Vector3 direction = ((ctx.MyBrain.Navigator.AI.endOfPath + Vector3.up * 1.4f) - origin).normalized;
             obstacle = Physics.RaycastNonAlloc(
                     ctx.transform.position + Vector3.up * 1.4f,
                     direction,
@@ -55,9 +55,9 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
-            if (ctx.MySensor.HasTarget)
+            if (ctx.MyBrain.Sensor.HasTarget)
                 return AnimState.LookAtMove;
-            if (Vector3.Distance(ctx.transform.position, ctx.Navigator.AI.endOfPath) <= stoppingDistance
+            if (Vector3.Distance(ctx.transform.position, ctx.MyBrain.Navigator.AI.endOfPath) <= stoppingDistance
                 && obstacle == 0)
                 return AnimState.Stop;
             if (IsOnTurnOppsiteCondition())
@@ -90,13 +90,13 @@ namespace AnimControl.Assault
 
         bool IsOnTurnOppsiteCondition()
         {
-            if (Vector3.Distance(ctx.Navigator.AI.steeringTarget, ctx.transform.position) <= 0.5f)
+            if (Vector3.Distance(ctx.MyBrain.Navigator.AI.steeringTarget, ctx.transform.position) <= 0.5f)
                 return false;
 
-            Vector3 vel = ctx.Navigator.AI.desiredVelocity;
+            Vector3 vel = ctx.MyBrain.Navigator.AI.desiredVelocity;
             if (vel.sqrMagnitude < 0.001f) return false;
 
-            Vector3 tgt = ctx.Navigator.AI.steeringTarget - ctx.transform.position;
+            Vector3 tgt = ctx.MyBrain.Navigator.AI.steeringTarget - ctx.transform.position;
 
             vel.y = 0f;
             tgt.y = 0f;

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using MEC;
 
-[RequireComponent(typeof(Collider))]
 public class Bullet : MonoBehaviour
 {
     private BulletPool myPool;
@@ -16,8 +15,8 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float drag = 0f;
 
     private float damage = 1f;
-    private LayerMask vfxLayers;
     private LayerMask friendLayers;
+    private LayerMask hitMask;
 
     private Vector3 velocity;
     private Vector3 prevPos;
@@ -26,11 +25,6 @@ public class Bullet : MonoBehaviour
 
     private bool hitProcessed = false;
     private bool initialized = false;
-
-    private void Awake()
-    {
-        vfxLayers = WorldManager.Instance.GetVFXLayers();
-    }
 
     private void OnEnable()
     {
@@ -48,6 +42,7 @@ public class Bullet : MonoBehaviour
     public void Init(LayerMask teamLayer, Vector3 shotOrigin, float projectileSpeed, float damage)
     {
         friendLayers = teamLayer;
+        hitMask = ~(WorldManager.Instance.GetVFXLayers() | friendLayers);
 
         this.shotOrigin = shotOrigin;
         this.velocity = transform.forward * projectileSpeed;
@@ -84,7 +79,7 @@ public class Bullet : MonoBehaviour
 
         if (rayDist > 0.0001f)
         {
-            if (Physics.Raycast(prevPos, rayDir.normalized, out var hit, rayDist, ~vfxLayers))
+            if (Physics.Raycast(prevPos, rayDir.normalized, out var hit, rayDist, hitMask))
             {
                 ProcessHit(hit.collider, hit.point, hit.normal);
                 return;
@@ -93,17 +88,6 @@ public class Bullet : MonoBehaviour
 
         transform.position = nextPos;
         prevPos = nextPos;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!initialized || hitProcessed) return;
-
-        int otherLayerBit = 1 << other.gameObject.layer;
-        if ((vfxLayers & otherLayerBit) != 0) return;
-        if ((friendLayers & otherLayerBit) != 0) return;
-
-        ProcessHit(other, other.ClosestPoint(transform.position), -transform.forward);
     }
 
     private void ProcessHit(Collider target, Vector3 hitPoint, Vector3 hitNormal)

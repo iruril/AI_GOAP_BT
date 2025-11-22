@@ -34,18 +34,20 @@ namespace GOAP.Assualt
 
         protected override void Start()
         {
-            Sensor.MyStat.OnDead += () =>
-            {
-                InitGOAP();
-            };
+            Sensor.MyStat.OnDead += InitGOAP;
+        }
+
+        private void OnDestroy()
+        {
+            Sensor.MyStat.OnDead -= InitGOAP;
         }
 
         ///임시 공격 코드
         float timer = 0f;
         private void Update()
         {
-            timer += Time.fixedDeltaTime;
-            if (timer >= 0.1f &&
+            timer += Time.deltaTime;
+            if (timer >= GunController.CurrentGun.GunInfo.ShotInterval &&
                 CurrentAction.Type == AssualtAction.COMBAT &&
                 MotionController.Shootable)
             {
