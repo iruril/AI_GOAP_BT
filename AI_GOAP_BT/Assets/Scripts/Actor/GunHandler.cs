@@ -16,6 +16,8 @@ public class GunHandler : MonoBehaviour
     private Gun currentGun;
     private GameObject currentGunModel;
 
+    private BulletPool bulletPool;
+
     private Dictionary<string, (Gun gun, GameObject instance)> gunHistory = new();
 
     void Awake()
@@ -23,6 +25,8 @@ public class GunHandler : MonoBehaviour
         myIK = GetComponent<BipedIK>();
         myIK.solvers.leftHand.target = LeftHandIKTarget;
         myIK.solvers.leftHand.IKPositionWeight = 1f;
+
+        bulletPool = GetComponent<BulletPool>();
     }
 
     void Start()
@@ -85,8 +89,18 @@ public class GunHandler : MonoBehaviour
 
     public void Fire()
     {
+        if (currentGun == null) return;
         //총알 발사
         //머즐 플래쉬
         EffectPoolManager.SpawnFromPool("MuzzleFlash", Muzzle.position, Muzzle.rotation);
+
+        bulletPool.SpawnBullet(
+            Muzzle.position,
+            Muzzle.rotation,
+            1 << gameObject.layer,
+            Muzzle.position,                             // shotOrigin
+            currentGun.GunInfo.ProjectileSpeed,          // 총알 속도
+            currentGun.GunInfo.RoundDamage               // 데미지
+        );
     }
 }

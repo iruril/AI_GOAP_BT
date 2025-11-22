@@ -18,6 +18,7 @@ public class GunInfo
     public float Spread { get; }
     public int MagazineCapacity { get; }
     public int RPM { get; }
+    public float ProjectileSpeed { get; }
     public List<FireMode> FireModes { get; } = new();
     public float ShotInterval { get; }
 
@@ -28,6 +29,7 @@ public class GunInfo
         float Spread,
         int MagazineCapacity,
         int RPM,
+        float ProjectileSpeed,
         List<FireMode> FireModes)
     {
         this.TimeToADS = TimeToADS;
@@ -36,6 +38,7 @@ public class GunInfo
         this.Spread = Spread;
         this.MagazineCapacity = MagazineCapacity;
         this.RPM = RPM;
+        this.ProjectileSpeed = ProjectileSpeed;
         if (FireModes.Count > 0)
         {
             this.FireModes = FireModes;

@@ -694,6 +694,7 @@ GameObject:
   - component: {fileID: 6883628252706435882}
   - component: {fileID: -2168579121952372337}
   - component: {fileID: 6757195939308535499}
+  - component: {fileID: 1464119152950905832}
   m_Layer: 8
   m_Name: Shooter_Blue
   m_TagString: TeamBlue
@@ -1424,6 +1425,21 @@ MonoBehaviour:
   GunPos: {fileID: 5334469523889394733}
   LeftHandIKTarget: {fileID: 7063086038202589735}
   Muzzle: {fileID: 2255073588551578324}
+--- !u!114 &1464119152950905832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2531024411289186008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b954a728e5c4554c8e1dffb8af5ef43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bulletPool:
+    Bullet: {fileID: 946230873439750309, guid: 36ba956664d8c524483e29bd15b0527d, type: 3}
+    Size: 3
 --- !u!1 &2536883339120134852
 GameObject:
   m_ObjectHideFlags: 0

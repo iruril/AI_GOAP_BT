@@ -2047,6 +2047,7 @@ GameObject:
   - component: {fileID: 3022949711016103152}
   - component: {fileID: 6931465804609677830}
   - component: {fileID: 5045340004835600201}
+  - component: {fileID: 8484353646962805838}
   m_Layer: 9
   m_Name: Shooter_Red
   m_TagString: TeamRed
@@ -2777,6 +2778,21 @@ MonoBehaviour:
   GunPos: {fileID: 2183927376611289369}
   LeftHandIKTarget: {fileID: 2051476966338809753}
   Muzzle: {fileID: 5282911154098719872}
+--- !u!114 &8484353646962805838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8480867171744423372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b954a728e5c4554c8e1dffb8af5ef43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bulletPool:
+    Bullet: {fileID: 946230873439750309, guid: 36ba956664d8c524483e29bd15b0527d, type: 3}
+    Size: 3
 --- !u!1 &8504014108894463283
 GameObject:
   m_ObjectHideFlags: 0

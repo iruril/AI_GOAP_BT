@@ -32329,6 +32329,9 @@ MonoBehaviour:
   levelLayers:
     serializedVersion: 2
     m_Bits: 8
+  vfxLayers:
+    serializedVersion: 2
+    m_Bits: 130
   captures:
   - {fileID: 1427910638}
   - {fileID: 1612766405}

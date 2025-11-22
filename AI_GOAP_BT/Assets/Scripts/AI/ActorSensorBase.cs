@@ -171,20 +171,14 @@ namespace Sensor
 
             if (hitCount == 0)
             {
-                CurrentTarget = null;
+                ResetTarget();
                 return;
             }
 
-            Transform bestTarget = SelectBestVisibleTarget(hitCount);
+            Transform best = SelectBestVisibleTarget(hitCount);
 
-            if (bestTarget != null)
-            {
-                SetTarget(bestTarget);
-            }
-            else
-            {
-                ResetTarget();
-            }
+            if (best != null) SetTarget(best);
+            else ResetTarget();
         }
 
         private Transform SelectBestVisibleTarget(int hitCount)

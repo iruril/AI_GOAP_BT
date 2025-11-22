@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1370874436994622287}
   - component: {fileID: 1370874436994622285}
   - component: {fileID: 1370874436994622286}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: particle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4933,7 +4933,7 @@ GameObject:
   - component: {fileID: 1370874438154576188}
   - component: {fileID: 1370874438154576189}
   - component: {fileID: 2607941879679634842}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: Hit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9909,7 +9909,7 @@ GameObject:
   - component: {fileID: 1782451455230326612}
   - component: {fileID: 1782451455230326635}
   - component: {fileID: 1782451455230326634}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: flash_front
   m_TagString: Untagged
   m_Icon: {fileID: 0}

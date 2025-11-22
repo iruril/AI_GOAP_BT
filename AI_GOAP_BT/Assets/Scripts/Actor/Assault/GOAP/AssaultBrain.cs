@@ -40,12 +40,25 @@ namespace GOAP.Assualt
             };
         }
 
+        ///임시 공격 코드
+        float timer = 0f;
+        private void Update()
+        {
+            timer += Time.fixedDeltaTime;
+            if (timer >= 0.1f &&
+                CurrentAction.Type == AssualtAction.COMBAT &&
+                MotionController.Shootable)
+            {
+                GunController.Fire();
+                timer = 0f;
+            }
+        }
+
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
         }
 
-        float timer = 0f;
         protected override void RegisterActions()
         {
             Actions.Add(AssualtAction.IDLE, new GoapAction<AssualtAction, AssaultGoal>
@@ -113,14 +126,6 @@ namespace GOAP.Assualt
                     if (!Sensor.HasTarget)
                     {
                         CompleteCurrentAction();
-                    }
-
-                    timer += Time.fixedDeltaTime;
-                    if (timer >= 0.08f && MotionController.Shootable)
-                    {
-                        GunController.Fire();
-                        Sensor.CurrentTargetStat.ApplyDamage(4f, transform.position);
-                        timer = 0f;
                     }
                 },
                 OnExit = () => { },

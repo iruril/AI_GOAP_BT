@@ -45,13 +45,13 @@ public class Stat : MonoBehaviour, IDamageable
     }
 
     #region Damageable Field
-    public virtual void ApplyDamage(float dmg, Vector3 hitSourcePosition)
+    public virtual void ApplyDamage(float dmg, Vector3 shotOriginm, Vector3 hitPoint)
     {
         if (IsDead) return;
 
         CurrentHP -= dmg;
 
-        Vector3 hitDir = hitSourcePosition - transform.position;
+        Vector3 hitDir = shotOriginm - transform.position;
         hitDir.y = 0f;
         GetComponent<AssaultAnimFSM>()?.OnHit(hitDir.normalized);
 
