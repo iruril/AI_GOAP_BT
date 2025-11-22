@@ -1409,7 +1409,7 @@ MonoBehaviour:
     mode: 2
     period: 0.5
     sensitivity: 5
-    maximumPeriod: 1
+    maximumPeriod: 0.5
     visualizeSensitivity: 0
   acceleration: 5
   rotationSpeed: 180

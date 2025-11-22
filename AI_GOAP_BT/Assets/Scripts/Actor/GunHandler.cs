@@ -135,7 +135,7 @@ public class GunHandler : MonoBehaviour
     {
         AimIKTarget.position = hasTarget ?
                     aimTarget.position + Vector3.up * 1.4f
-                    : transform.position + transform.forward + Vector3.up * 1.4f;
+                    : transform.position + transform.forward * 2.0f + Vector3.up * 1.4f;
     }
 
     float _refTargetValue;
@@ -147,7 +147,7 @@ public class GunHandler : MonoBehaviour
             aimIK.solver.IKPositionWeight,
             _targetVaule,
             ref _refTargetValue,
-            0.1f
+            0.25f
         );
     }
 
