@@ -6,6 +6,7 @@ TagManager:
   tags:
   - TeamBlue
   - TeamRed
+  - Gun
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - CapturePoint
   - TeamBlue
   - TeamRed
-  - 
+  - Corpse
   - 
   - 
   - 

@@ -6,8 +6,6 @@ public class AINavigator : MonoBehaviour
 {
     public event Action OnSetDestination;
 
-    private GOAP.Assualt.AssaultBrain myBrain;
-
     public RichAI AI { get; private set; }
     public Transform Destination { get; private set; }
 
@@ -17,7 +15,6 @@ public class AINavigator : MonoBehaviour
     void Awake()
     {
         AI = GetComponent<RichAI>();
-        myBrain = GetComponent<GOAP.Assualt.AssaultBrain>();
         Destination = GetComponent<AIDestinationSetter>().target;
         Destination.name = $"{this.name}_{Destination.name}";
         Destination.parent = null;

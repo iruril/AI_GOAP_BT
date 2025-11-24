@@ -5,12 +5,15 @@ using System;
 
 #if UNITY_EDITOR
 
-[CustomEditor(typeof(HitBoxController))]
-public class HitBoxControllerEditor : Editor
+[CustomEditor(typeof(HitBoxSetter))]
+public class HitBoxSetterEditor : Editor
 {
+    const string INFO = "HitBox데이터 세팅 전용 컴포넌트입니다.\n" +
+        "세팅 후에는 이 컴포넌트를 지워주세요.";
     public override void OnInspectorGUI()
     {
-        HitBoxController _myData = (HitBoxController)target;
+        EditorGUILayout.HelpBox(INFO, MessageType.Info);
+        HitBoxSetter _myData = (HitBoxSetter)target;
 
         if (GUILayout.Button("HitBox 가져오기"))
         {
@@ -24,7 +27,7 @@ public class HitBoxControllerEditor : Editor
 }
 #endif
 
-public class HitBoxController : MonoBehaviour
+public class HitBoxSetter : MonoBehaviour
 {
     public GameObject root;
     [SerializeField] private List<Collider> cols = new();
@@ -38,7 +41,9 @@ public class HitBoxController : MonoBehaviour
         {
             if (item.TryGetComponent<HitBox>(out var hitBox)) { }
             else hitBox = item.gameObject.AddComponent<HitBox>();
-            hitBox.InitHitBox(transform, gameObject.layer);
+
+            var corpseGenerator = GetComponent<CorpseGenerator>();
+            hitBox.InitHitBox(transform, corpseGenerator, gameObject.layer);
             item.gameObject.layer = LayerMask.NameToLayer("HitBox");
             cols.Add(item);
         }

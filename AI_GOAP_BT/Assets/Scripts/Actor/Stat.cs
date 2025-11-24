@@ -46,13 +46,13 @@ public class Stat : MonoBehaviour, IDamageable
     }
 
     #region Damageable Field
-    public virtual void ApplyDamage(float dmg, Vector3 shotOriginm, Vector3 hitPoint)
+    public virtual void ApplyDamage(float dmg, Vector3 shotOrigin, Vector3 hitPoint)
     {
         if (IsDead) return;
 
         CurrentHP -= dmg;
 
-        Vector3 hitDir = shotOriginm - transform.position;
+        Vector3 hitDir = shotOrigin - transform.position;
         hitDir.y = 0f;
         GetComponent<AnimControl.Assault.AssaultAnimFSM>()?.OnHit(hitDir.normalized);
 
@@ -81,7 +81,7 @@ public class Stat : MonoBehaviour, IDamageable
     private IEnumerator<float> Respawn()
     {
         gameObject.SetActive(false);
-        yield return Timing.WaitForSeconds(10f);
+        yield return Timing.WaitForSeconds(GameManager.Instance.RespawnTime);
 
         transform.position = spawnPosition;
         transform.rotation = spawnRotation;
