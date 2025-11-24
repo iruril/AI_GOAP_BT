@@ -80,9 +80,9 @@ public class Stat : MonoBehaviour, IDamageable
 
     private IEnumerator<float> Respawn()
     {
+        gameObject.SetActive(false);
         yield return Timing.WaitForSeconds(10f);
 
-        gameObject.SetActive(false);
         transform.position = spawnPosition;
         transform.rotation = spawnRotation;
         gameObject.SetActive(true);

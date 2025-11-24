@@ -53,11 +53,14 @@ namespace Sensor
 
         protected virtual void Start()
         {
-            MyStat.OnDead += () =>
-            {
-                ResetTarget();
-                ResetCapture();
-            };
+            MyStat.OnDead += ResetTarget;
+            MyStat.OnDead += ResetCapture;
+        }
+
+        protected virtual void OnDestroy()
+        {
+            MyStat.OnDead -= ResetTarget;
+            MyStat.OnDead -= ResetCapture;
         }
 
         protected virtual void Update()

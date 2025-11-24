@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class GunHandler : MonoBehaviour
 {
     private GOAP.Assualt.AssaultBrain myBrain;
-    private BipedIK myIK;
+    private FullBodyBipedIK myIK;
     private AimIK aimIK;
 
     [Header("Gun 트랜스폼 세팅")]
@@ -33,9 +33,9 @@ public class GunHandler : MonoBehaviour
     {
         myBrain = GetComponent<GOAP.Assualt.AssaultBrain>();
 
-        myIK = GetComponent<BipedIK>();
-        myIK.solvers.leftHand.target = LeftHandIKTarget;
-        myIK.solvers.leftHand.IKPositionWeight = 1f;
+        myIK = GetComponent<FullBodyBipedIK>();
+        myIK.solver.leftHandEffector.target = LeftHandIKTarget;
+        myIK.solver.leftHandEffector.positionWeight = 1f;
 
         aimIK = GetComponent<AimIK>();
         aimIK.solver.IKPositionWeight = 0f;
@@ -49,8 +49,6 @@ public class GunHandler : MonoBehaviour
 
         myBrain.Sensor.OnTargetSet += SetTarget;
         myBrain.Sensor.OnTargetReset += ResetTarget;
-        myBrain.Sensor.MyStat.OnDead += OnDead;
-        myBrain.Sensor.MyStat.OnRevive += OnRevive;
         aimIK.solver.OnPostUpdate += FireCallback;
     }
 
@@ -58,8 +56,6 @@ public class GunHandler : MonoBehaviour
     {
         myBrain.Sensor.OnTargetSet -= SetTarget;
         myBrain.Sensor.OnTargetReset -= ResetTarget;
-        myBrain.Sensor.MyStat.OnDead -= OnDead;
-        myBrain.Sensor.MyStat.OnRevive -= OnRevive;
         aimIK.solver.OnPostUpdate -= FireCallback;
     }
 
@@ -200,19 +196,5 @@ public class GunHandler : MonoBehaviour
     public void ResetTarget()
     {
         aimTarget = null;
-    }
-
-    private void OnDead()
-    {
-        myIK.enabled = false;
-        aimIK.enabled = false;
-        myBrain.MotionController.Anim.enabled = false;
-    }
-
-    private void OnRevive()
-    {
-        myIK.enabled = true;
-        aimIK.enabled = true;
-        myBrain.MotionController.Anim.enabled = true;
     }
 }

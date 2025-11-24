@@ -22,7 +22,7 @@ namespace GOAP.Assualt
         public Sensor.Assualt.AssaultSensor Sensor { get; private set; }
         public AnimControl.Assault.AssaultAnimFSM MotionController { get; private set; }
         public GunHandler GunController { get; private set; }
-        public RagdollController Ragdoll { get; private set; }
+        public HitBoxController Ragdoll { get; private set; }
 
         protected override void Awake()
         {
@@ -31,17 +31,17 @@ namespace GOAP.Assualt
             Sensor = GetComponent<Sensor.Assualt.AssaultSensor>();
             MotionController = GetComponent<AnimControl.Assault.AssaultAnimFSM>();
             GunController = GetComponent<GunHandler>();
-            Ragdoll = GetComponent<RagdollController>();
+            Ragdoll = GetComponent<HitBoxController>();
         }
 
         protected override void Start()
         {
-            Sensor.MyStat.OnRevive += InitGOAP;
+            Sensor.MyStat.OnDead += InitGOAP;
         }
 
         private void OnDestroy()
         {
-            Sensor.MyStat.OnRevive -= InitGOAP;
+            Sensor.MyStat.OnDead -= InitGOAP;
         }
 
         ///임시 공격 코드

@@ -5,12 +5,12 @@ using System;
 
 #if UNITY_EDITOR
 
-[CustomEditor(typeof(RagdollController))]
-public class RagdollControllerEditor : Editor
+[CustomEditor(typeof(HitBoxController))]
+public class HitBoxControllerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        RagdollController _myData = (RagdollController)target;
+        HitBoxController _myData = (HitBoxController)target;
 
         if (GUILayout.Button("Ragdoll ¼¼ÆÃ"))
         {
@@ -24,27 +24,10 @@ public class RagdollControllerEditor : Editor
 }
 #endif
 
-public class RagdollController : MonoBehaviour
+public class HitBoxController : MonoBehaviour
 {
-    private GOAP.Assualt.AssaultBrain myBrain;
-
     public GameObject root;
     [SerializeField] private List<Rigidbody> rbs = new();
-
-    void Awake()
-    {
-        myBrain = GetComponent<GOAP.Assualt.AssaultBrain>();
-    }
-
-    private void Start()
-    {
-        myBrain.Sensor.MyStat.OnDead += OnDead;
-    }
-
-    private void OnDestroy()
-    {
-        myBrain.Sensor.MyStat.OnDead -= OnDead;
-    }
 
 #if UNITY_EDITOR
     public void SetRagdoll()
@@ -61,13 +44,4 @@ public class RagdollController : MonoBehaviour
         }
     }
 #endif
-
-    public void OnDead()
-    {
-        foreach (var rb in rbs)
-        {
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
-    }
 }

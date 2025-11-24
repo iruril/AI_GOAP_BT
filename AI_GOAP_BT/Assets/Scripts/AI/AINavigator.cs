@@ -25,18 +25,6 @@ public class AINavigator : MonoBehaviour
         AI.simulateMovement = false;
     }
 
-    void Start()
-    {
-        myBrain.Sensor.MyStat.OnDead += OnDead;
-        myBrain.Sensor.MyStat.OnRevive += OnRevive;
-    }
-
-    private void OnDestroy()
-    {
-        myBrain.Sensor.MyStat.OnDead -= OnDead;
-        myBrain.Sensor.MyStat.OnRevive -= OnRevive;
-    }
-
     void Update()
     {
         UpdateMoveDirection();
@@ -74,15 +62,5 @@ public class AINavigator : MonoBehaviour
     {
         Destination.position = position;
         OnSetDestination?.Invoke();
-    }
-
-    private void OnDead()
-    {
-        AI.enabled = false;
-    }
-
-    private void OnRevive()
-    {
-        AI.enabled = true;
     }
 }
