@@ -12,7 +12,7 @@ public class HitBoxControllerEditor : Editor
     {
         HitBoxController _myData = (HitBoxController)target;
 
-        if (GUILayout.Button("Ragdoll 세팅"))
+        if (GUILayout.Button("HitBox 가져오기"))
         {
             _myData.SetRagdoll();
             EditorUtility.SetDirty(_myData);
@@ -27,20 +27,20 @@ public class HitBoxControllerEditor : Editor
 public class HitBoxController : MonoBehaviour
 {
     public GameObject root;
-    [SerializeField] private List<Rigidbody> rbs = new();
+    [SerializeField] private List<Collider> cols = new();
 
 #if UNITY_EDITOR
     public void SetRagdoll()
     {
-        rbs.Clear();
-        Rigidbody[] tempRigids = root.GetComponentsInChildren<Rigidbody>();
-        foreach (Rigidbody item in tempRigids)
+        cols.Clear();
+        Collider[] tempCols = root.GetComponentsInChildren<Collider>();
+        foreach (Collider item in tempCols)
         {
             if (item.TryGetComponent<HitBox>(out var hitBox)) { }
             else hitBox = item.gameObject.AddComponent<HitBox>();
             hitBox.InitHitBox(transform, gameObject.layer);
             item.gameObject.layer = LayerMask.NameToLayer("HitBox");
-            rbs.Add(item);
+            cols.Add(item);
         }
     }
 #endif
