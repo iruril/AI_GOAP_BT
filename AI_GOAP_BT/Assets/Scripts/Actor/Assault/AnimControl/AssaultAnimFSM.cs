@@ -60,6 +60,7 @@ namespace AnimControl.Assault
 
         void OnAnimatorMove()
         {
+            if (MyBrain.Sensor.MyStat.IsDead) return;
             if (Time.deltaTime <= 0) return;
 
             Vector3 nextPosition;
@@ -79,12 +80,19 @@ namespace AnimControl.Assault
 
         protected override void Update()
         {
+            if (MyBrain.Sensor.MyStat.IsDead) return;
             base.Update();
             CurrentStateKey = CurrentState.StateKey;
             UpdateMoveAxis();
             UpdateAcceleration();
             UpdateAimWeight();
             UpdateShootableCondition();
+        }
+
+        protected override void FixedUpdate()
+        {
+            if (MyBrain.Sensor.MyStat.IsDead) return;
+            base.FixedUpdate();
         }
 
         private void InitializeStates()

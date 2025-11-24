@@ -4,7 +4,9 @@ using System;
 
 public class AINavigator : MonoBehaviour
 {
-    public Action OnSetDestination;
+    public event Action OnSetDestination;
+
+    private GOAP.Assualt.AssaultBrain myBrain;
 
     public RichAI AI { get; private set; }
     public Transform Destination { get; private set; }
@@ -15,6 +17,7 @@ public class AINavigator : MonoBehaviour
     void Awake()
     {
         AI = GetComponent<RichAI>();
+        myBrain = GetComponent<GOAP.Assualt.AssaultBrain>();
         Destination = GetComponent<AIDestinationSetter>().target;
         Destination.name = $"{this.name}_{Destination.name}";
         Destination.parent = null;
@@ -24,7 +27,14 @@ public class AINavigator : MonoBehaviour
 
     void Start()
     {
-        
+        myBrain.Sensor.MyStat.OnDead += OnDead;
+        myBrain.Sensor.MyStat.OnRevive += OnRevive;
+    }
+
+    private void OnDestroy()
+    {
+        myBrain.Sensor.MyStat.OnDead -= OnDead;
+        myBrain.Sensor.MyStat.OnRevive -= OnRevive;
     }
 
     void Update()
@@ -64,5 +74,15 @@ public class AINavigator : MonoBehaviour
     {
         Destination.position = position;
         OnSetDestination?.Invoke();
+    }
+
+    private void OnDead()
+    {
+        AI.enabled = false;
+    }
+
+    private void OnRevive()
+    {
+        AI.enabled = true;
     }
 }

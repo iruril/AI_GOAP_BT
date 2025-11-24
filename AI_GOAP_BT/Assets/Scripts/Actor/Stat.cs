@@ -2,7 +2,6 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using MEC;
-using AnimControl.Assault;
 
 public class Stat : MonoBehaviour, IDamageable
 {
@@ -55,7 +54,7 @@ public class Stat : MonoBehaviour, IDamageable
 
         Vector3 hitDir = shotOriginm - transform.position;
         hitDir.y = 0f;
-        GetComponent<AssaultAnimFSM>()?.OnHit(hitDir.normalized);
+        GetComponent<AnimControl.Assault.AssaultAnimFSM>()?.OnHit(hitDir.normalized);
 
         if (CurrentHP <= 0f)
         {
@@ -81,9 +80,9 @@ public class Stat : MonoBehaviour, IDamageable
 
     private IEnumerator<float> Respawn()
     {
-        gameObject.SetActive(false);
         yield return Timing.WaitForSeconds(10f);
 
+        gameObject.SetActive(false);
         transform.position = spawnPosition;
         transform.rotation = spawnRotation;
         gameObject.SetActive(true);

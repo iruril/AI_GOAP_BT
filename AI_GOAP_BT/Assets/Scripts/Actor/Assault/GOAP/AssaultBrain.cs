@@ -22,6 +22,7 @@ namespace GOAP.Assualt
         public Sensor.Assualt.AssaultSensor Sensor { get; private set; }
         public AnimControl.Assault.AssaultAnimFSM MotionController { get; private set; }
         public GunHandler GunController { get; private set; }
+        public RagdollController Ragdoll { get; private set; }
 
         protected override void Awake()
         {
@@ -30,22 +31,24 @@ namespace GOAP.Assualt
             Sensor = GetComponent<Sensor.Assualt.AssaultSensor>();
             MotionController = GetComponent<AnimControl.Assault.AssaultAnimFSM>();
             GunController = GetComponent<GunHandler>();
+            Ragdoll = GetComponent<RagdollController>();
         }
 
         protected override void Start()
         {
-            Sensor.MyStat.OnDead += InitGOAP;
+            Sensor.MyStat.OnRevive += InitGOAP;
         }
 
         private void OnDestroy()
         {
-            Sensor.MyStat.OnDead -= InitGOAP;
+            Sensor.MyStat.OnRevive -= InitGOAP;
         }
 
         ///임시 공격 코드
         float timer = 0f;
         private void Update()
         {
+            if (Sensor.MyStat.IsDead) return;
             timer += Time.deltaTime;
             if (timer >= GunController.CurrentGun.GunInfo.ShotInterval &&
                 CurrentAction.Type == AssualtAction.COMBAT &&
@@ -58,6 +61,7 @@ namespace GOAP.Assualt
 
         protected override void FixedUpdate()
         {
+            if (Sensor.MyStat.IsDead) return;
             base.FixedUpdate();
         }
 

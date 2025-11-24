@@ -32332,6 +32332,9 @@ MonoBehaviour:
   vfxLayers:
     serializedVersion: 2
     m_Bits: 130
+  actorLayers:
+    serializedVersion: 2
+    m_Bits: 768
   captures:
   - {fileID: 1427910638}
   - {fileID: 1612766405}
@@ -96791,10 +96794,10 @@ MonoBehaviour:
   _pools:
   - Tag: MuzzleFlash
     PoolObject: {fileID: 1361203475981757967, guid: ffc81ee0a498559449888baf8451558f, type: 3}
-    Size: 10
+    Size: 20
   - Tag: Hit
     PoolObject: {fileID: 2260296087517024354, guid: c02083b1627cc40449e4e7c3ed1f2a65, type: 3}
-    Size: 10
+    Size: 20
 --- !u!4 &1984013631
 Transform:
   m_ObjectHideFlags: 0

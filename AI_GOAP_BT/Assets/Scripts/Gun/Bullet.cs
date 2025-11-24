@@ -39,10 +39,14 @@ public class Bullet : MonoBehaviour
         myPool?.ReturnToPool(gameObject);
     }
 
+    private void Awake()
+    {
+        hitMask = ~(WorldManager.Instance.GetVFXLayers() | WorldManager.Instance.GetActorLayers());
+    }
+
     public void Init(LayerMask teamLayer, Vector3 shotOrigin, float projectileSpeed, float damage)
     {
         friendLayers = teamLayer;
-        hitMask = ~(WorldManager.Instance.GetVFXLayers() | friendLayers);
 
         this.shotOrigin = shotOrigin;
         this.velocity = transform.forward * projectileSpeed;
@@ -68,12 +72,10 @@ public class Bullet : MonoBehaviour
 
     private void PerformContinuousHitCheck()
     {
-        float dt = Time.deltaTime;
+        velocity.y += gravity * Time.deltaTime;
+        velocity *= (1f - drag * Time.deltaTime);
 
-        velocity.y += gravity * dt;
-        velocity *= (1f - drag * dt);
-
-        Vector3 nextPos = transform.position + velocity * dt;
+        Vector3 nextPos = transform.position + velocity * Time.deltaTime;
         Vector3 rayDir = nextPos - prevPos;
         float rayDist = rayDir.magnitude;
 
@@ -92,9 +94,9 @@ public class Bullet : MonoBehaviour
 
     private void ProcessHit(Collider target, Vector3 hitPoint, Vector3 hitNormal)
     {
-        if (target.TryGetComponent<IDamageable>(out var dmg))
+        if (target.TryGetComponent<HitBox>(out var hitBox))
         {
-            dmg.ApplyDamage(damage, shotOrigin, hitPoint);
+            hitBox.ApplyDamage(damage, shotOrigin, hitPoint, friendLayers);
         }
 
         Quaternion rot = Quaternion.LookRotation(hitNormal);
