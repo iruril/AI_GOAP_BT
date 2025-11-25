@@ -133,7 +133,7 @@ public class GunHandler : MonoBehaviour
     float _refTargetValue;
     private void IKWeightControl(bool hasTarget)
     {
-        float _targetVaule = hasTarget && myBrain.MotionController.Shootable ? 1f : 0f;
+        float _targetVaule = myBrain.Sensor.TargetVisible ? 1f : 0f;
 
         aimIK.solver.IKPositionWeight = Mathf.SmoothDamp(
             aimIK.solver.IKPositionWeight,

@@ -16,7 +16,7 @@ public class Bullet : MonoBehaviour
 
     private float damage = 1f;
     private LayerMask friendLayers;
-    private LayerMask hitMask;
+    [SerializeField] private LayerMask hitMask;
 
     private Vector3 velocity;
     private Vector3 prevPos;
@@ -24,7 +24,9 @@ public class Bullet : MonoBehaviour
     private Vector3 shotOrigin;
 
     private bool hitProcessed = false;
-    private bool initialized = false;
+    private bool initialized = false; 
+    
+    private RaycastHit[] hitBuffer = new RaycastHit[1];
 
     private void OnEnable()
     {
@@ -37,11 +39,6 @@ public class Bullet : MonoBehaviour
         initialized = false;
         Timing.KillCoroutines(lifeHandle);
         myPool?.ReturnToPool(gameObject);
-    }
-
-    private void Awake()
-    {
-        hitMask = ~(WorldManager.Instance.GetVFXLayers() | WorldManager.Instance.GetActorLayers());
     }
 
     public void Init(LayerMask teamLayer, Vector3 shotOrigin, float projectileSpeed, float damage)
@@ -81,8 +78,10 @@ public class Bullet : MonoBehaviour
 
         if (rayDist > 0.0001f)
         {
-            if (Physics.Raycast(prevPos, rayDir.normalized, out var hit, rayDist, hitMask))
+            int count = Physics.RaycastNonAlloc(prevPos, rayDir.normalized, hitBuffer, rayDist, hitMask);
+            if (count > 0)
             {
+                var hit = hitBuffer[0];
                 ProcessHit(hit.collider, hit.point, hit.normal);
                 return;
             }

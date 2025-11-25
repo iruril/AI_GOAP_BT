@@ -56,7 +56,7 @@ namespace GOAP.Assualt
             timer += Time.deltaTime;
             if (timer >= GunController.CurrentGun.GunInfo.ShotInterval &&
                 CurrentAction.Type == AssualtAction.COMBAT &&
-                MotionController.Shootable)
+                MotionController.AimWeight >= 0.99f)
             {
                 GunController.Fire();
                 timer = 0f;

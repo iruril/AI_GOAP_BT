@@ -1,6 +1,4 @@
-using BehaviorDesigner.Runtime.Tasks.Unity.UnityQuaternion;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace AnimControl.Assault
 {

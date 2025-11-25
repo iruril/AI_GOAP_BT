@@ -24,12 +24,9 @@ namespace AnimControl.Assault
 
         public float Accel { get; private set; } = 0f;
         public float TargetAccel { get; private set; } = 0f;
-        [SerializeField] private float accelSmoothSpeed = 4f;
         public float StateTime { get; set; }
         public bool RootRotation = false;
 
-        private float shootableWeight;
-        public bool Shootable { get; private set; }
         public float AimWeight { get; private set; }
 
         private Vector3? hitDir = null;
@@ -83,16 +80,15 @@ namespace AnimControl.Assault
             if (MyBrain.Sensor.MyStat.IsDead) return;
             base.Update();
             CurrentStateKey = CurrentState.StateKey;
-            UpdateMoveAxis();
-            UpdateAcceleration();
             UpdateAimWeight();
-            UpdateShootableCondition();
         }
 
         protected override void FixedUpdate()
         {
             if (MyBrain.Sensor.MyStat.IsDead) return;
             base.FixedUpdate();
+            UpdateMoveAxis();
+            UpdateAcceleration();
         }
 
         private void InitializeStates()
@@ -111,9 +107,16 @@ namespace AnimControl.Assault
             Anim.SetFloat(AnimHash.YAxis, MyBrain.Navigator.MoveAxis.y);
         }
 
+        float _refAccel;
         void UpdateAcceleration()
         {
-            Accel = Mathf.Lerp(Accel, TargetAccel, Time.deltaTime * accelSmoothSpeed);
+            Accel = Mathf.SmoothDamp(
+                Accel,
+                TargetAccel,
+                ref _refAccel,
+                0.25f,
+                float.PositiveInfinity,
+                Time.fixedDeltaTime);
             Anim.SetFloat(AnimHash.Accelation, Accel);
         }
 
@@ -121,14 +124,13 @@ namespace AnimControl.Assault
         void UpdateAimWeight()
         {
             float _targetVaule = MyBrain.Sensor.TargetVisible ? 1f : 0f;
-            AimWeight = Mathf.SmoothDamp(AimWeight, _targetVaule, ref _refAimValue, 0.1f);
+            AimWeight = Mathf.SmoothDamp(
+                AimWeight,
+                _targetVaule,
+                ref _refAimValue,
+                MyBrain.GunController.CurrentGun.GunInfo.TimeToADS
+            );
             Anim.SetFloat(AnimHash.AimWeight, AimWeight);
-        }
-
-        void UpdateShootableCondition()
-        {
-            shootableWeight = Anim.GetFloat(AnimHash.Shootable);
-            Shootable = shootableWeight >= 0.99f && AimWeight >= 0.99f;
         }
 
         public void SetTargetAccel(float v)

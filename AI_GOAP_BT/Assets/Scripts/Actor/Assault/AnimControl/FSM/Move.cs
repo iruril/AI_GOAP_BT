@@ -30,20 +30,19 @@ namespace AnimControl.Assault
         {
             base.UpdateState();
 
-            float speed = ctx.MyBrain.Navigator.AI.velocity.magnitude;
-            float normalized = Mathf.InverseLerp(0f, ctx.MyBrain.Navigator.AI.maxSpeed, speed);
-
-            ctx.SetTargetAccel(normalized * 4f);
-
             DecideStopDistance();
         }
 
         public override void PhysicsUpdateState()
         {
-            Vector3 origin = ctx.transform.position + Vector3.up * 1.4f;
-            Vector3 direction = ((ctx.MyBrain.Navigator.AI.endOfPath + Vector3.up * 1.4f) - origin).normalized;
+            float speed = ctx.MyBrain.Navigator.AI.desiredVelocity.magnitude;
+            float normalized = Mathf.InverseLerp(0f, ctx.MyBrain.Navigator.AI.maxSpeed, speed);
+            ctx.SetTargetAccel(normalized * 4f);
+
+            Vector3 origin = ctx.transform.position + Vector3.up * 1.2f;
+            Vector3 direction = ((ctx.MyBrain.Navigator.AI.endOfPath + Vector3.up * 1.2f) - origin).normalized;
             obstacle = Physics.RaycastNonAlloc(
-                    ctx.transform.position + Vector3.up * 1.4f,
+                    ctx.transform.position + Vector3.up * 1.2f,
                     direction,
                     hits,
                     stoppingDistance,

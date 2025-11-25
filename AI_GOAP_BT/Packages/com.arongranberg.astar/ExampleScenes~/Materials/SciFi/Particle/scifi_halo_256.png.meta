@@ -142,6 +142,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 87744
   packageName: A* Pathfinding Project Pro
-  packageVersion: 5.4.4
+  packageVersion: 
   assetPath: Packages/com.arongranberg.astar/ExampleScenes~/Materials/SciFi/Particle/scifi_halo_256.png
-  uploadId: 800134
+  uploadId: 0

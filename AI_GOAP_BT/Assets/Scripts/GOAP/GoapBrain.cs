@@ -39,7 +39,10 @@ namespace GOAP
         public Dictionary<GoalType, GoapGoal<GoalType>> Goals = new();
 
         public GoapAction<ActionType, GoalType> CurrentAction { get; private set; }
+        [SerializeField] protected ActionType currentActionType;
+        
         public GoapGoal<GoalType> CurrentGoal { get; private set; }
+        [SerializeField] protected GoalType currentGoalType;
 
         protected ActionType DefaultActionType;
         protected GoalType DefaultGoalType;
@@ -219,6 +222,9 @@ namespace GOAP
 
             if (Actions.TryGetValue(DefaultActionType, out var action)) CurrentAction = action;
             else CurrentAction = Actions.First().Value;
+
+            currentGoalType = CurrentGoal.Type;
+            currentActionType = CurrentAction.Type;
         }
         #endregion
 
@@ -226,6 +232,9 @@ namespace GOAP
         {
             SelectGoal();
             RunAction();
+
+            currentGoalType = CurrentGoal.Type;
+            currentActionType = CurrentAction.Type;
         }
 
         void SelectGoal()

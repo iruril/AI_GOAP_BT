@@ -1742,7 +1742,7 @@ MonoBehaviour:
   lockWhenNotMoving: 1
   agentTimeHorizon: 2
   obstacleTimeHorizon: 0.5
-  maxNeighbours: 10
+  maxNeighbours: 16
   layer: 1
   collidesWith: -1
   wallAvoidForce: 1
@@ -1788,6 +1788,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf66fb4e366983d4190f6b2ef60eae00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentActionType: 0
+  currentGoalType: 0
 --- !u!114 &6883628252706435882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1801,7 +1803,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentStateKey: 0
-  accelSmoothSpeed: 4
   RootRotation: 0
 --- !u!114 &-2168579121952372337
 MonoBehaviour:

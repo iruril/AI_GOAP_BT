@@ -47,7 +47,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifeTime: 5
   gravity: 0
-  drag: 0
+  drag: 0.3
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 1113
 --- !u!1 &3126588462008031544
 GameObject:
   m_ObjectHideFlags: 0

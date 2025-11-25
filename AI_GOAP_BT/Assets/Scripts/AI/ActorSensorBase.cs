@@ -304,6 +304,7 @@ namespace Sensor
         }
         #endregion
 
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             if (HasTarget)
@@ -315,8 +316,6 @@ namespace Sensor
                     Vector3 originEye = transform.position + Vector3.up * visibleOffesetHight;
                     Vector3 targetEye = CurrentTarget.position + Vector3.up * visibleOffesetHight;
 
-                    Gizmos.DrawWireSphere(originEye, 0.3f);
-                    Gizmos.DrawWireSphere(targetEye, 0.3f);
                     Gizmos.DrawLine(originEye, targetEye);
 
                 }
@@ -327,11 +326,10 @@ namespace Sensor
                     Vector3 originEye = transform.position + Vector3.up * (visibleOffesetHight - 0.05f);
                     Vector3 targetEye = CurrentTarget.position + Vector3.up * (visibleOffesetHight - 0.05f);
 
-                    Gizmos.DrawWireSphere(originEye, 0.25f);
-                    Gizmos.DrawWireSphere(targetEye, 0.25f);
                     Gizmos.DrawLine(originEye, targetEye);
                 }
             }
         }
+#endif
     }
 }
