@@ -49,6 +49,7 @@ public class GunHandler : MonoBehaviour
 
         myBrain.Sensor.OnTargetSet += SetTarget;
         myBrain.Sensor.OnTargetReset += ResetTarget;
+        myBrain.Sensor.MyStat.OnDead += OnDead;
         aimIK.solver.OnPostUpdate += FireCallback;
     }
 
@@ -56,6 +57,7 @@ public class GunHandler : MonoBehaviour
     {
         myBrain.Sensor.OnTargetSet -= SetTarget;
         myBrain.Sensor.OnTargetReset -= ResetTarget;
+        myBrain.Sensor.MyStat.OnDead -= OnDead;
         aimIK.solver.OnPostUpdate -= FireCallback;
     }
 
@@ -161,7 +163,7 @@ public class GunHandler : MonoBehaviour
         ExecuteFire();
     }
 
-    public void ExecuteFire()
+    private void ExecuteFire()
     {
         float xError = MathUtility.SampleGaussian(0f, currentSpread);
         float yError = MathUtility.SampleGaussian(0f, currentSpread);
@@ -188,13 +190,18 @@ public class GunHandler : MonoBehaviour
         );
     }
 
-    public void SetTarget(Transform target)
+    private void SetTarget(Transform target)
     {
         aimTarget = target;
     }
 
-    public void ResetTarget()
+    private void ResetTarget()
     {
         aimTarget = null;
+    }
+
+    private void OnDead()
+    {
+        pendingFire = false;
     }
 }

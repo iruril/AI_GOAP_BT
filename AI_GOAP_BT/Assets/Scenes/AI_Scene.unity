@@ -30360,11 +30360,11 @@ MonoBehaviour:
   - 29
   - 30
   - 31
-  heuristic: 2
+  heuristic: 1
   heuristicScale: 1
-  threadCount: 1
+  threadCount: -1
   maxFrameTime: 10
-  batchGraphUpdates: 0
+  batchGraphUpdates: 1
   graphUpdateBatchingInterval: 0.2
   navmeshUpdates:
     updateInterval: 0
