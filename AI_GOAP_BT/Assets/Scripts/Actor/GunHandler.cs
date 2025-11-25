@@ -139,7 +139,7 @@ public class GunHandler : MonoBehaviour
             aimIK.solver.IKPositionWeight,
             _targetVaule,
             ref _refTargetValue,
-            0.25f
+            0.08f
         );
     }
 
