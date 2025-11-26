@@ -15,6 +15,7 @@ namespace AnimControl.Assault
             ctx.SetTargetAccel(2f);
             ctx.MyBrain.Navigator.AI.enableRotation = false;
             ctx.RootRotation = false;
+            ctx.Anim.CrossFade(AnimHash.Strafe, 0.1f);
         }
 
         public override void ExitState()
