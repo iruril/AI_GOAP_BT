@@ -1,12 +1,9 @@
-using RootMotion.FinalIK;
 using UnityEngine;
 using System.Collections.Generic;
 
 public class GunHandler : MonoBehaviour
 {
     private GOAP.Assualt.AssaultBrain myBrain;
-    private FullBodyBipedIK myIK;
-    private AimIK aimIK;
 
     [Header("Gun 트랜스폼 세팅")]
     [SerializeField] Transform GunPos;
@@ -32,25 +29,21 @@ public class GunHandler : MonoBehaviour
     void Awake()
     {
         myBrain = GetComponent<GOAP.Assualt.AssaultBrain>();
-
-        myIK = GetComponent<FullBodyBipedIK>();
-        myIK.solver.leftHandEffector.target = LeftHandIKTarget;
-        myIK.solver.leftHandEffector.positionWeight = 1f;
-
-        aimIK = GetComponent<AimIK>();
-        aimIK.solver.IKPositionWeight = 0f;
-
         bulletPool = GetComponent<BulletPool>();
     }
 
     void Start()
     {
+        myBrain.MotionController.FBBIK.solver.leftHandEffector.target = LeftHandIKTarget;
+        myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 1f;
+        myBrain.MotionController.AimIK.solver.IKPositionWeight = 0f;
+
         LoadGun("AK-15");
 
         myBrain.Sensor.OnTargetSet += SetTarget;
         myBrain.Sensor.OnTargetReset += ResetTarget;
         myBrain.Sensor.MyStat.OnDead += OnDead;
-        aimIK.solver.OnPostUpdate += FireCallback;
+        myBrain.MotionController.AimIK.solver.OnPostUpdate += FireCallback;
     }
 
     private void OnDestroy()
@@ -58,7 +51,7 @@ public class GunHandler : MonoBehaviour
         myBrain.Sensor.OnTargetSet -= SetTarget;
         myBrain.Sensor.OnTargetReset -= ResetTarget;
         myBrain.Sensor.MyStat.OnDead -= OnDead;
-        aimIK.solver.OnPostUpdate -= FireCallback;
+        myBrain.MotionController.AimIK.solver.OnPostUpdate -= FireCallback;
     }
 
     void Update()
@@ -109,7 +102,6 @@ public class GunHandler : MonoBehaviour
     void ApplyGunTransforms(Gun gunData)
     {
         GunPos.localPosition = gunData.GunPosition;
-
         Muzzle.localPosition = gunData.MuzzlePosition;
 
         LeftHandIKTarget.localPosition = gunData.LeftHandIKPosition;
@@ -133,13 +125,13 @@ public class GunHandler : MonoBehaviour
     float _refTargetValue;
     private void IKWeightControl(bool hasTarget)
     {
-        float _targetVaule = myBrain.Sensor.TargetVisible ? 1f : 0f;
+        float _targetVaule = myBrain.MotionController.Shootable() ? 1f : 0f;
 
-        aimIK.solver.IKPositionWeight = Mathf.SmoothDamp(
-            aimIK.solver.IKPositionWeight,
+        myBrain.MotionController.AimIK.solver.IKPositionWeight = Mathf.SmoothDamp(
+            myBrain.MotionController.AimIK.solver.IKPositionWeight,
             _targetVaule,
             ref _refTargetValue,
-            0.08f
+            0.05f
         );
     }
 

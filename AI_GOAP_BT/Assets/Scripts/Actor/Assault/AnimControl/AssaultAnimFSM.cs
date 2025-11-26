@@ -1,5 +1,6 @@
 using UnityEngine;
 using FSM;
+using RootMotion.FinalIK;
 
 namespace AnimControl.Assault
 {
@@ -19,6 +20,8 @@ namespace AnimControl.Assault
         private AssaultAnimFSM _context => this;
         public Animator Anim { get; private set; }
         public Rigidbody MyRigid { get; private set; }
+        public FullBodyBipedIK FBBIK { get; private set; }
+        public AimIK AimIK { get; private set; }
 
         public AnimState CurrentStateKey;
 
@@ -27,7 +30,7 @@ namespace AnimControl.Assault
         public float StateTime { get; set; }
         public bool RootRotation = false;
 
-        public float AimWeight { get; private set; }
+        private float aimWeight;
 
         private Vector3? hitDir = null;
         private float hitRotateRemain = 0f;
@@ -37,6 +40,8 @@ namespace AnimControl.Assault
             MyBrain = GetComponent<GOAP.Assualt.AssaultBrain>();
             Anim = GetComponent<Animator>();
             MyRigid = GetComponent<Rigidbody>();
+            FBBIK = GetComponent<FullBodyBipedIK>();
+            AimIK = GetComponent<AimIK>();
 
             InitializeStates();
             CurrentState = States[AnimState.Idle];
@@ -45,12 +50,14 @@ namespace AnimControl.Assault
         protected override void Start()
         {
             base.Start();
+            MyBrain.Sensor.MyStat.OnHit += OnHit;
             MyBrain.Sensor.MyStat.OnDead += OnDead;
             MyBrain.Navigator.OnSetDestination += DecideAccelByDistance;
         }
 
         private void OnDestroy()
         {
+            MyBrain.Sensor.MyStat.OnHit += OnHit;
             MyBrain.Sensor.MyStat.OnDead -= OnDead;
             MyBrain.Navigator.OnSetDestination -= DecideAccelByDistance;
         }
@@ -124,13 +131,13 @@ namespace AnimControl.Assault
         void UpdateAimWeight()
         {
             float _targetVaule = MyBrain.Sensor.TargetVisible ? 1f : 0f;
-            AimWeight = Mathf.SmoothDamp(
-                AimWeight,
+            aimWeight = Mathf.SmoothDamp(
+                aimWeight,
                 _targetVaule,
                 ref _refAimValue,
                 MyBrain.GunController.CurrentGun.GunInfo.TimeToADS
             );
-            Anim.SetFloat(AnimHash.AimWeight, AimWeight);
+            Anim.SetFloat(AnimHash.AimWeight, aimWeight);
         }
 
         public void SetTargetAccel(float v)
@@ -193,6 +200,14 @@ namespace AnimControl.Assault
                     hitDir = null;
                 }
             }
+        }
+
+        public bool Shootable()
+        {
+            bool stateValid = false;
+            var StateInfo = Anim.GetCurrentAnimatorStateInfo(0);
+            stateValid = StateInfo.shortNameHash == AnimHash.Strafe;
+            return stateValid && aimWeight >= 0.99f;
         }
 
         private void OnDead()

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using System;
+using RootMotion.FinalIK;
 
 #if UNITY_EDITOR
 
@@ -9,13 +9,14 @@ using System;
 public class HitBoxSetterEditor : Editor
 {
     const string INFO = "HitBox데이터 세팅 전용 컴포넌트입니다.\n" +
-        "세팅 후에는 이 컴포넌트를 지워주세요.";
+        "세팅 후에는 이 컴포넌트를 지워주세요.\n" +
+        "반드시 세팅 전에 HitBox를 심을 본에 콜라이더 세팅을 해주세요";
     public override void OnInspectorGUI()
     {
         EditorGUILayout.HelpBox(INFO, MessageType.Info);
         HitBoxSetter _myData = (HitBoxSetter)target;
 
-        if (GUILayout.Button("HitBox 가져오기"))
+        if (GUILayout.Button("HitBox 세팅하기"))
         {
             _myData.SetRagdoll();
             EditorUtility.SetDirty(_myData);
@@ -43,7 +44,8 @@ public class HitBoxSetter : MonoBehaviour
             else hitBox = item.gameObject.AddComponent<HitBox>();
 
             var corpseGenerator = GetComponent<CorpseGenerator>();
-            hitBox.InitHitBox(transform, corpseGenerator, gameObject.layer);
+            var hitReactIK = GetComponent<HitReaction>();
+            hitBox.InitHitBox(transform, corpseGenerator, hitReactIK, gameObject.layer);
             item.gameObject.layer = LayerMask.NameToLayer("HitBox");
             cols.Add(item);
         }
