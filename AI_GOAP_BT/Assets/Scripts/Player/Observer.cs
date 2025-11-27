@@ -16,8 +16,8 @@ namespace Observer
         [Header("Rotation")]
         [SerializeField] private float sensitivity = 10.0f;
 
-        private float yaw;
-        private float pitch;
+        private float yaw = 0;
+        private float pitch = 0;
 
         private Vector3 currentVelocity = Vector3.zero;
 
@@ -26,17 +26,14 @@ namespace Observer
             inputMap = GetComponent<InputRecorder>();
             rb = GetComponent<Rigidbody>();
 
-            pitch = transform.rotation.eulerAngles.y;
-            yaw = transform.rotation.eulerAngles.x;
-
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
 
         void Update()
         {
-            yaw = yaw + inputMap.CamInputMap.x * sensitivity * Time.deltaTime;
-            pitch = pitch + inputMap.CamInputMap.y * sensitivity * Time.deltaTime;
+            yaw = yaw + inputMap.CamInputMap.x * sensitivity;
+            pitch = pitch + inputMap.CamInputMap.y * sensitivity;
             pitch = Mathf.Clamp(pitch, -75, 75);
 
             transform.rotation = Quaternion.Euler(-pitch, yaw, 0);

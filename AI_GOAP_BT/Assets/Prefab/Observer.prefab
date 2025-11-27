@@ -110,7 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSpeed: 12
   acceleration: 30
-  sensitivity: 7
+  sensitivity: 0.08
 --- !u!114 &4041391991125226324
 MonoBehaviour:
   m_ObjectHideFlags: 0
