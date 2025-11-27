@@ -111,11 +111,11 @@ public class GunHandler : MonoBehaviour
     private void AimIKHandle()
     {
         bool hasTarget = aimTarget != null;
-        IKTargetTransformControl(hasTarget);
-        IKWeightControl(hasTarget);
+        AimIKTargetTransformControl(hasTarget);
+        AimIKWeightControl(hasTarget);
     }
 
-    private void IKTargetTransformControl(bool hasTarget)
+    private void AimIKTargetTransformControl(bool hasTarget)
     {
         AimIKTarget.position = hasTarget ?
                     aimTarget.position + Vector3.up * 1.2f
@@ -123,15 +123,15 @@ public class GunHandler : MonoBehaviour
     }
 
     float _refTargetValue;
-    private void IKWeightControl(bool hasTarget)
+    private void AimIKWeightControl(bool hasTarget)
     {
-        float _targetVaule = myBrain.MotionController.Shootable() ? 1f : 0f;
+        float _targetVaule = myBrain.MotionController.Aimable() ? 1f : 0f;
 
         myBrain.MotionController.AimIK.solver.IKPositionWeight = Mathf.SmoothDamp(
             myBrain.MotionController.AimIK.solver.IKPositionWeight,
             _targetVaule,
             ref _refTargetValue,
-            0.05f
+            0.1f
         );
     }
 

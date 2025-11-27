@@ -130,7 +130,7 @@ namespace AnimControl.Assault
         float _refAimValue;
         void UpdateAimWeight()
         {
-            float _targetVaule = MyBrain.Sensor.TargetVisible ? 1f : 0f;
+            float _targetVaule = MyBrain.Sensor.HasTarget ? 1f : 0f;
             aimWeight = Mathf.SmoothDamp(
                 aimWeight,
                 _targetVaule,
@@ -202,12 +202,17 @@ namespace AnimControl.Assault
             }
         }
 
-        public bool Shootable()
+        public bool Aimable()
         {
             bool stateValid = false;
             var StateInfo = Anim.GetCurrentAnimatorStateInfo(0);
             stateValid = StateInfo.shortNameHash == AnimHash.Strafe;
             return stateValid && aimWeight >= 0.99f;
+        }
+
+        public bool Shootable()
+        {
+            return Aimable() && MyBrain.Sensor.TargetVisible;
         }
 
         private void OnDead()

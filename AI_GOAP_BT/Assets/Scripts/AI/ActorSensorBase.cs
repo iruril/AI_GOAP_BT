@@ -20,9 +20,6 @@ namespace Sensor
         public Vector3 LastSeenPosition { get; private set; }
         public bool HasLastSeenPosition { get; private set; } = false;
 
-        [SerializeField] private float loseTargetAfter = 2f;
-        protected float targetLostTimer = 0f;
-
         [Header("Cover Info")]
         public float CoverDistance { get; set; } = Mathf.Infinity;
         public bool UnderAttack { get; set; } = false;
@@ -91,19 +88,10 @@ namespace Sensor
         {
             if (!HasTarget) return;
 
-            if (TargetVisible)
+            if (!TargetVisible)
             {
-                targetLostTimer = 0f;
-            }
-            else
-            {
-                targetLostTimer += Time.deltaTime;
-
-                if (targetLostTimer >= loseTargetAfter)
-                {
-                    CurrentTarget = null;
-                    TargetVisible = false;
-                }
+                CurrentTarget = null;
+                TargetVisible = false;
             }
         }
 
@@ -112,7 +100,6 @@ namespace Sensor
             CurrentTarget = target;
             if (target.TryGetComponent<Stat>(out var stat)) 
                 CurrentTargetStat = stat;
-            targetLostTimer = 0f;
         }
 
         protected virtual void ResetTarget()
