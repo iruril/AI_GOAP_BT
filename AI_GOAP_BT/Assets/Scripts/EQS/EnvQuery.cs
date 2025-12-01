@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using NoAlloq;
-using System.Collections;
+using AYellowpaper.SerializedCollections;
+using System.Linq;
 
 public class EnvQuery : MonoBehaviour
 {
@@ -15,95 +16,79 @@ public class EnvQuery : MonoBehaviour
 
 	public EnvQueryGeneratorType GeneratorType = EnvQueryGeneratorType.OnCircle;
 	public GameObject CenterOfItems;
-	public float Radius = 4.0f;
-	public float SpaceBetween = 1.0f;
-	[SerializeField] private float _tickInterval = 0.05f;
+	[SerializedDictionary("Context Name", "Context SO")]
+	private SerializedDictionary<string, EQSContextSO> Contexts = new();
+	private EQSContextSO currentCTX;
 
-    public List<EnvQueryTestDistance> EnvQueryTestDistances = new();
-    public List<EnvQueryTestPathFinding> EnvQueryTestPathFindings = new();
-    public List<EnvQueryTestDot> EnvQueryTestDots = new();
-    public List<EnvQueryTestTrace> EnvQueryTestTraces = new();
-	private int _testCount = 0;
+    private int testCount = 0;
 
-	private GameObject _querier;
-	private EnvQueryGenerator _generator;
-	private List<EnvQueryItem> _eqsItems;
-	private List<EnvQueryItem> _eqsItemsRef;
+	private GameObject querier;
+	private EnvQueryGenerator generator;
+	private List<EnvQueryItem> eqsItems;
+	private List<EnvQueryItem> eqsItemsRef;
 
 	void Start()
 	{
-		if(_querier == null)
+		if(querier == null)
 		{
-			_querier = gameObject;
+			querier = gameObject;
 		}
 		if(CenterOfItems == null)
 		{
-			CenterOfItems = _querier;
+			CenterOfItems = querier;
         }
 
-		_testCount = EnvQueryTestDistances.Count + 
-			EnvQueryTestPathFindings.Count + 
-			EnvQueryTestDots.Count + 
-			EnvQueryTestTraces.Count;
+		LoadContext(Contexts.First().Value);
+    }
+    public void LoadContext(EQSContextSO context)
+    {
+        currentCTX = context;
+        InitializeQuery();
     }
 
-	/// <summary>
-	/// 임의의 값으로 EQS를 초기화한다.
-	/// </summary>
-	/// <param name="radius"> EQS 범위 </param>
-	/// <param name="spaceBetween"> EQS 포인트들 간 간격 </param>
-    public void InitializeQuery(float radius)
-	{
-		StopAllCoroutines();
-
-        Radius = radius;
+    private void InitializeQuery()
+    {
+        testCount = currentCTX.Distances.Count +
+                    currentCTX.Paths.Count +
+                    currentCTX.Dots.Count +
+                    currentCTX.Traces.Count;
 
         if (GeneratorType == EnvQueryGeneratorType.OnCircle)
         {
-            _generator = new EnvQueryGeneratorOnCircle(Radius, SpaceBetween);
+            generator = new EnvQueryGeneratorOnCircle(currentCTX.Radius, currentCTX.SpaceBetween);
         }
         else if (GeneratorType == EnvQueryGeneratorType.SimpleGrid)
         {
-            _generator = new EnvQueryGeneratorSimpleGrid(Radius, SpaceBetween);
+            generator = new EnvQueryGeneratorSimpleGrid(currentCTX.Radius, currentCTX.SpaceBetween);
         }
 
-        if (CenterOfItems != null && _generator != null)
+        if (CenterOfItems != null && generator != null)
         {
-            _eqsItems = _generator.GenerateItems(_testCount, CenterOfItems.transform);
+            eqsItems = generator.GenerateItems(testCount, CenterOfItems.transform);
         }
         else
         {
-            _eqsItems = new List<EnvQueryItem>();
+            eqsItems = new List<EnvQueryItem>();
         }
 
-        _eqsItemsRef = _eqsItems.GetRange(0, _eqsItems.Count);
+        eqsItemsRef = eqsItems.GetRange(0, eqsItems.Count);
     }
 
-	public void StartQuery()
-	{
-        StartCoroutine(InvestigateEQS());
-    }
-
-    private IEnumerator InvestigateEQS()
+    public void TickEQS()
     {
-        while (true)
+        ResetScore();
+        foreach (EnvQueryItem item in eqsItems)
         {
-            ResetScore();
-            foreach (EnvQueryItem item in _eqsItems)
-            {
-                item.UpdateNavMeshProjection();
-            }
-
-            RunEQSTests(EnvQueryTestDistances);
-            RunEQSTests(EnvQueryTestPathFindings);
-            RunEQSTests(EnvQueryTestDots);
-            RunEQSTests(EnvQueryTestTraces);
-
-            FinalizeEQS();
-            yield return new WaitForSeconds(_tickInterval);
+            item.ApplyAstarProjection();
         }
-    }
 
+        RunEQSTests(currentCTX.Distances);
+        RunEQSTests(currentCTX.Paths);
+        RunEQSTests(currentCTX.Dots);
+        RunEQSTests(currentCTX.Traces);
+
+        FinalizeEQS();
+    }
 
     private void RunEQSTests<T>(List<T> tests) where T : EnvQueryTest
     {
@@ -111,14 +96,14 @@ public class EnvQuery : MonoBehaviour
 
         for (int currentTest = 0; currentTest < tests.Count; currentTest++)
         {
-            tests[currentTest].RunTest(currentTest, _eqsItems);
-            tests[currentTest].NormalizeItemScores(currentTest, _eqsItems);
+            tests[currentTest].RunTest(currentTest, eqsItems);
+            tests[currentTest].NormalizeItemScores(currentTest, eqsItems);
         }
     }
 
     private void ResetScore()
     {
-		foreach(EnvQueryItem item in _eqsItems)
+		foreach(EnvQueryItem item in eqsItems)
 		{
 			item.Score = 0.0f;
 		}
@@ -127,22 +112,22 @@ public class EnvQuery : MonoBehaviour
 	private void FinalizeEQS()
 	{
 		NormalizeScore();
-		BestItem = _eqsItems.AsSpan().Where(x => x.IsValid)
-			.OrderByDescending(_eqsItemsRef.AsSpan(), x => x.Score)
+		BestItem = eqsItems.AsSpan().Where(x => x.IsValid)
+			.OrderByDescending(eqsItemsRef.AsSpan(), x => x.Score)
 			.FirstOrDefault();
 	}
 
 	private void NormalizeScore()
 	{
-        if(_eqsItems == null || _eqsItems.Count < 1)
+        if(eqsItems == null || eqsItems.Count < 1)
         {
             return;
         }
 
-		float maxScore = _eqsItems[0].Score;
-		float minScore = _eqsItems[0].Score;
+		float maxScore = eqsItems[0].Score;
+		float minScore = eqsItems[0].Score;
 
-		foreach(EnvQueryItem item in _eqsItems)
+		foreach(EnvQueryItem item in eqsItems)
 		{
 			if(item.Score > maxScore)
 			{
@@ -156,7 +141,7 @@ public class EnvQuery : MonoBehaviour
 
 		if(maxScore != minScore)
 		{
-			foreach(EnvQueryItem item in _eqsItems)
+			foreach(EnvQueryItem item in eqsItems)
 			{
 				item.Score = (item.Score - minScore) / (maxScore - minScore);
 			}

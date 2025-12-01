@@ -14,9 +14,8 @@ public class EnvQueryTestPathFinding : EnvQueryTest
     public PathFindingTestType PathFindingType;
     public Transform Target;
 
-    private const float _pathNotFoundScore = -10000f;
-    private const float _pathExistScore = 1.0f;
-    private const float _pathNotExistScore = 0.0f;
+    private const float pathPossibleScore = 1.0f;
+    private const float pathNotPossibleScore = 0.0f;
 
     public override void RunTest(int currentTest, List<EnvQueryItem> envQueryItems)
     {
@@ -24,7 +23,7 @@ public class EnvQueryTestPathFinding : EnvQueryTest
         {
             foreach (EnvQueryItem item in envQueryItems)
             {
-                item.TestResults[currentTest] = _pathNotExistScore;
+                item.TestResults[currentTest] = pathNotPossibleScore;
             }
             return;
         }
@@ -34,35 +33,18 @@ public class EnvQueryTestPathFinding : EnvQueryTest
             Vector3 startPos = item.GetWorldPosition();
             Vector3 endPos = Target.position;
 
-            ABPath path = ABPath.Construct(startPos, endPos, (Path p) => OnPathComplete(p, item, currentTest));
-        }
-    }
+            var startNode = AstarPath.active.GetNearest(startPos).node;
+            var endNode = AstarPath.active.GetNearest(endPos).node;
 
-    private void OnPathComplete(Path p, EnvQueryItem item, int currentTest)
-    {
-        ABPath path = p as ABPath;
-
-        if (path == null)
-        {
-            Debug.LogError("Path is not of type ABPath");
-            item.TestResults[currentTest] = _pathNotExistScore;
-            return;
-        }
-
-        if (PathFindingType == PathFindingTestType.PathExist)
-        {
-            item.TestResults[currentTest] = (path.CompleteState == PathCompleteState.Complete) ? _pathExistScore : _pathNotExistScore;
-        }
-        else if (PathFindingType == PathFindingTestType.PathLength)
-        {
-            if (path.CompleteState == PathCompleteState.Complete)
+            if (startNode == null || endNode == null || !startNode.Walkable || !endNode.Walkable)
             {
-                item.TestResults[currentTest] = -path.GetTotalLength();
+                item.TestResults[currentTest] = pathNotPossibleScore;
+                continue;
             }
-            else
-            {
-                item.TestResults[currentTest] = _pathNotFoundScore;
-            }
+
+            bool possible = PathUtilities.IsPathPossible(startNode, endNode);
+
+            item.TestResults[currentTest] = possible ? pathPossibleScore : pathNotPossibleScore;
         }
     }
 }

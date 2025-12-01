@@ -32,39 +32,39 @@ public class EnvQueryTest
         ScoringEquation = EnvQueryTestScoringEquation.Linear;
     }
 
-    public virtual void RunTest(int currentTest, List<EnvQueryItem> envQueryItems){}
+    public virtual void RunTest(int currentTest, List<EnvQueryItem> envQueryItems) { }
 
     public void NormalizeItemScores(int currentTest, List<EnvQueryItem> envQueryItems)
     {
-        if(envQueryItems == null || envQueryItems.Count < 1)
+        if (envQueryItems == null || envQueryItems.Count < 1)
         {
             return;
         }
 
-		float maxValue = envQueryItems[0].TestResults[currentTest];
-		float minValue = envQueryItems[0].TestResults[currentTest];
+        float maxValue = envQueryItems[0].TestResults[currentTest];
+        float minValue = envQueryItems[0].TestResults[currentTest];
 
-		foreach(EnvQueryItem item in envQueryItems)
-		{
-            if(item.IsValid)
+        foreach (EnvQueryItem item in envQueryItems)
+        {
+            if (item.IsValid)
             {
                 float value = item.TestResults[currentTest];
-                if(value > maxValue)
+                if (value > maxValue)
                 {
                     maxValue = value;
                 }
-                if(value < minValue)
+                if (value < minValue)
                 {
                     minValue = value;
                 }
             }
-		}
+        }
 
-        if(maxValue != minValue)
+        if (maxValue != minValue)
         {
-            foreach(EnvQueryItem item in envQueryItems)
+            foreach (EnvQueryItem item in envQueryItems)
             {
-                if(!item.IsValid)
+                if (!item.IsValid)
                 {
                     continue;
                 }
@@ -72,7 +72,7 @@ public class EnvQueryTest
                 float weightedScore = 0.0f;
                 float normalizedScore = (item.TestResults[currentTest] - minValue) / (maxValue - minValue);
 
-                switch(ScoringEquation)
+                switch (ScoringEquation)
                 {
                     case EnvQueryTestScoringEquation.Linear:
                         weightedScore = ScaleFactor * normalizedScore;
@@ -96,10 +96,10 @@ public class EnvQueryTest
                         weightedScore = ScaleFactor * -(Mathf.Sin(Mathf.PI * normalizedScore) * Mathf.Sin(Mathf.PI * normalizedScore));
                         break;
                     case EnvQueryTestScoringEquation.SigmoidLike:
-                        weightedScore = ScaleFactor * (((float)Math.Tanh( 4.0f * (normalizedScore - 0.5f) ) + 1.0f) / 2.0f);
+                        weightedScore = ScaleFactor * (((float)Math.Tanh(4.0f * (normalizedScore - 0.5f)) + 1.0f) / 2.0f);
                         break;
                     case EnvQueryTestScoringEquation.InverseSigmoidLike:
-                        weightedScore = ScaleFactor * ( 1.0f - (((float)Math.Tanh( 4.0f * (normalizedScore - 0.5f) ) + 1.0f) / 2.0f) );
+                        weightedScore = ScaleFactor * (1.0f - (((float)Math.Tanh(4.0f * (normalizedScore - 0.5f)) + 1.0f) / 2.0f));
                         break;
                     case EnvQueryTestScoringEquation.AnimationCurve:
                         weightedScore = ScaleFactor * AnimationCurve.Evaluate(normalizedScore);

@@ -27,11 +27,11 @@ public class EnvQueryItem
         return _centerOfItems.position + _navLocation;
     }
 
-    public void UpdateNavMeshProjection()
+    public void ApplyAstarProjection()
     {
         IsValid = true;
         Vector3 worldPosition = _centerOfItems.position + _location;
-        Vector3 navMeshPosition = GetNearestPosition(worldPosition, 3.0f, ref IsValid);
+        Vector3 navMeshPosition = GetNearestPosition(worldPosition, 1.0f, ref IsValid);
 
         if (navMeshPosition != worldPosition)
         {
