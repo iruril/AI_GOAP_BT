@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using NoAlloq;
 using AYellowpaper.SerializedCollections;
 using System.Linq;
 
@@ -10,12 +9,14 @@ public class EnvQuery : MonoBehaviour
 	{
 		OnCircle,
 		SimpleGrid
-	}
+    }
 
-	public EnvQueryItem BestItem { get; private set; }
+    public EnvQueryItem BestItem { get; private set; }
 
-	public EnvQueryGeneratorType GeneratorType = EnvQueryGeneratorType.OnCircle;
-	public GameObject CenterOfItems;
+    public EnvQueryGeneratorType GeneratorType = EnvQueryGeneratorType.OnCircle;
+    public float Radius;
+    public float SpaceBetween;
+    public GameObject CenterOfItems;
 	[SerializedDictionary("Context Name", "Context SO")]
 	private SerializedDictionary<string, EQSContextSO> Contexts = new();
 	private EQSContextSO currentCTX;
@@ -25,42 +26,57 @@ public class EnvQuery : MonoBehaviour
 	private GameObject querier;
 	private EnvQueryGenerator generator;
 	private List<EnvQueryItem> eqsItems;
-	private List<EnvQueryItem> eqsItemsRef;
 
 	void Start()
-	{
-		if(querier == null)
-		{
-			querier = gameObject;
-		}
-		if(CenterOfItems == null)
-		{
-			CenterOfItems = querier;
+    {
+        Init();
+        LoadContext(Contexts.First().Value);
+    }
+
+    private void Init()
+    {
+        if (querier == null)
+        {
+            querier = gameObject;
         }
-
-		LoadContext(Contexts.First().Value);
-    }
-    public void LoadContext(EQSContextSO context)
-    {
-        currentCTX = context;
-        InitializeQuery();
-    }
-
-    private void InitializeQuery()
-    {
-        testCount = currentCTX.Distances.Count +
-                    currentCTX.Paths.Count +
-                    currentCTX.Dots.Count +
-                    currentCTX.Traces.Count;
+        if (CenterOfItems == null)
+        {
+            CenterOfItems = querier;
+        }
 
         if (GeneratorType == EnvQueryGeneratorType.OnCircle)
         {
-            generator = new EnvQueryGeneratorOnCircle(currentCTX.Radius, currentCTX.SpaceBetween);
+            generator = new EnvQueryGeneratorOnCircle(Radius, SpaceBetween);
         }
         else if (GeneratorType == EnvQueryGeneratorType.SimpleGrid)
         {
-            generator = new EnvQueryGeneratorSimpleGrid(currentCTX.Radius, currentCTX.SpaceBetween);
+            generator = new EnvQueryGeneratorSimpleGrid(Radius, SpaceBetween);
         }
+    }
+
+    public void LoadContext(string contextName)
+    {
+		if (!Contexts.ContainsKey(contextName))
+		{
+			Debug.LogWarning($"There's no such key : {contextName}");
+			return;
+		}
+        currentCTX = Contexts[contextName];
+        ApplyContext();
+    }
+
+    public void LoadContext(EQSContextSO context)
+    {
+        currentCTX = context;
+        ApplyContext();
+    }
+
+    private void ApplyContext()
+    {
+        testCount = currentCTX.Dists.Count +
+                    currentCTX.Paths.Count +
+                    currentCTX.Dots.Count +
+                    currentCTX.Traces.Count;
 
         if (CenterOfItems != null && generator != null)
         {
@@ -70,8 +86,6 @@ public class EnvQuery : MonoBehaviour
         {
             eqsItems = new List<EnvQueryItem>();
         }
-
-        eqsItemsRef = eqsItems.GetRange(0, eqsItems.Count);
     }
 
     public void TickEQS()
@@ -82,7 +96,7 @@ public class EnvQuery : MonoBehaviour
             item.ApplyAstarProjection();
         }
 
-        RunEQSTests(currentCTX.Distances);
+        RunEQSTests(currentCTX.Dists);
         RunEQSTests(currentCTX.Paths);
         RunEQSTests(currentCTX.Dots);
         RunEQSTests(currentCTX.Traces);
@@ -111,11 +125,26 @@ public class EnvQuery : MonoBehaviour
 
 	private void FinalizeEQS()
 	{
-		NormalizeScore();
-		BestItem = eqsItems.AsSpan().Where(x => x.IsValid)
-			.OrderByDescending(eqsItemsRef.AsSpan(), x => x.Score)
-			.FirstOrDefault();
-	}
+		NormalizeScore(); 
+		
+		EnvQueryItem best = null;
+        float bestScore = float.NegativeInfinity;
+
+        var span = eqsItems.AsSpan();
+        for (int i = 0; i < span.Length; i++)
+        {
+            ref var item = ref span[i];
+            if (!item.IsValid) continue;
+
+            if (item.Score > bestScore)
+            {
+                bestScore = item.Score;
+                best = item;
+            }
+        }
+
+        BestItem = best;
+    }
 
 	private void NormalizeScore()
 	{
@@ -149,25 +178,25 @@ public class EnvQuery : MonoBehaviour
 	}
 
 #if UNITY_EDITOR
-	//private void OnDrawGizmos()
-	//{
-	//	if (isActiveAndEnabled && _eqsItems != null)
-	//	{
-	//		foreach (EnvQueryItem item in _eqsItems)
-	//		{
-	//			if (item.IsValid)
-	//			{
-	//				Gizmos.color = Color.HSVToRGB((item.Score / 2.0f), 1.0f, 1.0f);
-	//				Gizmos.DrawWireSphere(item.GetWorldPosition(), 0.25f);
-	//				UnityEditor.Handles.Label(item.GetWorldPosition(), ((int)(item.Score * 100f)).ToString());
-	//			}
-	//		}
-	//	}
-	//	if (isActiveAndEnabled && BestItem != null)
-	//	{
-	//		Gizmos.color = Color.blue;
-	//		Gizmos.DrawSphere(BestItem.GetWorldPosition(), 0.25f);
-	//	}
-	//}
+	private void OnDrawGizmos()
+	{
+		if (isActiveAndEnabled && eqsItems != null)
+		{
+			foreach (EnvQueryItem item in eqsItems)
+			{
+				if (item.IsValid)
+				{
+					Gizmos.color = Color.HSVToRGB((item.Score / 2.0f), 1.0f, 1.0f);
+					Gizmos.DrawWireSphere(item.GetWorldPosition(), 0.25f);
+					UnityEditor.Handles.Label(item.GetWorldPosition(), ((int)(item.Score * 100f)).ToString());
+				}
+			}
+		}
+		if (isActiveAndEnabled && BestItem != null)
+		{
+			Gizmos.color = Color.blue;
+			Gizmos.DrawSphere(BestItem.GetWorldPosition(), 0.25f);
+		}
+	}
 #endif
 }
