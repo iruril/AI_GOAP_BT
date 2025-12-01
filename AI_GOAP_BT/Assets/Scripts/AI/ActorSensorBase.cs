@@ -8,8 +8,13 @@ namespace Sensor
     {
         public Stat MyStat { get; private set; }
 
+        [Header("My Eyes")]
+        [SerializeField] private Transform myEyes;
+        public Transform MyEyes => myEyes;
+
         [Header("Target Info")]
         public Transform CurrentTarget { get; private set; }
+        public Transform CurrentTargetChest { get; private set; }
         public Stat CurrentTargetStat { get; private set; }
         public bool HasTarget => CurrentTarget != null;
 
@@ -100,8 +105,7 @@ namespace Sensor
 
                 if (targetLostTimer >= loseTargetAfter)
                 {
-                    CurrentTarget = null;
-                    TargetVisible = false;
+                    ResetTarget();
                 }
             }
         }
@@ -111,12 +115,15 @@ namespace Sensor
             CurrentTarget = target;
             if (target.TryGetComponent<Stat>(out var stat)) 
                 CurrentTargetStat = stat;
+            if (target.TryGetComponent<Animator>(out var anim))
+                CurrentTargetChest = anim.GetBoneTransform(HumanBodyBones.UpperChest);
         }
 
         protected virtual void ResetTarget()
         {
             CurrentTarget = null;
             CurrentTargetStat = null;
+            CurrentTargetChest = null;
             TargetVisible = false;
         }
 
@@ -159,7 +166,7 @@ namespace Sensor
         #endregion
 
         #region Sight Check & Assgin Target Field
-        private void CheckHostileInSight()
+        protected void CheckHostileInSight()
         {
             if (HasTarget) return;
 
@@ -261,16 +268,12 @@ namespace Sensor
             return distScore + angleScore;
         }
 
-        private void CheckTargetInSight()
+        protected void CheckTargetInSight()
         {
-            if (!HasTarget)
-            {
-                ResetTarget();
-                return;
-            }
+            if (!HasTarget) return;
 
-            Vector3 originEye = transform.position + Vector3.up * visibleOffesetHight;
-            Vector3 targetEye = CurrentTarget.position + Vector3.up * visibleOffesetHight;
+            Vector3 originEye = myEyes.position;
+            Vector3 targetEye = CurrentTargetChest.position;
 
             Vector3 dir = targetEye - originEye;
             float dist = dir.magnitude;
@@ -295,7 +298,7 @@ namespace Sensor
             }
         }
 
-        private void CheckTargetIsValid()
+        protected void CheckTargetIsValid()
         {
             if (!HasTarget) return;
 
@@ -312,8 +315,8 @@ namespace Sensor
                 {
                     Gizmos.color = Color.cyan;
 
-                    Vector3 originEye = transform.position + Vector3.up * visibleOffesetHight;
-                    Vector3 targetEye = CurrentTarget.position + Vector3.up * visibleOffesetHight;
+                    Vector3 originEye = myEyes.position;
+                    Vector3 targetEye = CurrentTargetChest.position;
 
                     Gizmos.DrawLine(originEye, targetEye);
 
@@ -322,8 +325,8 @@ namespace Sensor
                 {
                     Gizmos.color = Color.magenta;
 
-                    Vector3 originEye = transform.position + Vector3.up * (visibleOffesetHight - 0.05f);
-                    Vector3 targetEye = CurrentTarget.position + Vector3.up * (visibleOffesetHight - 0.05f);
+                    Vector3 originEye = myEyes.position - Vector3.up * 0.05f;
+                    Vector3 targetEye = CurrentTargetChest.position - Vector3.up * 0.05f;
 
                     Gizmos.DrawLine(originEye, targetEye);
                 }

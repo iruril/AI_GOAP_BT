@@ -3317,7 +3317,7 @@ MonoBehaviour:
   heightBackingField: 2
   centerBackingField: 1
   locked: 0
-  lockWhenNotMoving: 1
+  lockWhenNotMoving: 0
   agentTimeHorizon: 2
   obstacleTimeHorizon: 0.5
   maxNeighbours: 16
@@ -3394,6 +3394,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcc5bb94738aae449a01c84cfa62b061, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myEyes: {fileID: 7896263592819095609}
   loseTargetAfter: 2
   captureOffsetRadius: 4
   sightRange: 50
@@ -3639,10 +3640,12 @@ MonoBehaviour:
       m_PostInfinity: 0
       m_RotationOrder: 0
     effectorLinks:
-    - effector: 5
-      weight: 0.5
-    - effector: 6
-      weight: 1
+    - effector: 1
+      weight: -0.1
+    - effector: 2
+      weight: -0.1
+    - effector: 0
+      weight: 0.7
   - name: spine_02
     collider: {fileID: 7193429548386491976}
     crossFadeTime: 0.05
@@ -4007,9 +4010,9 @@ MonoBehaviour:
       m_RotationOrder: 4
     effectorLinks:
     - effector: 1
-      weight: 0.2
+      weight: 0.7
     - effector: 5
-      weight: 0.1
+      weight: 0.5
   - name: upperarm_r
     collider: {fileID: 3683094124864253161}
     crossFadeTime: 0.05
@@ -4090,9 +4093,9 @@ MonoBehaviour:
       m_RotationOrder: 4
     effectorLinks:
     - effector: 2
-      weight: 0.2
+      weight: 0.7
     - effector: 6
-      weight: 0.1
+      weight: 0.5
   - name: lowerarm_l
     collider: {fileID: 2435383408209486779}
     crossFadeTime: 0.05
@@ -4173,12 +4176,12 @@ MonoBehaviour:
       m_RotationOrder: 4
     effectorLinks:
     - effector: 1
-      weight: 0.05
+      weight: 0.5
     - effector: 5
-      weight: 0.05
+      weight: 0.5
   - name: lowerarm_r
     collider: {fileID: 5697192372091473299}
-    crossFadeTime: 0.05
+    crossFadeTime: 0.3
     offsetInForceDirection:
       serializedVersion: 2
       m_Curve:
@@ -4256,9 +4259,9 @@ MonoBehaviour:
       m_RotationOrder: 4
     effectorLinks:
     - effector: 2
-      weight: 0.05
+      weight: 0.5
     - effector: 6
-      weight: 0.05
+      weight: 0.5
   boneHitPoints:
   - name: head
     collider: {fileID: 4581282566820413921}
@@ -4320,7 +4323,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a47100a2b4f7990489f439efd158eb49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GeneratorType: 1
+  GeneratorType: 0
   Radius: 4
   SpaceBetween: 2
   CenterOfItems: {fileID: 0}
@@ -4352,7 +4355,49 @@ MonoBehaviour:
       Value:
         Dists: []
         Paths: []
-        Dots: []
+        Dots:
+        - ScaleFactor: 0.5
+          ScoringEquation: 0
+          AnimationCurve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 4.7969394
+              outSlope: 4.7969394
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0.061002184
+            - serializedVersion: 3
+              time: 0.2922755
+              value: 0.9928571
+              inSlope: -0.19987375
+              outSlope: -0.5022019
+              tangentMode: 1
+              weightedMode: 0
+              inWeight: 0.18729094
+              outWeight: 0.046892755
+            - serializedVersion: 3
+              time: 1
+              value: 0
+              inSlope: -1.4028864
+              outSlope: -1.4028864
+              tangentMode: 34
+              weightedMode: 0
+              inWeight: 0.33333334
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 0
+          AbsoluteValue: 1
+          DirectionA: 0
+          Target: {fileID: 1882597698345154371}
+          DirectionB: 2
+          DirectionVectorObj: {fileID: 1882597698345154371}
+          LineFrom: {fileID: 0}
+          LineTo: {fileID: 0}
         Traces:
         - ScaleFactor: 0.5
           ScoringEquation: 0

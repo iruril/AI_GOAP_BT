@@ -103,6 +103,9 @@ namespace AnimControl.Assault
             vel.Normalize();
             tgt.Normalize();
 
+            if (Vector3.Angle(ctx.transform.forward, tgt) <= 30f)
+                return false;
+
             if (Vector3.Angle(vel, tgt) >= 150f)
                 return true;
             return false;

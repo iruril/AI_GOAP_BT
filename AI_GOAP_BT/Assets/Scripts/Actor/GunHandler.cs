@@ -44,7 +44,6 @@ public class GunHandler : MonoBehaviour
         myBrain.Sensor.OnTargetReset += ResetTarget;
         myBrain.Sensor.MyStat.OnDead += OnDead;
         myBrain.MotionController.AimIK.solver.OnPostUpdate += FireCallback;
-        myBrain.MotionController.AimIK.solver.OnPostUpdate += AimIKHandle;
     }
 
     private void OnDestroy()
@@ -53,12 +52,11 @@ public class GunHandler : MonoBehaviour
         myBrain.Sensor.OnTargetReset -= ResetTarget;
         myBrain.Sensor.MyStat.OnDead -= OnDead;
         myBrain.MotionController.AimIK.solver.OnPostUpdate -= FireCallback;
-        myBrain.MotionController.AimIK.solver.OnPostUpdate -= AimIKHandle;
     }
 
     void Update()
     {
-        //AimIKHandle();
+        AimIKHandle();
         SpreadHandle();
     }
 
@@ -119,7 +117,7 @@ public class GunHandler : MonoBehaviour
     private void AimIKTargetTransformControl()
     {
         AimIKTarget.position = aimTarget != null ?
-                    aimTarget.position + Vector3.up * 1.2f
+                    aimTarget.position
                     : transform.position + transform.forward * 3.0f + Vector3.up * 1.2f;
     }
 
@@ -185,7 +183,14 @@ public class GunHandler : MonoBehaviour
 
     private void SetTarget(Transform target)
     {
-        aimTarget = target;
+        if (target.TryGetComponent<Animator>(out var animator))
+        {
+            aimTarget = animator.GetBoneTransform(HumanBodyBones.UpperChest);
+        }
+        else
+        {
+            aimTarget = target;
+        }
     }
 
     private void ResetTarget()

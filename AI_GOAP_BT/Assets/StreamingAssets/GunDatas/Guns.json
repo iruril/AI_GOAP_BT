@@ -5,7 +5,7 @@
       "GunName": "AK-15",
       "GunInfo": {
         "TimeToADS": 0.25,
-        "RoundDamage": 1,
+        "RoundDamage": 20,
         "Stability": 6,
         "Spread": 1.0,
         "MagazineCapacity": 30,

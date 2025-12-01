@@ -41,7 +41,7 @@ namespace AnimControl.Assault
                     return AnimState.Move;
                 else return AnimState.Idle;
             }
-            if(Vector3.Distance(ctx.transform.position, ctx.MyBrain.Navigator.AI.endOfPath) <= 0.7f)
+            if(Vector3.Distance(ctx.transform.position, ctx.MyBrain.Navigator.AI.endOfPath) <= 0.5f)
             {
                 return AnimState.Idle;
             }

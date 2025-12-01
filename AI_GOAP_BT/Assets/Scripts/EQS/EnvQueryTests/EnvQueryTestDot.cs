@@ -25,7 +25,7 @@ public class EnvQueryTestDot : EnvQueryTest
     public Transform Target;
 
     public DirModeForLineB DirectionB; 
-    public GameObject DirectionVectorObj;
+    public Transform DirectionVectorObj;
     public Transform LineFrom;
     public Transform LineTo;
 
@@ -58,19 +58,19 @@ public class EnvQueryTestDot : EnvQueryTest
                 }
                 else if(DirectionB == DirModeForLineB.DirectionVector_Forward && DirectionVectorObj != null)
                 {
-                    b = DirectionVectorObj.transform.forward;
+                    b = DirectionVectorObj.forward;
                 }
                 else if(DirectionB == DirModeForLineB.DirectionVector_Backward && DirectionVectorObj != null)
                 {
-                    b = -(DirectionVectorObj.transform.forward);
+                    b = -(DirectionVectorObj.forward);
                 }
                 else if(DirectionB == DirModeForLineB.DirectionVector_Right && DirectionVectorObj != null)
                 {
-                    b = DirectionVectorObj.transform.right;
+                    b = DirectionVectorObj.right;
                 }
                 else if(DirectionB == DirModeForLineB.DirectionVector_Left && DirectionVectorObj != null)
                 {
-                    b = -(DirectionVectorObj.transform.right);
+                    b = -(DirectionVectorObj.right);
                 }
 
                 dotValue = Vector3.Dot(a, b);

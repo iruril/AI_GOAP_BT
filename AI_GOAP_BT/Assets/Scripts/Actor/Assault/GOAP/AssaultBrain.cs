@@ -140,6 +140,7 @@ namespace GOAP.Assualt
                 },
                 OnPhysicsUpdate = () =>
                 {
+                    EQS.TickEQS();
                     if (!Sensor.HasTarget)
                     {
                         CompleteCurrentAction();
@@ -188,7 +189,7 @@ namespace GOAP.Assualt
                 Priority = 50,
                 IsSatisfied = () =>
                 {
-                    return Sensor.CurrentTarget == null;
+                    return !Sensor.HasTarget;
                 },
                 Repeatable = true
             });

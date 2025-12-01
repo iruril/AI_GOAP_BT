@@ -5,12 +5,24 @@ namespace Sensor.Assualt
 {
     public class AssaultSensor : ActorSensorBase
     {
+        //private GOAP.Assualt.AssaultBrain myBrain;
         public event Action<Transform> OnTargetSet;
         public event Action OnTargetReset;
 
         protected override void Awake()
         {
             base.Awake();
+            //myBrain = GetComponent<GOAP.Assualt.AssaultBrain>();
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
         }
 
         protected override void Update()
