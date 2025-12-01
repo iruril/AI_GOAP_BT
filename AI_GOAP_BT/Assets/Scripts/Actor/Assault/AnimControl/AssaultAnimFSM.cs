@@ -162,7 +162,12 @@ namespace AnimControl.Assault
                     SetTargetAccel(4f);
             }
             else
-                SetTargetAccel(2f);
+            {
+                if (dist <= 1f)
+                    SetTargetAccel(0f);
+                else
+                    SetTargetAccel(2f);
+            }
         }
 
         public void OnHit(Vector3 dir)

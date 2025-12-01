@@ -178,25 +178,25 @@ public class EnvQuery : MonoBehaviour
 	}
 
 #if UNITY_EDITOR
-	private void OnDrawGizmos()
-	{
-		//if (isActiveAndEnabled && eqsItems != null && BestItem != null)
-		//{
-		//	foreach (EnvQueryItem item in eqsItems)
-		//	{
-		//		if (item.IsValid)
-		//		{
-		//			Gizmos.color = Color.HSVToRGB((item.Score / 2.0f), 1.0f, 1.0f);
-		//			Gizmos.DrawWireSphere(item.GetWorldPosition(), 0.25f);
-		//			UnityEditor.Handles.Label(item.GetWorldPosition(), ((int)(item.Score * 100f)).ToString());
-		//		}
-		//	}
-		//}
-		if (isActiveAndEnabled && BestItem != null && BestItem != null)
-		{
-			Gizmos.color = Color.blue;
-			Gizmos.DrawSphere(BestItem.GetWorldPosition(), 0.25f);
-		}
-	}
+    //private void OnDrawGizmos()
+    //{
+    //    if (isActiveAndEnabled && eqsItems != null && BestItem != null)
+    //    {
+    //        foreach (EnvQueryItem item in eqsItems)
+    //        {
+    //            if (item.IsValid)
+    //            {
+    //                Gizmos.color = Color.HSVToRGB((item.Score / 2.0f), 1.0f, 1.0f);
+    //                Gizmos.DrawWireSphere(item.GetWorldPosition(), 0.25f);
+    //                UnityEditor.Handles.Label(item.GetWorldPosition(), ((int)(item.Score * 100f)).ToString());
+    //            }
+    //        }
+    //    }
+    //    if (isActiveAndEnabled && BestItem != null && BestItem != null)
+    //    {
+    //        Gizmos.color = Color.blue;
+    //        Gizmos.DrawSphere(BestItem.GetWorldPosition(), 0.25f);
+    //    }
+    //}
 #endif
 }

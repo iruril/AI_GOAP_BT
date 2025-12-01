@@ -23,6 +23,8 @@ public class EnvQueryTestTrace : EnvQueryTest
     public float ItemHeightOffset;
     public float TargetHeightOffset;
 
+    private static readonly RaycastHit[] hitBuffer = new RaycastHit[1];
+
     public EnvQueryTestTrace()
     {
         traceType = TraceType.Visible;
@@ -34,24 +36,17 @@ public class EnvQueryTestTrace : EnvQueryTest
         {
             foreach(EnvQueryItem item in envQueryItems)
             {
-                Vector3 itemPosition = item.GetWorldPosition() + Vector3.up * ItemHeightOffset;
-                Vector3 direction = (TraceFrom.position + Vector3.up * TargetHeightOffset) - itemPosition;
+                Vector3 from = item.GetWorldPosition() + Vector3.up * ItemHeightOffset;
+                Vector3 to = TraceFrom.position + Vector3.up * TargetHeightOffset;
+                Vector3 dir = to - from;
+                float dist = dir.magnitude;
 
-                if(IsBlocked(itemPosition, direction))
-                {
-                    item.TestResults[currentTest] = 0.0f;
-                }
-                else
-                {
-                    if (traceType == TraceType.Visible)
-                    {
-                        item.TestResults[currentTest] = 1.0f;
-                    }
-                    else if (traceType == TraceType.Invisible)
-                    {
-                        item.TestResults[currentTest] = -1.0f;
-                    }
-                }
+                bool blocked = IsBlocked(from, dir.normalized, dist);
+
+                item.TestResults[currentTest] =
+                    (traceType == TraceType.Visible)
+                    ? (blocked ? 0f : 1f)
+                    : (blocked ? 1f : 0f);
             }
         }
         else
@@ -63,21 +58,18 @@ public class EnvQueryTestTrace : EnvQueryTest
         }
     }
 
-    private bool IsBlocked(Vector3 itemPosition, Vector3 direction)
+    private bool IsBlocked(Vector3 origin, Vector3 direction, float distance)
     {
-        if (Physics.Linecast(itemPosition, TraceFrom.position, out RaycastHit hitinfo, targetLayers))
-        {
-            if (hitinfo.transform.root != owner.transform) return true;
-            else return false;
-        }
-        else if(Physics.Linecast(TraceFrom.position, itemPosition, out hitinfo, targetLayers))
-        {
-            if (hitinfo.transform.root != owner.transform) return true;
-            else return false;
-        }
-        else
-        {
-            return false; 
-        }
+        int hitCount = Physics.SphereCastNonAlloc(
+            origin,
+            0.25f,
+            direction,
+            hitBuffer,
+            distance,
+            targetLayers,
+            QueryTriggerInteraction.Ignore
+        );
+
+        return hitCount > 0;
     }
 }
