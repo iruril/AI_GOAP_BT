@@ -265,8 +265,9 @@ namespace Sensor
             float dist = dir.magnitude;
             dir /= dist;
 
-            int hit = Physics.RaycastNonAlloc(
+            int hit = Physics.SphereCastNonAlloc(
                 originEye,
+                0.1f,
                 dir,
                 rayHits,
                 dist,

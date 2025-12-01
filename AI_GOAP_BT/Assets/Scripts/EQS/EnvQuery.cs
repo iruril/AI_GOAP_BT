@@ -17,9 +17,9 @@ public class EnvQuery : MonoBehaviour
     public float Radius;
     public float SpaceBetween;
     public GameObject CenterOfItems;
-	[SerializedDictionary("Context Name", "Context SO")]
-	private SerializedDictionary<string, EQSContextSO> Contexts = new();
-	private EQSContextSO currentCTX;
+    [SerializedDictionary("Context Name", "Context SO")]
+    public SerializedDictionary<string, EQSContext> Contexts = new();
+	private EQSContext currentCTX;
 
     private int testCount = 0;
 
@@ -65,7 +65,7 @@ public class EnvQuery : MonoBehaviour
         ApplyContext();
     }
 
-    public void LoadContext(EQSContextSO context)
+    public void LoadContext(EQSContext context)
     {
         currentCTX = context;
         ApplyContext();
@@ -180,19 +180,19 @@ public class EnvQuery : MonoBehaviour
 #if UNITY_EDITOR
 	private void OnDrawGizmos()
 	{
-		if (isActiveAndEnabled && eqsItems != null)
-		{
-			foreach (EnvQueryItem item in eqsItems)
-			{
-				if (item.IsValid)
-				{
-					Gizmos.color = Color.HSVToRGB((item.Score / 2.0f), 1.0f, 1.0f);
-					Gizmos.DrawWireSphere(item.GetWorldPosition(), 0.25f);
-					UnityEditor.Handles.Label(item.GetWorldPosition(), ((int)(item.Score * 100f)).ToString());
-				}
-			}
-		}
-		if (isActiveAndEnabled && BestItem != null)
+		//if (isActiveAndEnabled && eqsItems != null && BestItem != null)
+		//{
+		//	foreach (EnvQueryItem item in eqsItems)
+		//	{
+		//		if (item.IsValid)
+		//		{
+		//			Gizmos.color = Color.HSVToRGB((item.Score / 2.0f), 1.0f, 1.0f);
+		//			Gizmos.DrawWireSphere(item.GetWorldPosition(), 0.25f);
+		//			UnityEditor.Handles.Label(item.GetWorldPosition(), ((int)(item.Score * 100f)).ToString());
+		//		}
+		//	}
+		//}
+		if (isActiveAndEnabled && BestItem != null && BestItem != null)
 		{
 			Gizmos.color = Color.blue;
 			Gizmos.DrawSphere(BestItem.GetWorldPosition(), 0.25f);

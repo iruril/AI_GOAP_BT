@@ -12,14 +12,14 @@ public class EnvQueryTestPathFinding : EnvQueryTest
     }
 
     public PathFindingTestType PathFindingType;
-    public Transform Target;
+    public Transform Start;
 
     private const float pathPossibleScore = 1.0f;
     private const float pathNotPossibleScore = 0.0f;
 
     public override void RunTest(int currentTest, List<EnvQueryItem> envQueryItems)
     {
-        if (Target == null || envQueryItems == null)
+        if (Start == null || envQueryItems == null)
         {
             foreach (EnvQueryItem item in envQueryItems)
             {
@@ -30,8 +30,8 @@ public class EnvQueryTestPathFinding : EnvQueryTest
 
         foreach (EnvQueryItem item in envQueryItems)
         {
-            Vector3 startPos = item.GetWorldPosition();
-            Vector3 endPos = Target.position;
+            Vector3 startPos = Start.position;
+            Vector3 endPos = item.GetWorldPosition();
 
             var startNode = AstarPath.active.GetNearest(startPos).node;
             var endNode = AstarPath.active.GetNearest(endPos).node;

@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using UnityEngine;
 
-[CreateAssetMenu(fileName = "EQS_ctx",menuName = "AI/EQS Context", order = int.MaxValue)]
-public class EQSContextSO : ScriptableObject
+[System.Serializable]
+public class EQSContext
 {
     public List<EnvQueryTestDistance> Dists;
     public List<EnvQueryTestPathFinding> Paths;

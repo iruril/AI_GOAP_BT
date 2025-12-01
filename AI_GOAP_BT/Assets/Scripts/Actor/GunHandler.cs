@@ -44,6 +44,7 @@ public class GunHandler : MonoBehaviour
         myBrain.Sensor.OnTargetReset += ResetTarget;
         myBrain.Sensor.MyStat.OnDead += OnDead;
         myBrain.MotionController.AimIK.solver.OnPostUpdate += FireCallback;
+        myBrain.MotionController.AimIK.solver.OnPostUpdate += AimIKHandle;
     }
 
     private void OnDestroy()
@@ -52,11 +53,12 @@ public class GunHandler : MonoBehaviour
         myBrain.Sensor.OnTargetReset -= ResetTarget;
         myBrain.Sensor.MyStat.OnDead -= OnDead;
         myBrain.MotionController.AimIK.solver.OnPostUpdate -= FireCallback;
+        myBrain.MotionController.AimIK.solver.OnPostUpdate -= AimIKHandle;
     }
 
     void Update()
     {
-        AimIKHandle();
+        //AimIKHandle();
         SpreadHandle();
     }
 
@@ -110,20 +112,19 @@ public class GunHandler : MonoBehaviour
 
     private void AimIKHandle()
     {
-        bool hasTarget = aimTarget != null;
-        AimIKTargetTransformControl(hasTarget);
-        AimIKWeightControl(hasTarget);
+        AimIKTargetTransformControl();
+        AimIKWeightControl();
     }
 
-    private void AimIKTargetTransformControl(bool hasTarget)
+    private void AimIKTargetTransformControl()
     {
-        AimIKTarget.position = hasTarget ?
+        AimIKTarget.position = aimTarget != null ?
                     aimTarget.position + Vector3.up * 1.2f
                     : transform.position + transform.forward * 3.0f + Vector3.up * 1.2f;
     }
 
     float _refTargetValue;
-    private void AimIKWeightControl(bool hasTarget)
+    private void AimIKWeightControl()
     {
         float _targetVaule = myBrain.MotionController.Aimable() ? 1f : 0f;
 

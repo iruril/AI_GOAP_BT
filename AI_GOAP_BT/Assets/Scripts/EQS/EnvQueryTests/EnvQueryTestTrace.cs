@@ -11,7 +11,7 @@ public class EnvQueryTestTrace : EnvQueryTest
     }
 
     [SerializeField]
-    private GameObject owner;
+    private Transform owner;
 
     [SerializeField]
     private TraceType traceType;

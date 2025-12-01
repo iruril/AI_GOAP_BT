@@ -23,6 +23,7 @@ namespace GOAP.Assualt
         public AnimControl.Assault.AssaultAnimFSM MotionController { get; private set; }
         public GunHandler GunController { get; private set; }
         public CorpseGenerator CorpseSpawner { get; private set; }
+        public EnvQuery EQS { get; private set; }
 
         protected override void Awake()
         {
@@ -32,6 +33,7 @@ namespace GOAP.Assualt
             MotionController = GetComponent<AnimControl.Assault.AssaultAnimFSM>();
             GunController = GetComponent<GunHandler>();
             CorpseSpawner = GetComponent<CorpseGenerator>();
+            EQS = GetComponent<EnvQuery>();
         }
 
         protected override void Start()
@@ -130,7 +132,12 @@ namespace GOAP.Assualt
                     () => Sensor.HasTarget
                 },
 
-                OnStart = () => { },
+                OnStart = () => 
+                {
+                    EQS.LoadContext("Engage");
+                    EQS.TickEQS();
+                    Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
+                },
                 OnPhysicsUpdate = () =>
                 {
                     if (!Sensor.HasTarget)
