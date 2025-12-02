@@ -25,6 +25,7 @@ public class GunHandler : MonoBehaviour
     private bool pendingFire = false;
 
     private float currentSpread = 0;
+    public int CurrentRounds { get; private set; } = 0;
 
     void Awake()
     {
@@ -95,6 +96,7 @@ public class GunHandler : MonoBehaviour
         currentGunModel.transform.localPosition = Vector3.zero;
         currentGunModel.transform.localRotation = Quaternion.identity;
         currentSpread = 0;
+        CurrentRounds = currentGun.GunInfo.MagazineCapacity; //юс╫ц.
 
         ApplyGunTransforms(currentGun);
     }

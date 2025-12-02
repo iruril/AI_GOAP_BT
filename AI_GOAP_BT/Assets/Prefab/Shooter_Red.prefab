@@ -2477,6 +2477,7 @@ GameObject:
   - component: {fileID: 6993082637007307203}
   - component: {fileID: 4571881758926040757}
   - component: {fileID: 2582953516087713392}
+  - component: {fileID: 7427752599419136064}
   - component: {fileID: 8327779471062310252}
   - component: {fileID: -9172210202524470226}
   - component: {fileID: 5907054389595796612}
@@ -3327,6 +3328,50 @@ MonoBehaviour:
   wallAvoidFalloff: 1
   priority: 0.5
   debug: 0
+--- !u!114 &7427752599419136064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8480867171744423372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7b55c7ecdb49a4a89fa5e6f9022861, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startWhenEnabled: 1
+  asynchronousLoad: 0
+  pauseWhenDisabled: 0
+  restartWhenComplete: 0
+  logTaskChanges: 0
+  group: 0
+  resetValuesOnRestart: 0
+  externalBehavior: {fileID: 0}
+  mBehaviorSource:
+    behaviorName: ShooterEngageBehaviour
+    behaviorDescription: 
+    mTaskData:
+      types: []
+      parentIndex: 
+      startIndex: 
+      variableStartIndex: 
+      JSONSerialization: '{"EntryTask":{"Type":"BehaviorDesigner.Runtime.Tasks.EntryTask","NodeData":{"Offset":"(705.5,30)"},"ID":0,"Name":"Entry","Instant":true},"RootTask":{"Type":"BehaviorDesigner.Runtime.Tasks.Repeater","NodeData":{"Offset":"(2.68298149,113.414642)"},"ID":1,"Name":"Repeater","Instant":true,"SharedIntcount":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":null,"Int32mValue":0},"SharedBoolrepeatForever":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":true},"SharedBoolendOnFailure":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":false},"Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(0,110)"},"ID":2,"Name":"Selector","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-100,100)"},"ID":3,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"HasTarget","NodeData":{"Offset":"(-62,142)"},"ID":4,"Name":"Has
+        Target","Instant":true},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(60,140)"},"ID":5,"Name":"Selector","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-128.260864,140)"},"ID":6,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"HasSufficientAmmo","NodeData":{"Offset":"(-87.3913,109.130432)"},"ID":7,"Name":"Has
+        Sufficient Ammo","Instant":true},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(90,109.130432)"},"ID":8,"Name":"Selector","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-77.3913,110)"},"ID":9,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"TargetVisible","NodeData":{"Offset":"(-67.3913,99.13043)"},"ID":10,"Name":"Target
+        Visible","Instant":true},{"Type":"Shoot","NodeData":{"Offset":"(88.2608643,99.13043)"},"ID":11,"Name":"Shoot","Instant":true}]},{"Type":"Reposition","NodeData":{"Offset":"(87.3913,110)"},"ID":12,"Name":"Reposition","Instant":true}]}]},{"Type":"Cover","NodeData":{"Offset":"(0,140)"},"ID":13,"Name":"Cover","Instant":true},{"Type":"Reload","NodeData":{"Offset":"(130,140)"},"ID":14,"Name":"Reload","Instant":true}]}]},{"Type":"CompleteEngage","NodeData":{"Offset":"(110,100)"},"ID":15,"Name":"Complete
+        Engage","Instant":true}]}]}}'
+      fieldSerializationData:
+        typeName: []
+        fieldNameHash: 
+        startIndex: 
+        dataPosition: 
+        unityObjects: []
+        byteData: 
+        byteDataArray: 
+      Version: 1.7.12
+  gizmoViewMode: 2
+  showBehaviorDesignerGizmo: 1
 --- !u!114 &8327779471062310252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4332,7 +4377,17 @@ MonoBehaviour:
     - Key: Cover
       Value:
         Dists: []
-        Paths: []
+        Paths:
+        - ScaleFactor: 0.5
+          ScoringEquation: 0
+          AnimationCurve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 0
+            m_PostInfinity: 0
+            m_RotationOrder: 0
+          PathFindingType: 0
+          Start: {fileID: 1882597698345154371}
         Dots: []
         Traces:
         - ScaleFactor: 0.5
@@ -4354,9 +4409,19 @@ MonoBehaviour:
     - Key: Engage
       Value:
         Dists: []
-        Paths: []
-        Dots:
+        Paths:
         - ScaleFactor: 0.5
+          ScoringEquation: 0
+          AnimationCurve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 0
+            m_PostInfinity: 0
+            m_RotationOrder: 0
+          PathFindingType: 0
+          Start: {fileID: 1882597698345154371}
+        Dots:
+        - ScaleFactor: 0.25
           ScoringEquation: 0
           AnimationCurve:
             serializedVersion: 2
@@ -4399,7 +4464,7 @@ MonoBehaviour:
           LineFrom: {fileID: 0}
           LineTo: {fileID: 0}
         Traces:
-        - ScaleFactor: 0.5
+        - ScaleFactor: 0.25
           ScoringEquation: 0
           AnimationCurve:
             serializedVersion: 2

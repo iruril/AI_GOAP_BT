@@ -1,3 +1,4 @@
+using BehaviorDesigner.Runtime;
 using UnityEngine;
 
 namespace GOAP.Assualt
@@ -24,6 +25,7 @@ namespace GOAP.Assualt
         public GunHandler GunController { get; private set; }
         public CorpseGenerator CorpseSpawner { get; private set; }
         public EnvQuery EQS { get; private set; }
+        public BehaviorTree BT { get; private set; }
 
         protected override void Awake()
         {
@@ -34,6 +36,7 @@ namespace GOAP.Assualt
             GunController = GetComponent<GunHandler>();
             CorpseSpawner = GetComponent<CorpseGenerator>();
             EQS = GetComponent<EnvQuery>();
+            BT = GetComponent<BehaviorTree>();
         }
 
         protected override void Start()
@@ -41,6 +44,7 @@ namespace GOAP.Assualt
             Sensor.MyStat.OnDead += InitGOAP;
             Sensor.MyStat.OnDead += CorpseSpawner.SpawnCorpse;
             Sensor.MyStat.OnRevive += CorpseSpawner.DespawnCorpse;
+            BT.DisableBehavior();
         }
 
         private void OnDestroy()
@@ -50,19 +54,9 @@ namespace GOAP.Assualt
             Sensor.MyStat.OnRevive -= CorpseSpawner.DespawnCorpse;
         }
 
-        ///임시 공격 코드
-        float timer = 0f;
         private void Update()
         {
-            if (Sensor.MyStat.IsDead) return;
-            timer += Time.deltaTime;
-            if (timer >= GunController.CurrentGun.GunInfo.ShotInterval &&
-                CurrentAction.Type == AssualtAction.COMBAT &&
-                MotionController.Shootable())
-            {
-                GunController.Fire();
-                timer = 0f;
-            }
+
         }
 
         protected override void FixedUpdate()
@@ -134,19 +128,15 @@ namespace GOAP.Assualt
 
                 OnStart = () => 
                 {
-                    EQS.LoadContext("Engage");
-                    EQS.TickEQS();
-                    Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
+                    BT.EnableBehavior();
                 },
                 OnPhysicsUpdate = () =>
                 {
-                    EQS.TickEQS();
-                    if (!Sensor.HasTarget)
-                    {
-                        CompleteCurrentAction();
-                    }
                 },
-                OnExit = () => { },
+                OnExit = () =>
+                {
+                    BT.DisableBehavior();
+                },
 
                 IsUsefulForGoal = goal => {
                     return
