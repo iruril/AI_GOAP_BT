@@ -73,8 +73,33 @@ public class WorldManager : MonoBehaviour
             }
         }
 
-        destination = AstarPath.active.GetNearest(GetRandomPointAround(bestPos, error)).position;
+        destination = FindReachableRandomPoint(bestPos, agent.position, error);
         return resultCap;
+    }
+
+    private Vector3 FindReachableRandomPoint(Vector3 center, Vector3 agentPos, float error)
+    {
+        const int MaxTries = 5;
+
+        var startNode = AstarPath.active.GetNearest(agentPos).node;
+        if (startNode == null || !startNode.Walkable)
+            return center;
+
+        for (int i = 0; i < MaxTries; i++)
+        {
+            Vector3 randomPoint = GetRandomPointAround(center, error);
+
+            var endNode = AstarPath.active.GetNearest(randomPoint).node;
+            if (endNode == null || !endNode.Walkable)
+                continue;
+
+            if (PathUtilities.IsPathPossible(startNode, endNode))
+            {
+                return (Vector3)endNode.position;
+            }
+        }
+
+        return center;
     }
 
     private float CalculatePathDistance(Vector3 start, Vector3 end)

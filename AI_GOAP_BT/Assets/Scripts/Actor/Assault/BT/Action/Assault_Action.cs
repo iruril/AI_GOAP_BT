@@ -90,7 +90,6 @@ public class Cover : Action
         timer += Time.deltaTime;
 
         if (timer >= brain.GunController.CurrentGun.GunInfo.ShotInterval &&
-            brain.CurrentAction.Type == AssualtAction.COMBAT &&
             brain.MotionController.Shootable())
         {
             brain.GunController.Fire();
@@ -137,7 +136,6 @@ public class Reposition : Action
         timer += Time.deltaTime;
 
         if (timer >= brain.GunController.CurrentGun.GunInfo.ShotInterval &&
-            brain.CurrentAction.Type == AssualtAction.COMBAT &&
             brain.MotionController.Shootable())
         {
             brain.GunController.Fire();
@@ -185,7 +183,6 @@ public class Shoot : Action
         timer += Time.deltaTime;
 
         if (timer >= brain.GunController.CurrentGun.GunInfo.ShotInterval &&
-            brain.CurrentAction.Type == AssualtAction.COMBAT &&
             brain.MotionController.Shootable())
         {
             brain.GunController.Fire();

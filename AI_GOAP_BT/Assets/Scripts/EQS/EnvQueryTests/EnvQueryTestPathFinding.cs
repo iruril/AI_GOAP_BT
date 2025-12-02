@@ -5,13 +5,6 @@ using Pathfinding;
 [System.Serializable]
 public class EnvQueryTestPathFinding : EnvQueryTest
 {
-    public enum PathFindingTestType
-    {
-        PathExist,
-        PathLength
-    }
-
-    public PathFindingTestType PathFindingType;
     public Transform Start;
 
     private const float pathPossibleScore = 1.0f;

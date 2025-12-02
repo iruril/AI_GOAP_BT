@@ -3356,10 +3356,10 @@ MonoBehaviour:
       parentIndex: 
       startIndex: 
       variableStartIndex: 
-      JSONSerialization: '{"EntryTask":{"Type":"BehaviorDesigner.Runtime.Tasks.EntryTask","NodeData":{"Offset":"(705.5,30)"},"ID":0,"Name":"Entry","Instant":true},"RootTask":{"Type":"BehaviorDesigner.Runtime.Tasks.Repeater","NodeData":{"Offset":"(2.68298149,113.414642)"},"ID":1,"Name":"Repeater","Instant":true,"SharedIntcount":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":null,"Int32mValue":0},"SharedBoolrepeatForever":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":true},"SharedBoolendOnFailure":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":false},"Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(0,110)"},"ID":2,"Name":"Selector","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-100,100)"},"ID":3,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"HasTarget","NodeData":{"Offset":"(-62,142)"},"ID":4,"Name":"Has
-        Target","Instant":true},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(60,140)"},"ID":5,"Name":"Selector","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-128.260864,140)"},"ID":6,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"HasSufficientAmmo","NodeData":{"Offset":"(-87.3913,109.130432)"},"ID":7,"Name":"Has
+      JSONSerialization: '{"EntryTask":{"Type":"BehaviorDesigner.Runtime.Tasks.EntryTask","NodeData":{"Offset":"(705.5,30)"},"ID":0,"Name":"Entry","Instant":true},"RootTask":{"Type":"BehaviorDesigner.Runtime.Tasks.Repeater","NodeData":{"Offset":"(2.68298149,113.414642)"},"ID":1,"Name":"Repeater","Instant":true,"SharedIntcount":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":null,"Int32mValue":0},"SharedBoolrepeatForever":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":true},"SharedBoolendOnFailure":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":false},"Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(0,110)"},"ID":2,"Name":"Selector","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-100,100)"},"ID":3,"Name":"Sequence","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"HasTarget","NodeData":{"Offset":"(-82,142)"},"ID":4,"Name":"Has
+        Target","Instant":true},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(80,140)"},"ID":5,"Name":"Selector","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-128.260864,140)"},"ID":6,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"HasSufficientAmmo","NodeData":{"Offset":"(-87.3913,109.130432)"},"ID":7,"Name":"Has
         Sufficient Ammo","Instant":true},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(90,109.130432)"},"ID":8,"Name":"Selector","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-77.3913,110)"},"ID":9,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"TargetVisible","NodeData":{"Offset":"(-67.3913,99.13043)"},"ID":10,"Name":"Target
-        Visible","Instant":true},{"Type":"Shoot","NodeData":{"Offset":"(88.2608643,99.13043)"},"ID":11,"Name":"Shoot","Instant":true}]},{"Type":"Reposition","NodeData":{"Offset":"(87.3913,110)"},"ID":12,"Name":"Reposition","Instant":true}]}]},{"Type":"Cover","NodeData":{"Offset":"(0,140)"},"ID":13,"Name":"Cover","Instant":true},{"Type":"Reload","NodeData":{"Offset":"(130,140)"},"ID":14,"Name":"Reload","Instant":true}]}]},{"Type":"CompleteEngage","NodeData":{"Offset":"(110,100)"},"ID":15,"Name":"Complete
+        Visible","Instant":true},{"Type":"Shoot","NodeData":{"Offset":"(88.2608643,99.13043)"},"ID":11,"Name":"Shoot","Instant":true}]},{"Type":"Reposition","NodeData":{"Offset":"(87.3913,110)"},"ID":12,"Name":"Reposition","Instant":true}]}]},{"Type":"Cover","NodeData":{"Offset":"(0,140)"},"ID":13,"Name":"Cover","Instant":true},{"Type":"Reload","NodeData":{"Offset":"(140,140)"},"ID":14,"Name":"Reload","Instant":true}]}]},{"Type":"CompleteEngage","NodeData":{"Offset":"(110,100)"},"ID":15,"Name":"Complete
         Engage","Instant":true}]}]}}'
       fieldSerializationData:
         typeName: []
@@ -4386,7 +4386,6 @@ MonoBehaviour:
             m_PreInfinity: 0
             m_PostInfinity: 0
             m_RotationOrder: 0
-          PathFindingType: 0
           Start: {fileID: 1882597698345154371}
         Dots: []
         Traces:
@@ -4418,53 +4417,10 @@ MonoBehaviour:
             m_PreInfinity: 0
             m_PostInfinity: 0
             m_RotationOrder: 0
-          PathFindingType: 0
           Start: {fileID: 1882597698345154371}
-        Dots:
-        - ScaleFactor: 0.25
-          ScoringEquation: 0
-          AnimationCurve:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 4.7969394
-              outSlope: 4.7969394
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0.061002184
-            - serializedVersion: 3
-              time: 0.2922755
-              value: 0.9928571
-              inSlope: -0.19987375
-              outSlope: -0.5022019
-              tangentMode: 1
-              weightedMode: 0
-              inWeight: 0.18729094
-              outWeight: 0.046892755
-            - serializedVersion: 3
-              time: 1
-              value: 0
-              inSlope: -1.4028864
-              outSlope: -1.4028864
-              tangentMode: 34
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 0
-          AbsoluteValue: 1
-          DirectionA: 0
-          Target: {fileID: 1882597698345154371}
-          DirectionB: 2
-          DirectionVectorObj: {fileID: 1882597698345154371}
-          LineFrom: {fileID: 0}
-          LineTo: {fileID: 0}
+        Dots: []
         Traces:
-        - ScaleFactor: 0.25
+        - ScaleFactor: 0.5
           ScoringEquation: 0
           AnimationCurve:
             serializedVersion: 2
