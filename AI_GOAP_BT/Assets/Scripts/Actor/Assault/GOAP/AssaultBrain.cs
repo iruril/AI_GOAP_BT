@@ -1,4 +1,6 @@
 using BehaviorDesigner.Runtime;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 
 namespace GOAP.Assualt
@@ -7,7 +9,8 @@ namespace GOAP.Assualt
     {
         IDLE,
         MOVE_TO_CAPTURE,
-        COMBAT
+        COMBAT,
+        RELOAD
     }
 
     public enum AssaultGoal
@@ -29,7 +32,6 @@ namespace GOAP.Assualt
 
         protected override void Awake()
         {
-            base.Awake();
             Navigator = GetComponent<AINavigator>();
             Sensor = GetComponent<Sensor.Assualt.AssaultSensor>();
             MotionController = GetComponent<AnimControl.Assault.AssaultAnimFSM>();
@@ -37,6 +39,7 @@ namespace GOAP.Assualt
             CorpseSpawner = GetComponent<CorpseGenerator>();
             EQS = GetComponent<EnvQuery>();
             BT = GetComponent<BehaviorTree>();
+            base.Awake();
         }
 
         protected override void Start()
@@ -44,7 +47,6 @@ namespace GOAP.Assualt
             Sensor.MyStat.OnDead += InitGOAP;
             Sensor.MyStat.OnDead += CorpseSpawner.SpawnCorpse;
             Sensor.MyStat.OnRevive += CorpseSpawner.DespawnCorpse;
-            BT.DisableBehavior();
         }
 
         private void OnDestroy()
@@ -63,6 +65,20 @@ namespace GOAP.Assualt
         {
             if (Sensor.MyStat.IsDead) return;
             base.FixedUpdate();
+        }
+
+        protected override void InitGOAP()
+        {
+            BT.enabled = false;
+
+            if (Goals.TryGetValue(DefaultGoalType, out var goal)) CurrentGoal = goal;
+            else CurrentGoal = Goals.First().Value;
+
+            if (Actions.TryGetValue(DefaultActionType, out var action)) CurrentAction = action;
+            else CurrentAction = Actions.First().Value;
+
+            currentGoalType = CurrentGoal.Type;
+            currentActionType = CurrentAction.Type;
         }
 
         protected override void RegisterActions()
@@ -88,7 +104,7 @@ namespace GOAP.Assualt
             Actions.Add(AssualtAction.MOVE_TO_CAPTURE, new GoapAction<AssualtAction, AssaultGoal>
             {
                 Type = AssualtAction.MOVE_TO_CAPTURE,
-                Cost = 10,
+                Cost = 20,
 
                 Preconditions =
                 {
@@ -119,23 +135,27 @@ namespace GOAP.Assualt
             Actions.Add(AssualtAction.COMBAT, new GoapAction<AssualtAction, AssaultGoal>
             {
                 Type = AssualtAction.COMBAT,
-                Cost = 10,
+                Cost = 20,
 
                 Preconditions =
                 {
                     () => Sensor.HasTarget
                 },
 
-                OnStart = () => 
+                OnStart = () =>
                 {
-                    BT.EnableBehavior();
+                    BT.enabled = true;
                 },
-                OnPhysicsUpdate = () =>
+                OnPhysicsUpdate = () => 
                 {
+                    if (!Sensor.HasTarget)
+                    {
+                        CompleteCurrentAction();
+                    }
                 },
                 OnExit = () =>
                 {
-                    BT.DisableBehavior();
+                    BT.enabled = false;
                 },
 
                 IsUsefulForGoal = goal => {
@@ -143,6 +163,42 @@ namespace GOAP.Assualt
                     goal == AssaultGoal.ENGAGE_ENEMY
                     || goal == AssaultGoal.SURVIVE;
                     },
+                IsFinished = false
+            }); 
+            
+            Actions.Add(AssualtAction.RELOAD, new GoapAction<AssualtAction, AssaultGoal>
+            {
+                Type = AssualtAction.COMBAT,
+                Cost = 10,
+
+                Preconditions =
+                {
+                    () => GunController.CurrentRounds == 0
+                },
+
+                OnStart = () =>
+                {
+                    EQS.LoadContext("Cover");
+                    EQS.TickEQS();
+                    Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
+                    GunController.Reload();
+                },
+                OnPhysicsUpdate = () =>
+                {
+                    if (GunController.CurrentRounds > 0)
+                    {
+                        CompleteCurrentAction();
+                    }
+                },
+                OnExit = () =>
+                {
+                },
+
+                IsUsefulForGoal = goal => {
+                    return
+                    goal == AssaultGoal.ENGAGE_ENEMY
+                    || goal == AssaultGoal.SURVIVE;
+                },
                 IsFinished = false
             });
 

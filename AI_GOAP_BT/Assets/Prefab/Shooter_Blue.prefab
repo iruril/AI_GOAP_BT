@@ -983,7 +983,12 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 1
-  m_WarningMessage: 
+  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
+    are already bound by a Humanoid avatar. These transforms can only be changed
+    by Humanoid clips.\n\tTransform 'index_03_l'\n\tTransform 'index_03_r'\n\tTransform
+    'index_03_l'\n\tTransform 'index_03_r'\n\tTransform 'index_03_l'\n\tTransform
+    'index_03_r'\n\tFrom animation clip 'AimTurn_L90'\n\tFrom animation clip 'AimTurn_R90'\n\tFrom
+    animation clip 'AimIdle'"
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -1086,6 +1091,7 @@ MonoBehaviour:
     spine:
     - {fileID: 4541341677793966817}
     - {fileID: 6732675037903908856}
+    - {fileID: 4767196767874728609}
     eyes: []
   solver:
     executedInEditor: 0
@@ -1474,6 +1480,7 @@ MonoBehaviour:
       - {fileID: 7114761626121677571}
       - {fileID: 4541341677793966817}
       - {fileID: 6732675037903908856}
+      - {fileID: 4767196767874728609}
       leftUpperArmBone: {fileID: 9017559631230802086}
       rightUpperArmBone: {fileID: 1073503616366174322}
       leftThighBone: {fileID: 4058531465626583679}
@@ -1806,11 +1813,8 @@ MonoBehaviour:
       parentIndex: 
       startIndex: 
       variableStartIndex: 
-      JSONSerialization: '{"EntryTask":{"Type":"BehaviorDesigner.Runtime.Tasks.EntryTask","NodeData":{"Offset":"(705.5,30)"},"ID":0,"Name":"Entry","Instant":true},"RootTask":{"Type":"BehaviorDesigner.Runtime.Tasks.Repeater","NodeData":{"Offset":"(0,120)"},"ID":1,"Name":"Repeater","Instant":true,"SharedIntcount":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":null,"Int32mValue":0},"SharedBoolrepeatForever":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":true},"SharedBoolendOnFailure":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":false},"Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(0,110)"},"ID":2,"Name":"Selector","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-120,100)"},"ID":3,"Name":"Sequence","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"HasTarget","NodeData":{"Offset":"(-90,130)"},"ID":4,"Name":"Has
-        Target","Instant":true},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(90,130)"},"ID":5,"Name":"Selector","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-130,140)"},"ID":6,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"HasSufficientAmmo","NodeData":{"Offset":"(-90,110)"},"ID":7,"Name":"Has
-        Sufficient Ammo","Instant":true},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(90,110)"},"ID":8,"Name":"Selector","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-80,110)"},"ID":9,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"TargetVisible","NodeData":{"Offset":"(-70,100)"},"ID":10,"Name":"Target
-        Visible","Instant":true},{"Type":"Shoot","NodeData":{"Offset":"(90,100)"},"ID":11,"Name":"Shoot","Instant":true}]},{"Type":"Reposition","NodeData":{"Offset":"(90,110)"},"ID":12,"Name":"Reposition","Instant":true}]}]},{"Type":"Cover","NodeData":{"Offset":"(0,140)"},"ID":13,"Name":"Cover","Instant":true},{"Type":"Reload","NodeData":{"Offset":"(130,140)"},"ID":14,"Name":"Reload","Instant":true}]}]},{"Type":"CompleteEngage","NodeData":{"Offset":"(110,100)"},"ID":15,"Name":"Complete
-        Engage","Instant":true}]}]}}'
+      JSONSerialization: '{"EntryTask":{"Type":"BehaviorDesigner.Runtime.Tasks.EntryTask","NodeData":{"Offset":"(705.5,30)"},"ID":0,"Name":"Entry","Instant":true},"RootTask":{"Type":"BehaviorDesigner.Runtime.Tasks.Repeater","NodeData":{"Offset":"(-2,110)"},"ID":1,"Name":"Repeater","Instant":true,"SharedIntcount":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":null,"Int32mValue":0},"SharedBoolrepeatForever":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":true},"SharedBoolendOnFailure":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":false},"Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(0,110)"},"ID":2,"Name":"Selector","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-82,110)"},"ID":3,"Name":"Sequence","Instant":true,"AbortTypeabortType":"Both","Children":[{"Type":"TargetInvisible","NodeData":{"Offset":"(-72,110)"},"ID":4,"Name":"Target
+        Invisible","Instant":true},{"Type":"Reposition","NodeData":{"Offset":"(58,110)"},"ID":5,"Name":"Reposition","Instant":true}]},{"Type":"Shoot","NodeData":{"Offset":"(98,110)"},"ID":6,"Name":"Shoot","Instant":true}]}]}}'
       fieldSerializationData:
         typeName: []
         fieldNameHash: 
@@ -2819,7 +2823,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GeneratorType: 0
-  Radius: 4
+  Radius: 6
   SpaceBetween: 2
   CenterOfItems: {fileID: 0}
   Contexts:

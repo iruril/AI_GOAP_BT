@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using MEC;
 
 public class GunHandler : MonoBehaviour
 {
@@ -20,12 +21,15 @@ public class GunHandler : MonoBehaviour
 
     private BulletPool bulletPool;
 
-    private Dictionary<string, (Gun gun, GameObject instance)> gunHistory = new(); 
+    private Dictionary<string, (Gun gun, GameObject instance)> gunHistory = new();
+    private Dictionary<string, int> roundHistory = new();
     
     private bool pendingFire = false;
 
     private float currentSpread = 0;
     public int CurrentRounds { get; private set; } = 0;
+    public bool OnReload { get; private set; }
+    CoroutineHandle reloadHandle;
 
     void Awake()
     {
@@ -74,7 +78,6 @@ public class GunHandler : MonoBehaviour
         else
         {
             gunData = GameManager.Instance.GunTable[gunName];
-            gunHistory.Add(gunName, gunData);
         }
 
         currentGun = gunData.gun;
@@ -84,21 +87,34 @@ public class GunHandler : MonoBehaviour
 
         if (!cached)
         {
-            currentGunModel = Instantiate(gunData.instance);
+            GameObject gunModel = Instantiate(gunData.instance);
+            gunHistory.Add(gunName, (gunData.gun, gunModel));
+            currentGunModel = gunModel;
+            roundHistory.Add(gunName, gunData.gun.GunInfo.MagazineCapacity);
         }
         else
         {
-            currentGunModel = gunData.instance;
-            currentGunModel.SetActive(true);
+            currentGunModel = gunHistory[gunName].instance;
         }
 
         currentGunModel.transform.SetParent(GunPos, false);
         currentGunModel.transform.localPosition = Vector3.zero;
         currentGunModel.transform.localRotation = Quaternion.identity;
         currentSpread = 0;
-        CurrentRounds = currentGun.GunInfo.MagazineCapacity; //юс╫ц.
+        CurrentRounds = roundHistory[currentGun.GunName];
 
         ApplyGunTransforms(currentGun);
+    }
+
+    void SaveGun()
+    {
+        roundHistory[currentGun.GunName] = CurrentRounds;
+    }
+
+    public void SwapGun(string gunName)
+    {
+        if (currentGun != null) SaveGun();
+        LoadGun(gunName);
     }
 
     void ApplyGunTransforms(Gun gunData)
@@ -126,7 +142,7 @@ public class GunHandler : MonoBehaviour
     float _refTargetValue;
     private void AimIKWeightControl()
     {
-        float _targetVaule = myBrain.MotionController.Aimable() ? 1f : 0f;
+        float _targetVaule = myBrain.MotionController.Aimable() && !OnReload ? 1f : 0f;
 
         myBrain.MotionController.AimIK.solver.IKPositionWeight = Mathf.SmoothDamp(
             myBrain.MotionController.AimIK.solver.IKPositionWeight,
@@ -146,11 +162,13 @@ public class GunHandler : MonoBehaviour
     public void Fire()
     {
         if (currentGun == null) return;
+        if (CurrentRounds == 0) return;
         pendingFire = true;
     }
 
     private void FireCallback()
     {
+        if (CurrentRounds == 0) return;
         if (!pendingFire) return;
         pendingFire = false;
         ExecuteFire();
@@ -158,6 +176,9 @@ public class GunHandler : MonoBehaviour
 
     private void ExecuteFire()
     {
+        if (CurrentRounds == 0) return;
+        CurrentRounds = Mathf.Clamp(CurrentRounds - 1, 0, int.MaxValue);
+
         float xError = MathUtility.SampleGaussian(0f, currentSpread);
         float yError = MathUtility.SampleGaussian(0f, currentSpread);
 
@@ -203,5 +224,34 @@ public class GunHandler : MonoBehaviour
     private void OnDead()
     {
         pendingFire = false;
+        Timing.KillCoroutines(reloadHandle);
+    }
+
+    public void Reload()
+    {
+        reloadHandle = Timing.RunCoroutine(ReloadRoutine());
+    }
+
+    private IEnumerator<float> ReloadRoutine()
+    {
+        StartReload();
+        yield return Timing.WaitForSeconds(2f);
+        CompleteReload();
+    }
+
+    private void StartReload()
+    {
+        OnReload = true;
+        myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 0;
+        myBrain.MotionController.Anim.SetLayerWeight(1, 1);
+        myBrain.MotionController.Anim.CrossFade(AnimHash.Reload, 0.1f);
+    }
+
+    private void CompleteReload()
+    {
+        myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 1;
+        myBrain.MotionController.Anim.SetLayerWeight(1, 0);
+        CurrentRounds = CurrentRounds == 0 ? currentGun.GunInfo.MagazineCapacity : currentGun.GunInfo.MagazineCapacity + 1;
+        OnReload = false;
     }
 }

@@ -3,65 +3,6 @@ using GOAP.Assualt;
 using UnityEngine;
 
 [TaskCategory("Shooter AI/Engage")]
-public class CompleteEngage : Action
-{
-    AssaultBrain brain;
-
-    public override void OnAwake()
-    {
-        brain = GetComponent<AssaultBrain>();
-    }
-
-    public override void OnStart()
-    {
-        brain.CompleteCurrentAction();
-    }
-
-    public override void OnEnd()
-    {
-    }
-
-    public override TaskStatus OnUpdate()
-    {
-        return TaskStatus.Running;
-    }
-}
-
-[TaskCategory("Shooter AI/Engage")]
-public class Reload : Action
-{
-    AssaultBrain brain;
-    float time = 0f;
-
-    public override void OnAwake()
-    {
-        brain = GetComponent<AssaultBrain>();
-    }
-
-    public override void OnStart()
-    {
-        time = 0f;
-        //Play Reload Anim
-    }
-
-    public override void OnEnd()
-    {
-       // brain.GunController.Reload();
-    }
-
-    public override TaskStatus OnUpdate()
-    {
-        time += Time.deltaTime;
-        //if (time >= brain.GunController.CurrentGun.ReloadTime)
-        //{
-        //    return TaskStatus.Success;
-        //}
-        return TaskStatus.Success;
-        //return TaskStatus.Running;
-    }
-}
-
-[TaskCategory("Shooter AI/Engage")]
 public class Cover : Action
 {
     AssaultBrain brain;

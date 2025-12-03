@@ -38,10 +38,10 @@ namespace GOAP
         public Dictionary<ActionType, GoapAction<ActionType, GoalType>> Actions = new();
         public Dictionary<GoalType, GoapGoal<GoalType>> Goals = new();
 
-        public GoapAction<ActionType, GoalType> CurrentAction { get; private set; }
+        public GoapAction<ActionType, GoalType> CurrentAction { get; protected set; }
         [SerializeField] protected ActionType currentActionType;
         
-        public GoapGoal<GoalType> CurrentGoal { get; private set; }
+        public GoapGoal<GoalType> CurrentGoal { get; protected set; }
         [SerializeField] protected GoalType currentGoalType;
 
         protected ActionType DefaultActionType;
