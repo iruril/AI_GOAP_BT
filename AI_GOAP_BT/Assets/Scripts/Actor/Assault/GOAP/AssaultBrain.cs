@@ -26,6 +26,7 @@ namespace GOAP.Assualt
         public Sensor.Assualt.AssaultSensor Sensor { get; private set; }
         public AnimControl.Assault.AssaultAnimFSM MotionController { get; private set; }
         public GunHandler GunController { get; private set; }
+        public AttackHandler AttackController { get; private set; }
         public CorpseGenerator CorpseSpawner { get; private set; }
         public EnvQuery EQS { get; private set; }
         public BehaviorTree BT { get; private set; }
@@ -36,6 +37,7 @@ namespace GOAP.Assualt
             Sensor = GetComponent<Sensor.Assualt.AssaultSensor>();
             MotionController = GetComponent<AnimControl.Assault.AssaultAnimFSM>();
             GunController = GetComponent<GunHandler>();
+            AttackController = GetComponent<AttackHandler>();
             CorpseSpawner = GetComponent<CorpseGenerator>();
             EQS = GetComponent<EnvQuery>();
             BT = GetComponent<BehaviorTree>();
@@ -160,8 +162,7 @@ namespace GOAP.Assualt
 
                 IsUsefulForGoal = goal => {
                     return
-                    goal == AssaultGoal.ENGAGE_ENEMY
-                    || goal == AssaultGoal.SURVIVE;
+                    goal == AssaultGoal.ENGAGE_ENEMY;
                     },
                 IsFinished = false
             }); 
@@ -221,7 +222,7 @@ namespace GOAP.Assualt
             Goals.Add(AssaultGoal.CAPTURE, new GoapGoal<AssaultGoal>
             {
                 Type = AssaultGoal.CAPTURE,
-                Priority = 20,
+                Priority = 40,
                 IsSatisfied = () =>
                 {
                     return !WorldManager.Instance.IsThereUncapturedPoint(transform);

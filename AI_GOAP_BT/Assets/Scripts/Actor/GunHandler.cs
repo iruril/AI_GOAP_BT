@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using MEC;
+using System.Linq;
 
 public class GunHandler : MonoBehaviour
 {
@@ -224,7 +225,13 @@ public class GunHandler : MonoBehaviour
     private void OnDead()
     {
         pendingFire = false;
-        Timing.KillCoroutines(reloadHandle);
+        Timing.KillCoroutines(reloadHandle); 
+        
+        foreach (var key in roundHistory.Keys.ToList())
+        {
+            roundHistory[key] = gunHistory[key].gun.GunInfo.MagazineCapacity;
+        }
+        CurrentRounds = currentGun.GunInfo.MagazineCapacity;
     }
 
     public void Reload()
@@ -242,16 +249,43 @@ public class GunHandler : MonoBehaviour
     private void StartReload()
     {
         OnReload = true;
-        myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 0;
-        myBrain.MotionController.Anim.SetLayerWeight(1, 1);
+        Timing.RunCoroutine(LerpIKAndLayer(0f, 1f, 0.15f));
         myBrain.MotionController.Anim.CrossFade(AnimHash.Reload, 0.1f);
     }
 
     private void CompleteReload()
     {
-        myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 1;
-        myBrain.MotionController.Anim.SetLayerWeight(1, 0);
-        CurrentRounds = CurrentRounds == 0 ? currentGun.GunInfo.MagazineCapacity : currentGun.GunInfo.MagazineCapacity + 1;
+        Timing.RunCoroutine(LerpIKAndLayer(1f, 0f, 0.15f));
+        CurrentRounds = CurrentRounds == 0
+            ? currentGun.GunInfo.MagazineCapacity
+            : currentGun.GunInfo.MagazineCapacity + 1;
         OnReload = false;
+    }
+
+    private IEnumerator<float> LerpIKAndLayer(float targetIK, float targetLayer, float duration)
+    {
+        float t = 0f;
+
+        float startIK = myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight;
+        float startLayer = myBrain.MotionController.Anim.GetLayerWeight(1);
+
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float k = t / duration;
+
+            myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight =
+                Mathf.Lerp(startIK, targetIK, k);
+
+            myBrain.MotionController.Anim.SetLayerWeight(
+                1,
+                Mathf.Lerp(startLayer, targetLayer, k)
+            );
+
+            yield return Timing.WaitForOneFrame;
+        }
+
+        myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = targetIK;
+        myBrain.MotionController.Anim.SetLayerWeight(1, targetLayer);
     }
 }

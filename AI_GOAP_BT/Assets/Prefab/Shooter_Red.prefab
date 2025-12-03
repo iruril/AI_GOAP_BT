@@ -2484,6 +2484,7 @@ GameObject:
   - component: {fileID: 3022949711016103152}
   - component: {fileID: 6931465804609677830}
   - component: {fileID: 5045340004835600201}
+  - component: {fileID: 7963050324835666344}
   - component: {fileID: 8484353646962805838}
   - component: {fileID: 9058194844410026065}
   - component: {fileID: 4328736312465415461}
@@ -2590,7 +2591,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!114 &3613360481386635131
@@ -3468,6 +3469,20 @@ MonoBehaviour:
   LeftHandIKTarget: {fileID: 2051476966338809753}
   Muzzle: {fileID: 5282911154098719872}
   AimIKTarget: {fileID: 8588148283287528868}
+--- !u!114 &7963050324835666344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8480867171744423372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27ec43e3efbf88549a6eb6f98c72024b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackCooldown: 2
+  burstCount: 3
 --- !u!114 &8484353646962805838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4372,15 +4387,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a47100a2b4f7990489f439efd158eb49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GeneratorType: 0
-  Radius: 6
+  GeneratorType: 1
+  Radius: 8
   SpaceBetween: 2
   CenterOfItems: {fileID: 0}
   Contexts:
     _serializedList:
     - Key: Cover
       Value:
-        Dists: []
+        Dists:
+        - ScaleFactor: 0.25
+          ScoringEquation: 1
+          AnimationCurve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 0
+            m_PostInfinity: 0
+            m_RotationOrder: 0
+          DistanceTo: {fileID: 1882597698345154371}
         Paths:
         - ScaleFactor: 0.5
           ScoringEquation: 0
@@ -4393,7 +4417,7 @@ MonoBehaviour:
           Start: {fileID: 1882597698345154371}
         Dots: []
         Traces:
-        - ScaleFactor: 0.5
+        - ScaleFactor: 0.25
           ScoringEquation: 0
           AnimationCurve:
             serializedVersion: 2

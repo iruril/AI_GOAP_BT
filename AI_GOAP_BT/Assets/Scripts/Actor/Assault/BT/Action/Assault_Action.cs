@@ -6,7 +6,6 @@ using UnityEngine;
 public class Cover : Action
 {
     AssaultBrain brain;
-    float timer = 0f;
 
     public override void OnAwake()
     {
@@ -15,7 +14,6 @@ public class Cover : Action
 
     public override void OnStart()
     {
-        timer = 0f;
         brain.EQS.LoadContext("Cover");
         brain.EQS.TickEQS();
         brain.Navigator.SetDestination(brain.EQS.BestItem.GetWorldPosition());
@@ -28,14 +26,7 @@ public class Cover : Action
 
     public override TaskStatus OnUpdate()
     {
-        timer += Time.deltaTime;
-
-        if (timer >= brain.GunController.CurrentGun.GunInfo.ShotInterval &&
-            brain.MotionController.Shootable())
-        {
-            brain.GunController.Fire();
-            timer = 0f;
-        }
+        brain.AttackController.TryAttack();
 
         if (Vector3.Distance(transform.position, brain.Navigator.AI.endOfPath) < 0.5f)
         {
@@ -52,7 +43,6 @@ public class Cover : Action
 public class Reposition : Action
 {
     AssaultBrain brain;
-    float timer = 0f;
 
     public override void OnAwake()
     {
@@ -61,7 +51,6 @@ public class Reposition : Action
 
     public override void OnStart()
     {
-        timer = 0f;
         brain.EQS.LoadContext("Engage");
         brain.EQS.TickEQS();
         brain.Navigator.SetDestination(brain.EQS.BestItem.GetWorldPosition());
@@ -74,14 +63,7 @@ public class Reposition : Action
 
     public override TaskStatus OnUpdate()
     {
-        timer += Time.deltaTime;
-
-        if (timer >= brain.GunController.CurrentGun.GunInfo.ShotInterval &&
-            brain.MotionController.Shootable())
-        {
-            brain.GunController.Fire();
-            timer = 0f;
-        }
+        brain.AttackController.TryAttack();
 
         if (Vector3.Distance(transform.position, brain.Navigator.AI.endOfPath) < 0.5f 
             || !brain.Sensor.HasTarget)
@@ -99,7 +81,6 @@ public class Reposition : Action
 public class Shoot : Action
 {
     AssaultBrain brain;
-    float timer = 0f;
 
     public override void OnAwake()
     {
@@ -108,7 +89,6 @@ public class Shoot : Action
 
     public override void OnStart()
     {
-        timer = 0f;
         brain.EQS.LoadContext("Engage");
         brain.EQS.TickEQS();
         brain.Navigator.SetDestination(brain.EQS.BestItem.GetWorldPosition());
@@ -116,19 +96,12 @@ public class Shoot : Action
 
     public override void OnEnd()
     {
-        brain.CompleteCurrentAction();
+
     }
 
     public override TaskStatus OnUpdate()
     {
-        timer += Time.deltaTime;
-
-        if (timer >= brain.GunController.CurrentGun.GunInfo.ShotInterval &&
-            brain.MotionController.Shootable())
-        {
-            brain.GunController.Fire();
-            timer = 0f;
-        }
+        brain.AttackController.TryAttack();
 
         return TaskStatus.Running;
     }
