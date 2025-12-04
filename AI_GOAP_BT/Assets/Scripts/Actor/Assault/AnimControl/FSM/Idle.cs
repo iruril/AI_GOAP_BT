@@ -99,6 +99,8 @@ namespace AnimControl.Assault
             float time = 0;
             while(time <= animTime)
             {
+                if(ctx.MyBrain.Sensor.MyStat.IsDead) yield break;
+
                 float t = time / animTime;
                 Quaternion newRot = Quaternion.Slerp(startRot, endRot, t);
                 ctx.MyRigid.MoveRotation(newRot);

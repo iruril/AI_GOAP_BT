@@ -78,7 +78,7 @@ public class Corpse : MonoBehaviour
         }
 
         Vector3 forceDir = (this.transform.position - shotOrigin).normalized;
-        PhysicsBones[latestHittedPart].AddForce(forceDir * 20f, ForceMode.VelocityChange);
+        PhysicsBones[latestHittedPart].AddForce(forceDir * 10f, ForceMode.VelocityChange);
     }
 
     void Update()
