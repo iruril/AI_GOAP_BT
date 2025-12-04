@@ -60,14 +60,11 @@ public class AttackHandler : MonoBehaviour
 
         while (fireCount > 0)
         {
-            if (gunStat.CurrentRounds <= 0)
-                break;
+            if (!myBrain.MotionController.Shootable()) break;
+            if (gunStat.CurrentRounds <= 0) break;
 
             myBrain.GunController.Fire();
             fireCount--;
-
-            if (burstCount == 1)
-                break;
 
             yield return Timing.WaitForSeconds(myBrain.GunController.CurrentGun.GunInfo.ShotInterval);
         }

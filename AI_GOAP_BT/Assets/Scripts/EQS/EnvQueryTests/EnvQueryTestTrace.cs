@@ -11,9 +11,6 @@ public class EnvQueryTestTrace : EnvQueryTest
     }
 
     [SerializeField]
-    private Transform owner;
-
-    [SerializeField]
     private TraceType traceType;
     [SerializeField]
     private LayerMask targetLayers;

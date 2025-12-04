@@ -31,7 +31,7 @@ public class EnvQueryItem
     {
         IsValid = true;
         Vector3 worldPosition = _centerOfItems.position + _location;
-        Vector3 navMeshPosition = GetNearestPosition(worldPosition, 1f, ref IsValid);
+        Vector3 navMeshPosition = GetNearestPosition(worldPosition, 2f, ref IsValid);
 
         if (navMeshPosition != worldPosition)
         {

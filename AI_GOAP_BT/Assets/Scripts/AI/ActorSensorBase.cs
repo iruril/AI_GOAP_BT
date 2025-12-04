@@ -1,5 +1,4 @@
 using MEC;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Sensor
@@ -14,7 +13,7 @@ namespace Sensor
 
         [Header("Target Info")]
         public Transform CurrentTarget { get; private set; }
-        public Transform CurrentTargetChest { get; private set; }
+        public Transform CurrentTargetHead { get; private set; }
         public Stat CurrentTargetStat { get; private set; }
         public bool HasTarget => CurrentTarget != null;
 
@@ -22,16 +21,11 @@ namespace Sensor
         public float TargetDistance { get; private set; } = Mathf.Infinity;
 
         [Header("Target Memory")]
-        public Vector3 LastSeenPosition { get; private set; }
+        public Vector3 LastSeenPosition { get; private set; } = Vector3.negativeInfinity;
         public bool HasLastSeenPosition { get; private set; } = false;
 
         [SerializeField] private float loseTargetAfter = 2f;
         protected float targetLostTimer = 0f;
-
-        [Header("Cover Info")]
-        public float CoverDistance { get; set; } = Mathf.Infinity;
-        public bool UnderAttack { get; set; } = false;
-        public bool CoverAvailable { get; set; } = false;
 
         [Header("Capture Info")]
         public CapturePoint.CapturePoint CaptureTarget { get; private set; }
@@ -58,20 +52,19 @@ namespace Sensor
 
         protected virtual void Start()
         {
-            MyStat.OnDead += ResetTarget;
-            MyStat.OnDead += ResetCapture;
+            MyStat.OnDead += OnDead;
         }
 
         protected virtual void OnDestroy()
         {
-            MyStat.OnDead -= ResetTarget;
-            MyStat.OnDead -= ResetCapture;
+            MyStat.OnDead -= OnDead;
         }
 
         protected virtual void Update()
         {
             UpdateTargetDistance();
             UpdateLostTargetTimer();
+            UpdateLastSeenPosition();
         }
 
         protected virtual void FixedUpdate()
@@ -110,42 +103,28 @@ namespace Sensor
             }
         }
 
+        private void UpdateLastSeenPosition()
+        {
+            if (!TargetVisible) return;
+            LastSeenPosition = CurrentTargetHead.position;
+            HasLastSeenPosition = true;
+        }
+
         protected virtual void SetTarget(Transform target)
         {
             CurrentTarget = target;
             if (target.TryGetComponent<Stat>(out var stat)) 
                 CurrentTargetStat = stat;
             if (target.TryGetComponent<Animator>(out var anim))
-                CurrentTargetChest = anim.GetBoneTransform(HumanBodyBones.UpperChest);
+                CurrentTargetHead = anim.GetBoneTransform(HumanBodyBones.Head);
         }
 
         protected virtual void ResetTarget()
         {
             CurrentTarget = null;
             CurrentTargetStat = null;
-            CurrentTargetChest = null;
+            CurrentTargetHead = null;
             TargetVisible = false;
-        }
-
-        protected virtual void NotifySuppressed()
-        {
-            UnderAttack = true;
-            Timing.KillCoroutines(underAttackHandle);
-            underAttackHandle = Timing.RunCoroutine(_ResetUnderAttackTimer());
-        }
-
-        private IEnumerator<float> _ResetUnderAttackTimer()
-        {
-            yield return Timing.WaitForSeconds(1.0f);
-            UnderAttack = false;
-        }
-
-        public virtual void SearchCoverPosition()
-        {
-            bool result = false;
-            //EQS 사용해서 검출할 것.
-
-            CoverAvailable = result;
         }
 
         #region Capture Field
@@ -273,7 +252,7 @@ namespace Sensor
             if (!HasTarget) return;
 
             Vector3 originEye = myEyes.position;
-            Vector3 targetEye = CurrentTargetChest.position;
+            Vector3 targetEye = CurrentTargetHead.position;
 
             Vector3 dir = targetEye - originEye;
             float dist = dir.magnitude;
@@ -290,12 +269,6 @@ namespace Sensor
 
             bool visible = (hit == 0);
             TargetVisible = visible;
-
-            if (visible)
-            {
-                LastSeenPosition = CurrentTarget.position;
-                HasLastSeenPosition = true;
-            }
         }
 
         protected void CheckTargetIsValid()
@@ -305,6 +278,14 @@ namespace Sensor
             if (CurrentTargetStat.IsDead) ResetTarget();
         }
         #endregion
+
+        private void OnDead()
+        {
+            ResetTarget();
+            ResetCapture();
+            HasLastSeenPosition = false;
+            LastSeenPosition = Vector3.negativeInfinity;
+        }
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
@@ -316,7 +297,7 @@ namespace Sensor
                     Gizmos.color = Color.cyan;
 
                     Vector3 originEye = myEyes.position;
-                    Vector3 targetEye = CurrentTargetChest.position;
+                    Vector3 targetEye = CurrentTargetHead.position;
 
                     Gizmos.DrawLine(originEye, targetEye);
 
@@ -326,7 +307,7 @@ namespace Sensor
                     Gizmos.color = Color.magenta;
 
                     Vector3 originEye = myEyes.position - Vector3.up * 0.05f;
-                    Vector3 targetEye = CurrentTargetChest.position - Vector3.up * 0.05f;
+                    Vector3 targetEye = CurrentTargetHead.position - Vector3.up * 0.05f;
 
                     Gizmos.DrawLine(originEye, targetEye);
                 }

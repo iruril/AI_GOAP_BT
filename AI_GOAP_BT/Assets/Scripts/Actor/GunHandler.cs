@@ -14,7 +14,6 @@ public class GunHandler : MonoBehaviour
 
     [Header("Aim IK Target 세팅")]
     [SerializeField] Transform AimIKTarget;
-    Transform aimTarget;
 
     private Gun currentGun;
     public Gun CurrentGun { get { return currentGun; } }
@@ -46,16 +45,12 @@ public class GunHandler : MonoBehaviour
 
         LoadGun("AK-15");
 
-        myBrain.Sensor.OnTargetSet += SetTarget;
-        myBrain.Sensor.OnTargetReset += ResetTarget;
         myBrain.Sensor.MyStat.OnDead += OnDead;
         myBrain.MotionController.AimIK.solver.OnPostUpdate += FireCallback;
     }
 
     private void OnDestroy()
     {
-        myBrain.Sensor.OnTargetSet -= SetTarget;
-        myBrain.Sensor.OnTargetReset -= ResetTarget;
         myBrain.Sensor.MyStat.OnDead -= OnDead;
         myBrain.MotionController.AimIK.solver.OnPostUpdate -= FireCallback;
     }
@@ -135,9 +130,10 @@ public class GunHandler : MonoBehaviour
 
     private void AimIKTargetTransformControl()
     {
-        AimIKTarget.position = aimTarget != null ?
-                    aimTarget.position
-                    : transform.position + transform.forward * 3.0f + Vector3.up * 1.2f;
+        AimIKTarget.position =
+            (myBrain.Sensor.HasTarget && myBrain.Sensor.HasLastSeenPosition)
+            ? myBrain.Sensor.LastSeenPosition
+            : transform.position + transform.forward * 20f + Vector3.up * 1.2f;
     }
 
     float _refTargetValue;
@@ -203,23 +199,6 @@ public class GunHandler : MonoBehaviour
             currentGun.GunInfo.ProjectileSpeed,          // 총알 속도
             currentGun.GunInfo.RoundDamage               // 데미지
         );
-    }
-
-    private void SetTarget(Transform target)
-    {
-        if (target.TryGetComponent<Animator>(out var animator))
-        {
-            aimTarget = animator.GetBoneTransform(HumanBodyBones.UpperChest);
-        }
-        else
-        {
-            aimTarget = target;
-        }
-    }
-
-    private void ResetTarget()
-    {
-        aimTarget = null;
     }
 
     private void OnDead()

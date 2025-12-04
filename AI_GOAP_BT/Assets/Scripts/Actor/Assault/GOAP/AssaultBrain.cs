@@ -169,7 +169,7 @@ namespace GOAP.Assualt
             
             Actions.Add(AssualtAction.RELOAD, new GoapAction<AssualtAction, AssaultGoal>
             {
-                Type = AssualtAction.COMBAT,
+                Type = AssualtAction.RELOAD,
                 Cost = 10,
 
                 Preconditions =
@@ -179,9 +179,12 @@ namespace GOAP.Assualt
 
                 OnStart = () =>
                 {
-                    EQS.LoadContext("Cover");
-                    EQS.TickEQS();
-                    Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
+                    if (Sensor.HasLastSeenPosition)
+                    {
+                        EQS.LoadContext("Cover");
+                        EQS.TickEQS();
+                        Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
+                    }
                     GunController.Reload();
                 },
                 OnPhysicsUpdate = () =>
@@ -196,9 +199,7 @@ namespace GOAP.Assualt
                 },
 
                 IsUsefulForGoal = goal => {
-                    return
-                    goal == AssaultGoal.ENGAGE_ENEMY
-                    || goal == AssaultGoal.SURVIVE;
+                    return true; //어느때나 탄약이 부족하면 즉시 재장전
                 },
                 IsFinished = false
             });
