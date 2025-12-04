@@ -131,7 +131,7 @@ public class GunHandler : MonoBehaviour
     private void AimIKTargetTransformControl()
     {
         AimIKTarget.position =
-            (myBrain.Sensor.HasTarget && myBrain.Sensor.HasLastSeenPosition)
+            myBrain.Sensor.HasTarget
             ? myBrain.Sensor.LastSeenPosition
             : transform.position + transform.forward * 20f + Vector3.up * 1.2f;
     }

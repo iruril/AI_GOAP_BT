@@ -17,4 +17,8 @@ public static class AnimHash
     public static readonly int Opposite_R = Animator.StringToHash("Opposite_R");
     public static readonly int Opposite_L = Animator.StringToHash("Opposite_L");
     public static readonly int Reload = Animator.StringToHash("Reload");
+    public static readonly int Turn_L = Animator.StringToHash("Turn_L");
+    public static readonly int Turn_R = Animator.StringToHash("Turn_R");
+    public static readonly int AimTurn_L = Animator.StringToHash("AimTurn_L");
+    public static readonly int AimTurn_R = Animator.StringToHash("AimTurn_R");
 }

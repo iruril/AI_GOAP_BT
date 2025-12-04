@@ -179,7 +179,7 @@ namespace GOAP.Assualt
 
                 OnStart = () =>
                 {
-                    if (Sensor.HasLastSeenPosition)
+                    if (Sensor.HasTarget)
                     {
                         EQS.LoadContext("Cover");
                         EQS.TickEQS();
@@ -196,7 +196,7 @@ namespace GOAP.Assualt
                 },
                 OnExit = () =>
                 {
-                    if (Sensor.HasLastSeenPosition)
+                    if (Sensor.HasTarget)
                     {
                         EQS.LoadContext("Peek");
                         EQS.TickEQS();

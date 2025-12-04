@@ -3286,7 +3286,7 @@ MonoBehaviour:
   endReachedDistance: 0.5
   whenCloseToDestination: 0
   rvoDensityBehavior:
-    enabled: 0
+    enabled: 1
     densityThreshold: 0.5
     returnAfterBeingPushedAway: 1
     progressAverage: 0
@@ -3326,7 +3326,7 @@ MonoBehaviour:
   heightBackingField: 2
   centerBackingField: 1
   locked: 0
-  lockWhenNotMoving: 0
+  lockWhenNotMoving: 1
   agentTimeHorizon: 2
   obstacleTimeHorizon: 0.5
   maxNeighbours: 16
@@ -3481,8 +3481,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27ec43e3efbf88549a6eb6f98c72024b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackCooldown: 1
-  burstCount: 3
+  attackCooldown: 1.25
+  burstCount: 4
 --- !u!114 &8484353646962805838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4395,9 +4395,18 @@ MonoBehaviour:
     _serializedList:
     - Key: Cover
       Value:
-        Dists: []
-        Paths:
+        Dists:
         - ScaleFactor: 0.5
+          ScoringEquation: 1
+          AnimationCurve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 0
+            m_PostInfinity: 0
+            m_RotationOrder: 0
+          DistanceTo: {fileID: 1882597698345154371}
+        Paths:
+        - ScaleFactor: 1
           ScoringEquation: 0
           AnimationCurve:
             serializedVersion: 2
@@ -4421,13 +4430,13 @@ MonoBehaviour:
             serializedVersion: 2
             m_Bits: 8
           TraceFrom: {fileID: 8588148283287528868}
-          ItemHeightOffset: 1.6
+          ItemHeightOffset: 1.5
           TargetHeightOffset: 0
     - Key: Engage
       Value:
         Dists: []
         Paths:
-        - ScaleFactor: 0.5
+        - ScaleFactor: 1
           ScoringEquation: 0
           AnimationCurve:
             serializedVersion: 2
@@ -4456,7 +4465,7 @@ MonoBehaviour:
     - Key: Peek
       Value:
         Dists:
-        - ScaleFactor: 0.25
+        - ScaleFactor: 0.5
           ScoringEquation: 1
           AnimationCurve:
             serializedVersion: 2
@@ -4466,7 +4475,7 @@ MonoBehaviour:
             m_RotationOrder: 0
           DistanceTo: {fileID: 1882597698345154371}
         Paths:
-        - ScaleFactor: 0.5
+        - ScaleFactor: 1
           ScoringEquation: 0
           AnimationCurve:
             serializedVersion: 2
@@ -4477,7 +4486,7 @@ MonoBehaviour:
           Start: {fileID: 1882597698345154371}
         Dots: []
         Traces:
-        - ScaleFactor: 0.25
+        - ScaleFactor: 0.5
           ScoringEquation: 0
           AnimationCurve:
             serializedVersion: 2

@@ -59,7 +59,7 @@ public class EnvQueryTestTrace : EnvQueryTest
     {
         int hitCount = Physics.SphereCastNonAlloc(
             origin,
-            0.25f,
+            0.1f,
             direction,
             hitBuffer,
             distance,

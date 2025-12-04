@@ -29,7 +29,7 @@ namespace AnimControl.Assault
 
             int snapSpeed = Mathf.Clamp(Mathf.RoundToInt(ctx.Accel), 1, 4);
             ctx.Anim.SetFloat(AnimHash.TransitionAccel, snapSpeed);
-            ctx.Anim.CrossFade(AnimHash.Opposite_R, 0.1f);
+            ctx.Anim.CrossFade(AnimHash.Opposite_R, 0.25f);
 
             switch (snapSpeed)
             {

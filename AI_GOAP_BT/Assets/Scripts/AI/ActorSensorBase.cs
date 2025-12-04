@@ -22,7 +22,6 @@ namespace Sensor
 
         [Header("Target Memory")]
         public Vector3 LastSeenPosition { get; private set; } = Vector3.negativeInfinity;
-        public bool HasLastSeenPosition { get; private set; } = false;
 
         [SerializeField] private float loseTargetAfter = 2f;
         protected float targetLostTimer = 0f;
@@ -107,7 +106,6 @@ namespace Sensor
         {
             if (!TargetVisible) return;
             LastSeenPosition = CurrentTargetHead.position;
-            HasLastSeenPosition = true;
         }
 
         protected virtual void SetTarget(Transform target)
@@ -117,6 +115,8 @@ namespace Sensor
                 CurrentTargetStat = stat;
             if (target.TryGetComponent<Animator>(out var anim))
                 CurrentTargetHead = anim.GetBoneTransform(HumanBodyBones.Head);
+
+            LastSeenPosition = CurrentTargetHead.position;
         }
 
         protected virtual void ResetTarget()
@@ -124,6 +124,7 @@ namespace Sensor
             CurrentTarget = null;
             CurrentTargetStat = null;
             CurrentTargetHead = null;
+            LastSeenPosition = Vector3.negativeInfinity;
             TargetVisible = false;
         }
 
@@ -283,8 +284,6 @@ namespace Sensor
         {
             ResetTarget();
             ResetCapture();
-            HasLastSeenPosition = false;
-            LastSeenPosition = Vector3.negativeInfinity;
         }
 
 #if UNITY_EDITOR

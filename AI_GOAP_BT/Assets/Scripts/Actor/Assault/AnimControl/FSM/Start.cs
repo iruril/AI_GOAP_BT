@@ -48,11 +48,11 @@ namespace AnimControl.Assault
 
             if (turnDir > 0)
             {
-                ctx.Anim.CrossFade(AnimHash.StartMove_R, 0.1f);
+                ctx.Anim.CrossFade(AnimHash.StartMove_R, 0.25f);
             }
             else
             {
-                ctx.Anim.CrossFade(AnimHash.StartMove_L, 0.1f);
+                ctx.Anim.CrossFade(AnimHash.StartMove_L, 0.25f);
             }
         }
 
