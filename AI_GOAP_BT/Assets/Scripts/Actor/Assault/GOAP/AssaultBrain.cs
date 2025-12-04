@@ -196,6 +196,12 @@ namespace GOAP.Assualt
                 },
                 OnExit = () =>
                 {
+                    if (Sensor.HasLastSeenPosition)
+                    {
+                        EQS.LoadContext("Peek");
+                        EQS.TickEQS();
+                        Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
+                    }
                 },
 
                 IsUsefulForGoal = goal => {

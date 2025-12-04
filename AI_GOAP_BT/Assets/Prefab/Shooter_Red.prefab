@@ -3481,7 +3481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27ec43e3efbf88549a6eb6f98c72024b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackCooldown: 1.5
+  attackCooldown: 1
   burstCount: 3
 --- !u!114 &8484353646962805838
 MonoBehaviour:
@@ -4439,6 +4439,45 @@ MonoBehaviour:
         Dots: []
         Traces:
         - ScaleFactor: 0.5
+          ScoringEquation: 0
+          AnimationCurve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 0
+            m_PostInfinity: 0
+            m_RotationOrder: 0
+          traceType: 0
+          targetLayers:
+            serializedVersion: 2
+            m_Bits: 520
+          TraceFrom: {fileID: 8588148283287528868}
+          ItemHeightOffset: 1.2
+          TargetHeightOffset: 0
+    - Key: Peek
+      Value:
+        Dists:
+        - ScaleFactor: 0.25
+          ScoringEquation: 1
+          AnimationCurve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 0
+            m_PostInfinity: 0
+            m_RotationOrder: 0
+          DistanceTo: {fileID: 1882597698345154371}
+        Paths:
+        - ScaleFactor: 0.5
+          ScoringEquation: 0
+          AnimationCurve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 0
+            m_PostInfinity: 0
+            m_RotationOrder: 0
+          Start: {fileID: 1882597698345154371}
+        Dots: []
+        Traces:
+        - ScaleFactor: 0.25
           ScoringEquation: 0
           AnimationCurve:
             serializedVersion: 2
