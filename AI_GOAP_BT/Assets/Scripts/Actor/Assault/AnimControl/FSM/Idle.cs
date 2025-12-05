@@ -20,7 +20,7 @@ namespace AnimControl.Assault
             ctx.SetTargetAccel(0f);
             ctx.MyBrain.Navigator.AI.enableRotation = false;
             ctx.RootRotation = false;
-            ctx.Anim.CrossFade(AnimHash.Strafe, 0.25f);
+            ctx.Anim.CrossFade(AnimHash.Strafe, 0.1f);
             turning = false;
         }
 
@@ -42,7 +42,7 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
-            if (Vector3.Distance(ctx.transform.position, ctx.MyBrain.Navigator.AI.endOfPath) > 1.5f)
+            if (Vector3.Distance(ctx.transform.position, ctx.MyBrain.Navigator.AI.endOfPath) > 0.7f)
             {
                 if (!ctx.MyBrain.Sensor.HasTarget)
                     return AnimState.Start;
@@ -94,7 +94,7 @@ namespace AnimControl.Assault
                 ? (onAim ? AnimHash.AimTurn_L : AnimHash.Turn_L)
                 : (onAim ? AnimHash.AimTurn_R : AnimHash.Turn_R);
 
-            ctx.Anim.CrossFade(turnHash, 0.05f);
+            ctx.Anim.CrossFade(turnHash, 0.1f);
 
             float time = 0;
             while(time <= animTime)
@@ -110,7 +110,7 @@ namespace AnimControl.Assault
             }
 
             ctx.MyRigid.MoveRotation(endRot);
-            ctx.Anim.CrossFade(AnimHash.Strafe, 0.05f);
+            ctx.Anim.CrossFade(AnimHash.Strafe, 0.1f);
             turning = false;
         }
     }

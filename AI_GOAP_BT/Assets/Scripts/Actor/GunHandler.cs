@@ -2,18 +2,19 @@ using UnityEngine;
 using System.Collections.Generic;
 using MEC;
 using System.Linq;
+using RootMotion.FinalIK;
 
 public class GunHandler : MonoBehaviour
 {
-    private GOAP.Assualt.AssaultBrain myBrain;
-
     [Header("Gun 트랜스폼 세팅")]
-    [SerializeField] Transform GunPos;
-    [SerializeField] Transform LeftHandIKTarget;
-    [SerializeField] Transform Muzzle;
+    [SerializeField] Transform gunPos;
+    [SerializeField] Transform leftHandIKTarget;
+    public Transform LeftHandIKTarget { get { return leftHandIKTarget; } }
+    [SerializeField] Transform muzzle;
 
     [Header("Aim IK Target 세팅")]
-    [SerializeField] Transform AimIKTarget;
+    [SerializeField] Transform aimIKTarget;
+    public Transform AimIKTarget { get { return aimIKTarget; } }
 
     private Gun currentGun;
     public Gun CurrentGun { get { return currentGun; } }
@@ -33,31 +34,16 @@ public class GunHandler : MonoBehaviour
 
     void Awake()
     {
-        myBrain = GetComponent<GOAP.Assualt.AssaultBrain>();
         bulletPool = GetComponent<BulletPool>();
     }
 
     void Start()
     {
-        myBrain.MotionController.FBBIK.solver.leftHandEffector.target = LeftHandIKTarget;
-        myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 1f;
-        myBrain.MotionController.AimIK.solver.IKPositionWeight = 0f;
-
         LoadGun("AK-15");
-
-        myBrain.Sensor.MyStat.OnDead += OnDead;
-        myBrain.MotionController.AimIK.solver.OnPostUpdate += FireCallback;
-    }
-
-    private void OnDestroy()
-    {
-        myBrain.Sensor.MyStat.OnDead -= OnDead;
-        myBrain.MotionController.AimIK.solver.OnPostUpdate -= FireCallback;
     }
 
     void Update()
     {
-        AimIKHandle();
         SpreadHandle();
     }
 
@@ -93,7 +79,7 @@ public class GunHandler : MonoBehaviour
             currentGunModel = gunHistory[gunName].instance;
         }
 
-        currentGunModel.transform.SetParent(GunPos, false);
+        currentGunModel.transform.SetParent(gunPos, false);
         currentGunModel.transform.localPosition = Vector3.zero;
         currentGunModel.transform.localRotation = Quaternion.identity;
         currentSpread = 0;
@@ -115,39 +101,13 @@ public class GunHandler : MonoBehaviour
 
     void ApplyGunTransforms(Gun gunData)
     {
-        GunPos.localPosition = gunData.GunPosition;
-        Muzzle.localPosition = gunData.MuzzlePosition;
+        gunPos.localPosition = gunData.GunPosition;
+        muzzle.localPosition = gunData.MuzzlePosition;
 
-        LeftHandIKTarget.localPosition = gunData.LeftHandIKPosition;
-        LeftHandIKTarget.localEulerAngles = gunData.LeftHandIKRotation;
+        leftHandIKTarget.localPosition = gunData.LeftHandIKPosition;
+        leftHandIKTarget.localEulerAngles = gunData.LeftHandIKRotation;
     }
 
-    private void AimIKHandle()
-    {
-        AimIKTargetTransformControl();
-        AimIKWeightControl();
-    }
-
-    private void AimIKTargetTransformControl()
-    {
-        AimIKTarget.position =
-            myBrain.Sensor.HasTarget
-            ? myBrain.Sensor.LastSeenPosition
-            : transform.position + transform.forward * 20f + Vector3.up * 1.2f;
-    }
-
-    float _refTargetValue;
-    private void AimIKWeightControl()
-    {
-        float _targetVaule = myBrain.MotionController.Aimable() && !OnReload ? 1f : 0f;
-
-        myBrain.MotionController.AimIK.solver.IKPositionWeight = Mathf.SmoothDamp(
-            myBrain.MotionController.AimIK.solver.IKPositionWeight,
-            _targetVaule,
-            ref _refTargetValue,
-            0.1f
-        );
-    }
 
     private float currentSpreadRef = 0;
     private void SpreadHandle()
@@ -163,7 +123,7 @@ public class GunHandler : MonoBehaviour
         pendingFire = true;
     }
 
-    private void FireCallback()
+    public void FireCallback()
     {
         if (CurrentRounds == 0) return;
         if (!pendingFire) return;
@@ -181,27 +141,27 @@ public class GunHandler : MonoBehaviour
 
         currentSpread += 1f / currentGun.GunInfo.Stability;
 
-        Vector3 aimDir = Muzzle.forward;
-        aimDir = Quaternion.AngleAxis(yError, Muzzle.up) * aimDir;
-        aimDir = Quaternion.AngleAxis(xError, Muzzle.right) * aimDir;
+        Vector3 aimDir = muzzle.forward;
+        aimDir = Quaternion.AngleAxis(yError, muzzle.up) * aimDir;
+        aimDir = Quaternion.AngleAxis(xError, muzzle.right) * aimDir;
 
         Quaternion bulletRotation = Quaternion.LookRotation(aimDir);
 
         //머즐 플래쉬
-        EffectPoolManager.SpawnFromPool("MuzzleFlash", Muzzle.position, Muzzle.rotation);
+        EffectPoolManager.SpawnFromPool("MuzzleFlash", muzzle.position, muzzle.rotation);
 
         //총알 발사
         bulletPool.SpawnBullet(
-            Muzzle.position,
+            muzzle.position,
             bulletRotation,
             1 << gameObject.layer,
-            Muzzle.position,                             // shotOrigin
+            muzzle.position,                             // shotOrigin
             currentGun.GunInfo.ProjectileSpeed,          // 총알 속도
             currentGun.GunInfo.RoundDamage               // 데미지
         );
     }
 
-    private void OnDead()
+    public void OnDead()
     {
         pendingFire = false;
         Timing.KillCoroutines(reloadHandle); 
@@ -213,50 +173,51 @@ public class GunHandler : MonoBehaviour
         CurrentRounds = currentGun.GunInfo.MagazineCapacity;
     }
 
-    public void Reload()
+    public void Reload(Animator anim, IKEffector leftHand)
     {
-        reloadHandle = Timing.RunCoroutine(ReloadRoutine());
+        reloadHandle = Timing.RunCoroutine(ReloadRoutine(anim, leftHand));
     }
 
-    private IEnumerator<float> ReloadRoutine()
+    private IEnumerator<float> ReloadRoutine(Animator anim, IKEffector leftHand)
     {
-        StartReload();
-        yield return Timing.WaitForSeconds(2f);
-        CompleteReload();
+        StartReload(anim, leftHand);
+        yield return Timing.WaitForSeconds(1.9f);
+        CompleteReload(anim, leftHand);
     }
 
-    private void StartReload()
+    private void StartReload(Animator anim, IKEffector leftHand)
     {
         OnReload = true;
-        Timing.RunCoroutine(LerpIKAndLayer(0f, 1f, 0.15f));
-        myBrain.MotionController.Anim.CrossFade(AnimHash.Reload, 0.1f);
+        Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.15f));
+        anim.CrossFade(AnimHash.Reload, 0.1f);
     }
 
-    private void CompleteReload()
+    private void CompleteReload(Animator anim, IKEffector leftHand)
     {
-        Timing.RunCoroutine(LerpIKAndLayer(1f, 0f, 0.15f));
+        Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.15f));
         CurrentRounds = CurrentRounds == 0
             ? currentGun.GunInfo.MagazineCapacity
             : currentGun.GunInfo.MagazineCapacity + 1;
         OnReload = false;
     }
 
-    private IEnumerator<float> LerpIKAndLayer(float targetIK, float targetLayer, float duration)
+    private IEnumerator<float> LerpIKAndLayer(Animator anim, IKEffector leftHand,
+        float targetIK, float targetLayer, float duration)
     {
         float t = 0f;
 
-        float startIK = myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight;
-        float startLayer = myBrain.MotionController.Anim.GetLayerWeight(1);
+        float startIK = leftHand.positionWeight;
+        float startLayer = anim.GetLayerWeight(1);
 
         while (t < duration)
         {
             t += Time.deltaTime;
             float k = t / duration;
 
-            myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight =
+            leftHand.positionWeight =
                 Mathf.Lerp(startIK, targetIK, k);
 
-            myBrain.MotionController.Anim.SetLayerWeight(
+            anim.SetLayerWeight(
                 1,
                 Mathf.Lerp(startLayer, targetLayer, k)
             );
@@ -264,7 +225,7 @@ public class GunHandler : MonoBehaviour
             yield return Timing.WaitForOneFrame;
         }
 
-        myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = targetIK;
-        myBrain.MotionController.Anim.SetLayerWeight(1, targetLayer);
+        leftHand.positionWeight = targetIK;
+        anim.SetLayerWeight(1, targetLayer);
     }
 }

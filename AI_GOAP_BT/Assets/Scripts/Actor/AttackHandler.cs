@@ -24,16 +24,52 @@ public class AttackHandler : MonoBehaviour
     private void Start()
     {
         myBrain.Sensor.MyStat.OnDead += OnDead;
+        myBrain.Sensor.MyStat.OnDead += myBrain.GunController.OnDead;
+        myBrain.MotionController.AimIK.solver.OnPostUpdate += myBrain.GunController.FireCallback;
+        myBrain.MotionController.FBBIK.solver.leftHandEffector.target = myBrain.GunController.LeftHandIKTarget;
+        myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 1f;
+        myBrain.MotionController.AimIK.solver.IKPositionWeight = 0f;
     }
 
     private void OnDestroy()
     {
         myBrain.Sensor.MyStat.OnDead -= OnDead;
+        myBrain.Sensor.MyStat.OnDead -= myBrain.GunController.OnDead;
+        myBrain.MotionController.AimIK.solver.OnPostUpdate -= myBrain.GunController.FireCallback;
     }
 
     private void Update()
     {
         cooldownTimer += Time.deltaTime;
+        AimIKHandle();
+    }
+
+    private void AimIKHandle()
+    {
+        AimIKTargetTransformControl();
+        AimIKWeightControl();
+    }
+
+    private void AimIKTargetTransformControl()
+    {
+        myBrain.GunController.AimIKTarget.position =
+            myBrain.Sensor.HasTarget
+            ? myBrain.Sensor.LastSeenPosition
+            : transform.position + transform.forward * 20f + Vector3.up * 1.2f;
+    }
+
+
+    float _refTargetValue;
+    private void AimIKWeightControl()
+    {
+        float _targetVaule = myBrain.MotionController.Aimable() && !myBrain.GunController.OnReload ? 1f : 0f;
+
+        myBrain.MotionController.AimIK.solver.IKPositionWeight = Mathf.SmoothDamp(
+            myBrain.MotionController.AimIK.solver.IKPositionWeight,
+            _targetVaule,
+            ref _refTargetValue,
+            0.1f
+        );
     }
 
     public void TryAttack()

@@ -185,7 +185,7 @@ namespace GOAP.Assualt
                         EQS.TickEQS();
                         Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
                     }
-                    GunController.Reload();
+                    GunController.Reload(MotionController.Anim, MotionController.FBBIK.solver.leftHandEffector);
                 },
                 OnPhysicsUpdate = () =>
                 {

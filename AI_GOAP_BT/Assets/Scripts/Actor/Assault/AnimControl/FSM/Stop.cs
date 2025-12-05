@@ -19,7 +19,7 @@ namespace AnimControl.Assault
             ctx.RootRotation = false;
             int snapSpeed = Mathf.Clamp(Mathf.RoundToInt(ctx.Accel), 1, 4);
             ctx.Anim.SetFloat(AnimHash.TransitionAccel, snapSpeed);
-            ctx.Anim.CrossFade(AnimHash.Stop, 0.25f);
+            ctx.Anim.CrossFade(AnimHash.Stop, 0.1f);
 
             switch (snapSpeed)
             {

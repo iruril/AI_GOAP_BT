@@ -3465,10 +3465,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 095816f8425ac3546bbc5cf2fcf154b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GunPos: {fileID: 2183927376611289369}
-  LeftHandIKTarget: {fileID: 2051476966338809753}
-  Muzzle: {fileID: 5282911154098719872}
-  AimIKTarget: {fileID: 8588148283287528868}
+  gunPos: {fileID: 2183927376611289369}
+  leftHandIKTarget: {fileID: 2051476966338809753}
+  muzzle: {fileID: 5282911154098719872}
+  aimIKTarget: {fileID: 8588148283287528868}
 --- !u!114 &7963050324835666344
 MonoBehaviour:
   m_ObjectHideFlags: 0

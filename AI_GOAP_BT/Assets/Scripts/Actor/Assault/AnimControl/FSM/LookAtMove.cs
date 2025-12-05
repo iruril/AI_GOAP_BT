@@ -15,7 +15,7 @@ namespace AnimControl.Assault
             ctx.SetTargetAccel(2f);
             ctx.MyBrain.Navigator.AI.enableRotation = false;
             ctx.RootRotation = false;
-            ctx.Anim.CrossFade(AnimHash.Strafe, 0.25f);
+            ctx.Anim.CrossFade(AnimHash.Strafe, 0.1f);
         }
 
         public override void ExitState()
@@ -35,7 +35,7 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
-            if (ctx.MyBrain.Navigator.AI.desiredVelocity.sqrMagnitude < 0.001f)
+            if (ctx.MyBrain.Navigator.AI.velocity.sqrMagnitude < 0.001f)
                 return AnimState.Idle;
             if (!ctx.MyBrain.Sensor.HasTarget)
             {
@@ -44,7 +44,7 @@ namespace AnimControl.Assault
                 else
                     return AnimState.Idle;
             }
-            if(Vector3.Distance(ctx.transform.position, ctx.MyBrain.Navigator.AI.endOfPath) <= 0.2f)
+            if(Vector3.Distance(ctx.transform.position, ctx.MyBrain.Navigator.AI.endOfPath) <= 0.1f)
             {
                 return AnimState.Idle;
             }
