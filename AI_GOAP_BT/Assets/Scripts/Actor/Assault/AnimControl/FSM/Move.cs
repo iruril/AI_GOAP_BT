@@ -48,13 +48,11 @@ namespace AnimControl.Assault
                     stoppingDistance,
                     WorldManager.Instance.GetLevelLayers()
                 );
-
-            ctx.LookHitDirection();
         }
 
         public override AnimState GetNextState()
         {
-            if (ctx.MyBrain.Sensor.HasTarget)
+            if (ctx.MyBrain.Sensor.HasTarget || ctx.AttackedDirection != Vector3.zero)
                 return AnimState.LookAtMove;
             if (Vector3.Distance(ctx.transform.position, ctx.MyBrain.Navigator.AI.endOfPath) <= stoppingDistance
                 && obstacle == 0)

@@ -1,3 +1,5 @@
+using MEC;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AnimControl.Assault
@@ -20,7 +22,6 @@ namespace AnimControl.Assault
 
         public override void ExitState()
         {
-
         }
 
         public override void UpdateState()
@@ -59,16 +60,29 @@ namespace AnimControl.Assault
 
         void LookAtTarget()
         {
-            if(!ctx.MyBrain.Sensor.HasTarget) return;
+            Vector3 targetDir;
+            Quaternion targetRot;
+            Quaternion newRot;
 
-            Vector3 targetDir = ctx.MyBrain.Sensor.CurrentTarget.position - ctx.transform.position;
-            targetDir.y = 0f;
-            targetDir.Normalize();
+            if (ctx.MyBrain.Sensor.HasTarget)
+            {
+                targetDir = ctx.MyBrain.Sensor.LastSeenPosition - ctx.transform.position;
+                targetDir.y = 0f;
+                targetDir.Normalize();
 
-            Quaternion targetRot = Quaternion.LookRotation(targetDir);
+                targetRot = Quaternion.LookRotation(targetDir);
+            }
+            else if(ctx.AttackedDirection != Vector3.zero)
+            {
+                targetRot = Quaternion.LookRotation(ctx.AttackedDirection);
+            }
+            else
+            {
+                return;
+            }
 
             float maxStep = ctx.MyBrain.Sensor.MyStat.RotateSpeedToTarget * Time.fixedDeltaTime;
-            Quaternion newRot = Quaternion.RotateTowards(ctx.MyRigid.rotation, targetRot, maxStep);
+            newRot = Quaternion.RotateTowards(ctx.MyRigid.rotation, targetRot, maxStep);
 
             ctx.MyRigid.MoveRotation(newRot);
         }

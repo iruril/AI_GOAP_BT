@@ -72,7 +72,9 @@ public class MathUtility
 
         double y1 = Math.Sqrt(-2.0 * Math.Log(x1)) * Math.Cos(2.0 * Math.PI * x2);
         return (float)y1 * standard + mean;
-    }/// <summary>
+    }
+    
+    /// <summary>
      /// focus의 값을 기준으로 2차원 벡터 축 입력을 받았을 시 라디안 회전값을 반환한다.
      /// </summary>
      /// <param name="focus"> 기준이 되는 회전값. ex) camRotationY </param>
@@ -82,6 +84,8 @@ public class MathUtility
     {
         return focus + Mathf.Atan2(axis.x, axis.y) * Mathf.Rad2Deg;
     }
+
+    private const float EPS = 0.001f;
 
     /// <summary>
     /// 두 회전값이 서로 반대방향을 바라보는지를 검사한다.
@@ -98,44 +102,65 @@ public class MathUtility
         return angle > maxError || angle < minError;
     }
 
-    public static bool IsOppositeDirection(Vector3 prevDirection, Vector3 nextDirection, float error)
+    public static bool IsOppositeDirection(Vector3 forward, Vector3 direction, float error)
     {
-        float maxError = 180 - error;
-        float minError = error - 180;
-        float angle = Vector3.Angle(prevDirection, nextDirection);
-        return angle > maxError || angle < minError;
+        if (!Valid(forward, direction)) return false;
+
+        Vector3 f = forward.normalized;
+        Vector3 d = direction.normalized;
+
+        float threshold = Mathf.Cos((180f - error) * Mathf.Deg2Rad);
+        float dot = Vector3.Dot(f, d);
+
+        return dot <= threshold;
     }
 
-    public static bool IsSameDirection(Vector3 prevDirection, Vector3 nextDirection, float error)
+    public static bool IsRightDirection(Vector3 forward, Vector3 direction, float error)
     {
-        float angle = Vector3.Angle(prevDirection, nextDirection);
-        return angle < error;
+        if (!Valid(forward, direction)) return false;
+
+        Vector3 f = forward.normalized;
+        Vector3 d = direction.normalized;
+
+        float crossY = Vector3.Cross(f, d).y;
+        float dot = Vector3.Dot(f, d);
+        float threshold = Mathf.Cos(error * Mathf.Deg2Rad);
+
+        if (dot >= threshold) return false;
+
+        return crossY < 0f;
     }
 
-    public static bool IsRightDirection(Vector3 prevDirection, Vector3 nextDirection, float error)
+    public static bool IsLeftDirection(Vector3 forward, Vector3 direction, float error)
     {
-        float angle = Vector3.SignedAngle(prevDirection, nextDirection, Vector3.up);
-        return angle > error;
+        if (!Valid(forward, direction)) return false;
+
+        Vector3 f = forward.normalized;
+        Vector3 d = direction.normalized;
+
+        float crossY = Vector3.Cross(f, d).y;
+        float dot = Vector3.Dot(f, d);
+        float threshold = Mathf.Cos(error * Mathf.Deg2Rad);
+
+        if (dot >= threshold) return false;
+
+        return crossY > 0f;
     }
 
-    public static bool IsLeftDirection(Vector3 prevDirection, Vector3 nextDirection, float error)
+    public static bool IsSameDirection(Vector3 forward, Vector3 direction, float error)
     {
-        float angle = Vector3.SignedAngle(prevDirection, nextDirection, Vector3.up);
-        return angle < -error;
-    }
+        if (!Valid(forward, direction)) return false;
 
-    public static bool IsHeadingForward(Vector3 forward, Vector3 direction, float angle)
-    {
-        forward.y = 0;
-        direction.y = 0;
+        Vector3 f = forward.normalized;
+        Vector3 d = direction.normalized;
 
-        if (forward.sqrMagnitude < 0.001f || direction.sqrMagnitude < 0.001f)
-            return false;
-
-        float threshold = Mathf.Cos(angle * Mathf.Deg2Rad);
-        float dot = Vector3.Dot(forward.normalized, direction.normalized);
+        float threshold = Mathf.Cos(error * Mathf.Deg2Rad);
+        float dot = Vector3.Dot(f, d);
         return dot >= threshold;
     }
+
+    private static bool Valid(Vector3 a, Vector3 b)
+        => a.sqrMagnitude > EPS && b.sqrMagnitude > EPS;
 
     public static Vector3 GetRandomPositionInCircle(Vector3 position, float radius)
     {

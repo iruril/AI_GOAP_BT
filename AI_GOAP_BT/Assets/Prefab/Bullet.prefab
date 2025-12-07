@@ -51,6 +51,9 @@ MonoBehaviour:
   hitMask:
     serializedVersion: 2
     m_Bits: 1112
+  grazeMask:
+    serializedVersion: 2
+    m_Bits: 2048
 --- !u!1 &3126588462008031544
 GameObject:
   m_ObjectHideFlags: 0

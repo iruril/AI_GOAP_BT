@@ -32,8 +32,7 @@ namespace AnimControl.Assault
 
         private float aimWeight;
 
-        private Vector3? hitDir = null;
-        private float hitRotateRemain = 0f;
+        public Vector3 AttackedDirection { get; set; } = Vector3.zero;
 
         void Awake()
         {
@@ -50,14 +49,14 @@ namespace AnimControl.Assault
         protected override void Start()
         {
             base.Start();
-            MyBrain.Sensor.MyStat.OnHit += OnHit;
+            MyBrain.Sensor.MyStat.OnUnderAttack += SetAttackedDirection;
             MyBrain.Sensor.MyStat.OnDead += OnDead;
             MyBrain.Navigator.OnSetDestination += DecideAccelByDistance;
         }
 
         private void OnDestroy()
         {
-            MyBrain.Sensor.MyStat.OnHit += OnHit;
+            MyBrain.Sensor.MyStat.OnUnderAttack += SetAttackedDirection;
             MyBrain.Sensor.MyStat.OnDead -= OnDead;
             MyBrain.Navigator.OnSetDestination -= DecideAccelByDistance;
         }
@@ -96,6 +95,7 @@ namespace AnimControl.Assault
             base.FixedUpdate();
             UpdateMoveAxis();
             UpdateAcceleration();
+            HandleAttackedDirection();
         }
 
         private void InitializeStates()
@@ -170,41 +170,21 @@ namespace AnimControl.Assault
             }
         }
 
-        public void OnHit(Vector3 dir)
+        public void SetAttackedDirection(Vector3 shotOrigin)
         {
-            hitDir = dir;
-            hitRotateRemain = 0.5f;
+            Vector3 hitDir = shotOrigin - transform.position;
+            hitDir.y = 0;
+            hitDir.Normalize();
+
+            AttackedDirection = MyBrain.Sensor.HasTarget ? Vector3.zero : hitDir;
         }
 
-        public void LookHitDirection()
+        void HandleAttackedDirection()
         {
-            if (MyBrain.Sensor.HasTarget)
-            {
-                hitDir = null;
-                return;
-            }
+            if (AttackedDirection == Vector3.zero) return;
 
-            if (hitDir.HasValue)
-            {
-                if (!RootRotation)
-                {
-                    MyBrain.Navigator.AI.enableRotation = false;
-                    Quaternion targetRot = Quaternion.LookRotation(hitDir.Value);
-
-                    float maxStep = MyBrain.Sensor.MyStat.RotateSpeedToTarget * Time.fixedDeltaTime;
-                    Quaternion newRot = Quaternion.RotateTowards(MyRigid.rotation, targetRot, maxStep);
-
-                    MyRigid.MoveRotation(newRot);
-                }
-
-                hitRotateRemain -= Time.fixedDeltaTime;
-
-                if (hitRotateRemain <= 0f)
-                {
-                    MyBrain.Navigator.AI.enableRotation = true;
-                    hitDir = null;
-                }
-            }
+            AttackedDirection = MathUtility.IsSameDirection(transform.forward, AttackedDirection, 30f)
+                ? Vector3.zero : AttackedDirection;
         }
 
         public bool Aimable()
@@ -222,8 +202,7 @@ namespace AnimControl.Assault
 
         private void OnDead()
         {
-            hitDir = null;
-            hitRotateRemain = 0f;
+            AttackedDirection = Vector3.zero;
         }
     }
 }

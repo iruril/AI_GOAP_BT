@@ -73,6 +73,8 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
+            if (ctx.AttackedDirection != Vector3.zero)
+                return AnimState.LookAtMove;
             if (ctx.StateTime >= exitTime) 
                 return AnimState.Move;
             return StateKey;

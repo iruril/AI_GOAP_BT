@@ -7,7 +7,7 @@ public class Stat : MonoBehaviour, IDamageable
 {
     public event Action OnDead;
     public event Action OnRevive;
-    public event Action<Vector3> OnHit;
+    public event Action<Vector3> OnUnderAttack;
 
     [SerializeField] private float MaxHP = 100f;
     [SerializeField] private float rotateSpeedToTarget = 90f;
@@ -53,9 +53,7 @@ public class Stat : MonoBehaviour, IDamageable
 
         CurrentHP -= dmg;
 
-        Vector3 hitDir = shotOrigin - transform.position;
-        hitDir.y = 0f;
-        OnHit?.Invoke(hitDir);
+        OnUnderAttack?.Invoke(shotOrigin);
 
         if (CurrentHP <= 0f)
         {
@@ -66,6 +64,12 @@ public class Stat : MonoBehaviour, IDamageable
             Timing.RunCoroutine(Respawn());
         }
     }
+
+    public void OnGraze(Vector3 shotOrigin)
+    {
+        OnUnderAttack?.Invoke(shotOrigin);
+    }
+
     #endregion
 
     private void ReleaseCapturePoint()

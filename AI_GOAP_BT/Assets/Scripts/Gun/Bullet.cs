@@ -17,16 +17,16 @@ public class Bullet : MonoBehaviour
     private float damage = 1f;
     private LayerMask friendLayers;
     [SerializeField] private LayerMask hitMask;
+    [SerializeField] private LayerMask grazeMask;
 
     private Vector3 velocity;
     private Vector3 prevPos;
 
     private Vector3 shotOrigin;
 
-    private bool hitProcessed = false;
     private bool initialized = false; 
     
-    private RaycastHit[] hitBuffer = new RaycastHit[1];
+    private RaycastHit[] hitBuffer = new RaycastHit[8];
 
     private void OnEnable()
     {
@@ -63,27 +63,27 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        if (!initialized || hitProcessed) return;
+        if (!initialized) return;
         PerformContinuousHitCheck();
     }
 
     private void PerformContinuousHitCheck()
     {
-        velocity.y += gravity * Time.deltaTime;
-        velocity *= (1f - drag * Time.deltaTime);
+        Vector3 nextPos;
+        float rayDist;
+        Vector3 rayDir;
 
-        Vector3 nextPos = transform.position + velocity * Time.deltaTime;
-        Vector3 rayDir = nextPos - prevPos;
-        float rayDist = rayDir.magnitude;
+        ApplyBallistics(out nextPos, out rayDir, out rayDist);
 
         if (rayDist > 0.0001f)
         {
-            int count = Physics.RaycastNonAlloc(prevPos, rayDir.normalized, hitBuffer, rayDist, hitMask);
+            int count = DoRaycast(prevPos, rayDir, rayDist);
+
             if (count > 0)
             {
-                var hit = hitBuffer[0];
-                ProcessHit(hit.collider, hit.point, hit.normal);
-                return;
+                ProcessGrazingHits(count);
+                if (ProcessDamageHits(count))
+                    return;
             }
         }
 
@@ -91,7 +91,67 @@ public class Bullet : MonoBehaviour
         prevPos = nextPos;
     }
 
-    private void ProcessHit(Collider target, Vector3 hitPoint, Vector3 hitNormal)
+    private void ApplyBallistics(out Vector3 nextPos, out Vector3 rayDir, out float rayDist)
+    {
+        velocity.y += gravity * Time.deltaTime;
+        velocity *= (1f - drag * Time.deltaTime);
+
+        nextPos = transform.position + velocity * Time.deltaTime;
+        rayDir = nextPos - prevPos;
+        rayDist = rayDir.magnitude;
+    }
+
+    private int DoRaycast(Vector3 origin, Vector3 direction, float distance)
+    {
+        int combinedMask = hitMask | grazeMask;
+        return Physics.RaycastNonAlloc(origin, direction.normalized, hitBuffer, distance, combinedMask);
+    }
+
+    private void ProcessGrazingHits(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            var hit = hitBuffer[i];
+            var col = hit.collider;
+            int layer = col.gameObject.layer;
+
+            if ((grazeMask & (1 << layer)) != 0)
+            {
+                if (col.TryGetComponent<GrazeListener>(out var listener))
+                {
+                    if (IsFriendly(listener.Owner.gameObject)) continue;
+                    listener.OnGraze(shotOrigin);
+                }
+            }
+        }
+    }
+
+    private bool ProcessDamageHits(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            var hit = hitBuffer[i];
+            var col = hit.collider;
+            int layer = col.gameObject.layer;
+
+            if (IsFriendly(layer)) continue;
+            if ((hitMask & (1 << layer)) != 0)
+            {
+                ProcessDamageHit(col, hit.point, hit.normal);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool IsFriendly(int layer)
+    {
+        return ((1 << layer) & friendLayers) != 0;
+    }
+
+    private bool IsFriendly(GameObject obj) => ((1 << obj.layer) & friendLayers) != 0;
+
+    private void ProcessDamageHit(Collider target, Vector3 hitPoint, Vector3 hitNormal)
     {
         if (target.TryGetComponent<HitBox>(out var hitBox))
         {
@@ -106,7 +166,6 @@ public class Bullet : MonoBehaviour
 
     private void Deactivate()
     {
-        hitProcessed = false;
         initialized = false;
         gameObject.SetActive(false);
     }
