@@ -64,7 +64,7 @@ namespace GOAP.Assualt
 
         private void RecalcCoverPosition(Vector3 shotOrigin)
         {
-            if (coverRecalcPending) return;
+            if (coverRecalcPending || brain.CurrentAction.Type != Type) return;
             coverRecalcPending = true;
 
             brain.GunController.AimIKTarget.position = shotOrigin;

@@ -46,20 +46,19 @@ namespace GOAP.Assualt
             }
         }
 
-        public override void OnUpdate()
-        {
-            if (reloadStarted) return;
-            timer += Time.deltaTime;
-
-            if (timer >= RELOAD_EXECUTE_TIME || brain.GunController.CurrentRounds == 0)
-            {
-                reloadStarted = true;
-                brain.GunController.Reload(brain.MotionController.Anim, brain.MotionController.FBBIK.solver.leftHandEffector);
-            }
-        }
-
         public override void OnPhysicsUpdate()
         {
+            if (!reloadStarted)
+            {
+                timer += Time.fixedDeltaTime;
+
+                if (timer >= RELOAD_EXECUTE_TIME || brain.GunController.CurrentRounds == 0 || !brain.Sensor.HasTarget)
+                {
+                    reloadStarted = true;
+                    brain.GunController.Reload(brain.MotionController.Anim, brain.MotionController.FBBIK.solver.leftHandEffector);
+                }
+            }
+
             if (brain.GunController.CurrentRounds >= brain.GunController.CurrentGun.GunInfo.MagazineCapacity)
                 Complete();
         }
@@ -78,7 +77,7 @@ namespace GOAP.Assualt
 
         private void RecalcCoverPosition(Vector3 shotOrigin)
         {
-            if (coverRecalcPending) return;
+            if (coverRecalcPending || brain.CurrentAction.Type != Type) return;
             coverRecalcPending = true;
 
             brain.GunController.AimIKTarget.position = shotOrigin;
