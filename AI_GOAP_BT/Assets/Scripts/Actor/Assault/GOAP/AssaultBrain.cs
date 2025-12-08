@@ -1,6 +1,5 @@
 using BehaviorDesigner.Runtime;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 
 namespace GOAP.Assualt
@@ -10,7 +9,8 @@ namespace GOAP.Assualt
         IDLE,
         MOVE_TO_CAPTURE,
         COMBAT,
-        RELOAD
+        RELOAD,
+        COVER
     }
 
     public enum AssaultGoal
@@ -49,6 +49,7 @@ namespace GOAP.Assualt
             Sensor.MyStat.OnDead += InitGOAP;
             Sensor.MyStat.OnDead += CorpseSpawner.SpawnCorpse;
             Sensor.MyStat.OnRevive += CorpseSpawner.DespawnCorpse;
+            Sensor.MyStat.OnUnderAttack += OnUnderAttackDuringCover;
         }
 
         private void OnDestroy()
@@ -56,11 +57,7 @@ namespace GOAP.Assualt
             Sensor.MyStat.OnDead -= InitGOAP;
             Sensor.MyStat.OnDead -= CorpseSpawner.SpawnCorpse;
             Sensor.MyStat.OnRevive -= CorpseSpawner.DespawnCorpse;
-        }
-
-        private void Update()
-        {
-
+            Sensor.MyStat.OnUnderAttack -= OnUnderAttackDuringCover;
         }
 
         protected override void FixedUpdate()
@@ -148,7 +145,7 @@ namespace GOAP.Assualt
                 {
                     BT.enabled = true;
                 },
-                OnPhysicsUpdate = () => 
+                OnPhysicsUpdate = () =>
                 {
                     if (!Sensor.HasTarget)
                     {
@@ -160,13 +157,14 @@ namespace GOAP.Assualt
                     BT.enabled = false;
                 },
 
-                IsUsefulForGoal = goal => {
+                IsUsefulForGoal = goal =>
+                {
                     return
                     goal == AssaultGoal.ENGAGE_ENEMY;
-                    },
+                },
                 IsFinished = false
-            }); 
-            
+            });
+
             Actions.Add(AssualtAction.RELOAD, new GoapAction<AssualtAction, AssaultGoal>
             {
                 Type = AssualtAction.RELOAD,
@@ -179,7 +177,7 @@ namespace GOAP.Assualt
 
                 OnStart = () =>
                 {
-                    if (Sensor.HasTarget)
+                    if (Sensor.LastSeenPosition != Vector3.negativeInfinity)
                     {
                         EQS.LoadContext("Cover");
                         EQS.TickEQS();
@@ -196,7 +194,7 @@ namespace GOAP.Assualt
                 },
                 OnExit = () =>
                 {
-                    if (Sensor.HasTarget)
+                    if (Sensor.LastSeenPosition != Vector3.negativeInfinity)
                     {
                         EQS.LoadContext("Peek");
                         EQS.TickEQS();
@@ -204,13 +202,70 @@ namespace GOAP.Assualt
                     }
                 },
 
-                IsUsefulForGoal = goal => {
+                IsUsefulForGoal = goal =>
+                {
                     return true; //어느때나 탄약이 부족하면 즉시 재장전
                 },
                 IsFinished = false
             });
 
+            Actions.Add(AssualtAction.COVER, new GoapAction<AssualtAction, AssaultGoal>
+            {
+                Type = AssualtAction.COVER,
+                Cost = 5,
+
+                Preconditions =
+                {
+                    () => Sensor.MyStat.CurrentHP <= Sensor.MyStat.MaxHP * 0.25f
+                },
+
+                OnStart = () =>
+                {
+                    if (Sensor.LastSeenPosition != Vector3.negativeInfinity)
+                    {
+                        EQS.LoadContext("Cover");
+                        EQS.TickEQS();
+                        Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
+                    }
+                },
+                OnPhysicsUpdate = () =>
+                {
+                    if (Sensor.MyStat.CurrentHP >= Sensor.MyStat.MaxHP * 0.75f)
+                    {
+                        CompleteCurrentAction();
+                    }
+                },
+                OnExit = () =>
+                {
+                    if (Sensor.LastSeenPosition != Vector3.negativeInfinity)
+                    {
+                        EQS.LoadContext("Peek");
+                        EQS.TickEQS();
+                        Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
+                    }
+                },
+
+                IsUsefulForGoal = goal =>
+                {
+                    return true; //어느때나 체력이 부족하면 즉시 엄폐한다.
+                },
+                IsFinished = false
+            });
+
             DefaultActionType = AssualtAction.IDLE;
+        }
+
+        private void OnUnderAttackDuringCover(Vector3 shotOrigin)
+        {
+            if (CurrentAction.Type != AssualtAction.COVER)
+                return;
+
+            GunController.AimIKTarget.position = shotOrigin;
+
+            EQS.LoadContext("Cover");
+            EQS.TickEQS();
+
+            Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
         }
 
         protected override void RegisterGoals()
@@ -219,9 +274,9 @@ namespace GOAP.Assualt
             {
                 Type = AssaultGoal.SURVIVE,
                 Priority = 100,
-                IsSatisfied = () => 
+                IsSatisfied = () =>
                 {
-                    return true; //Sensor.MyStat.CurrentHP >= 30f;
+                    return true;
                 },
                 Repeatable = true
             });

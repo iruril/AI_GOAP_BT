@@ -9,7 +9,8 @@ public class Stat : MonoBehaviour, IDamageable
     public event Action OnRevive;
     public event Action<Vector3> OnUnderAttack;
 
-    [SerializeField] private float MaxHP = 100f;
+    [SerializeField] private float maxHP = 100f;
+    public float MaxHP => maxHP;
     [SerializeField] private float rotateSpeedToTarget = 90f;
     public float RotateSpeedToTarget => rotateSpeedToTarget;
 
@@ -20,6 +21,12 @@ public class Stat : MonoBehaviour, IDamageable
     private Quaternion spawnRotation;
 
     public CapturePoint.CapturePoint CurrentCapture { get; set; } = null;
+
+    private float lastDamageTime = -999f;
+    private CoroutineHandle hpRegenHandle;
+
+    private const float NO_DAMAGE_DURATION = 5f;
+    private const float REGEN_RATE = 0.1f;
 
     private void Awake()
     {
@@ -33,12 +40,16 @@ public class Stat : MonoBehaviour, IDamageable
     {
         OnDead += ReleaseCapturePoint;
         OnRevive += Revive;
+
+        hpRegenHandle = Timing.RunCoroutine(HPRegenHandle());
     }
 
     private void OnDestroy()
     {
         OnDead -= ReleaseCapturePoint;
         OnRevive -= Revive;
+
+        Timing.KillCoroutines(hpRegenHandle);
     }
 
     private void InitHP()
@@ -52,6 +63,7 @@ public class Stat : MonoBehaviour, IDamageable
         if (IsDead) return;
 
         CurrentHP -= dmg;
+        lastDamageTime = Time.time;
 
         OnUnderAttack?.Invoke(shotOrigin);
 
@@ -81,6 +93,23 @@ public class Stat : MonoBehaviour, IDamageable
     {
         InitHP();
         IsDead = false;
+    }
+
+    private IEnumerator<float> HPRegenHandle()
+    {
+        while (true)
+        {
+            yield return Timing.WaitForSeconds(0.1f);
+
+            if (IsDead) continue;
+
+            // 최근 피해 이후 5초가 지났으면 회복
+            if (Time.time - lastDamageTime >= NO_DAMAGE_DURATION)
+            {
+                float regenAmount = MaxHP * REGEN_RATE * 0.1f;
+                CurrentHP = Mathf.Min(CurrentHP + regenAmount, MaxHP);
+            }
+        }
     }
 
     private IEnumerator<float> Respawn()

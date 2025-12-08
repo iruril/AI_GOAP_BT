@@ -130,7 +130,7 @@ namespace AnimControl.Assault
         float _refAimValue;
         void UpdateAimWeight()
         {
-            float _targetVaule = MyBrain.Sensor.HasTarget ? 1f : 0f;
+            float _targetVaule = MyBrain.Sensor.IsAlert ? 1f : 0f;
             aimWeight = Mathf.SmoothDamp(
                 aimWeight,
                 _targetVaule,
@@ -148,7 +148,7 @@ namespace AnimControl.Assault
         public void DecideAccelByDistance()
         {
             float dist = Vector3.Distance(transform.position, MyBrain.Navigator.AI.endOfPath);
-            if (!MyBrain.Sensor.HasTarget)
+            if (!MyBrain.Sensor.IsAlert)
             {
                 if (dist <= 1f)
                     SetTargetAccel(0f);
@@ -197,7 +197,7 @@ namespace AnimControl.Assault
 
         public bool Shootable()
         {
-            return Aimable() && MyBrain.Sensor.TargetVisible;
+            return AimIK.solver.IKPositionWeight >= 0.99f && MyBrain.Sensor.TargetVisible;
         }
 
         private void OnDead()

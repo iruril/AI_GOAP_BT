@@ -1854,7 +1854,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad5e5a7ba8f1b014da22637a3c01d372, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 100
+  maxHP: 100
   rotateSpeedToTarget: 300
 --- !u!114 &2621712713207012491
 MonoBehaviour:
@@ -1897,7 +1897,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myEyes: {fileID: 7382681831241405966}
-  loseTargetAfter: 2
+  alertDuration: 7.5
   captureOffsetRadius: 4
   sightRange: 50
   sightAngle: 160
@@ -5041,6 +5041,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5417977022252455614}
+  setCooldown: 2
 --- !u!1001 &8998387009326069476
 PrefabInstance:
   m_ObjectHideFlags: 0

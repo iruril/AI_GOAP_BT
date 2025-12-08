@@ -1,4 +1,5 @@
 using MEC;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Sensor
@@ -18,13 +19,12 @@ namespace Sensor
         public bool HasTarget => CurrentTarget != null;
 
         public bool TargetVisible { get; private set; } = false;
-        public float TargetDistance { get; private set; } = Mathf.Infinity;
 
         [Header("Target Memory")]
         public Vector3 LastSeenPosition { get; private set; } = Vector3.negativeInfinity;
-
-        [SerializeField] private float loseTargetAfter = 2f;
-        protected float targetLostTimer = 0f;
+        [SerializeField] private float alertDuration = 20f;
+        private float alertTimer;
+        public bool IsAlert { get; private set; } = false;
 
         [Header("Capture Info")]
         public CapturePoint.CapturePoint CaptureTarget { get; private set; }
@@ -61,9 +61,9 @@ namespace Sensor
 
         protected virtual void Update()
         {
-            UpdateTargetDistance();
-            UpdateLostTargetTimer();
-            UpdateLastSeenPosition();
+            UpdateLostTarget();
+            UpdateLastSeenPosition(); 
+            UpdateAlertTimer();
         }
 
         protected virtual void FixedUpdate()
@@ -73,32 +73,30 @@ namespace Sensor
             CheckTargetIsValid();
         }
 
-        private void UpdateTargetDistance()
+        private void UpdateAlertTimer()
         {
-            if (!HasTarget)
+            if (!IsAlert) return;
+            if (HasTarget)
             {
-                TargetDistance = Mathf.Infinity;
-                return;
-            }
-
-            TargetDistance = Vector3.Distance(transform.position, CurrentTarget.position);
-        }
-
-        private void UpdateLostTargetTimer()
-        {
-            if (!HasTarget) return;
-            if (TargetVisible)
-            {
-                targetLostTimer = 0f;
+                alertTimer = 0f;
             }
             else
             {
-                targetLostTimer += Time.deltaTime;
+                alertTimer += Time.deltaTime;
 
-                if (targetLostTimer >= loseTargetAfter)
+                if (alertTimer >= alertDuration)
                 {
-                    ResetTarget();
+                    IsAlert = false;
                 }
+            }
+        }
+
+        private void UpdateLostTarget()
+        {
+            if (!HasTarget) return;
+            if (!TargetVisible)
+            {
+                ResetTarget();
             }
         }
 
@@ -117,6 +115,7 @@ namespace Sensor
                 CurrentTargetHead = anim.GetBoneTransform(HumanBodyBones.Head);
 
             LastSeenPosition = CurrentTargetHead.position;
+            IsAlert = true;
         }
 
         protected virtual void ResetTarget()
@@ -124,7 +123,6 @@ namespace Sensor
             CurrentTarget = null;
             CurrentTargetStat = null;
             CurrentTargetHead = null;
-            LastSeenPosition = Vector3.negativeInfinity;
             TargetVisible = false;
         }
 
@@ -284,6 +282,8 @@ namespace Sensor
         {
             ResetTarget();
             ResetCapture();
+            IsAlert = false;
+            alertTimer = 0f;
         }
 
 #if UNITY_EDITOR
@@ -296,7 +296,7 @@ namespace Sensor
                     Gizmos.color = Color.cyan;
 
                     Vector3 originEye = myEyes.position;
-                    Vector3 targetEye = CurrentTargetHead.position;
+                    Vector3 targetEye = LastSeenPosition;
 
                     Gizmos.DrawLine(originEye, targetEye);
 
@@ -306,7 +306,7 @@ namespace Sensor
                     Gizmos.color = Color.magenta;
 
                     Vector3 originEye = myEyes.position - Vector3.up * 0.05f;
-                    Vector3 targetEye = CurrentTargetHead.position - Vector3.up * 0.05f;
+                    Vector3 targetEye = LastSeenPosition - Vector3.up * 0.05f;
 
                     Gizmos.DrawLine(originEye, targetEye);
                 }

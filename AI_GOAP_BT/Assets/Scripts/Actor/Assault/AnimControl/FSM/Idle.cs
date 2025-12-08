@@ -43,7 +43,7 @@ namespace AnimControl.Assault
         {
             if (Vector3.Distance(ctx.transform.position, ctx.MyBrain.Navigator.AI.endOfPath) > 0.7f)
             {
-                if (!ctx.MyBrain.Sensor.HasTarget)
+                if (!ctx.MyBrain.Sensor.IsAlert)
                     return AnimState.Start;
                 else
                     return AnimState.LookAtMove;
@@ -79,13 +79,14 @@ namespace AnimControl.Assault
 
             if (MathUtility.IsRightDirection(ctx.transform.forward, targetDir, 60))
             {
-                turnHandle = Timing.RunCoroutine(DoTurn(false, targetDir));
+                turnHandle = Timing.RunCoroutine(DoTurn(false, targetDir), Segment.FixedUpdate);
             }
             else if (MathUtility.IsLeftDirection(ctx.transform.forward, targetDir, 60))
             {
-                turnHandle = Timing.RunCoroutine(DoTurn(true, targetDir));
+                turnHandle = Timing.RunCoroutine(DoTurn(true, targetDir), Segment.FixedUpdate);
             }
         }
+
         private IEnumerator<float> DoTurn(bool leftTurn, Vector3 targetDir)
         {
             float animTime = 0.66f;
@@ -107,7 +108,7 @@ namespace AnimControl.Assault
                 Quaternion newRot = Quaternion.Slerp(startRot, endRot, t);
                 ctx.MyRigid.MoveRotation(newRot);
 
-                time += Time.deltaTime;
+                time += Timing.DeltaTime;
                 yield return Timing.WaitForOneFrame;
             }
 

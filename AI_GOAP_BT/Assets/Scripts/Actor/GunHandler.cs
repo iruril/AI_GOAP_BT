@@ -164,6 +164,7 @@ public class GunHandler : MonoBehaviour
     public void OnDead()
     {
         pendingFire = false;
+        OnReload = false;
         Timing.KillCoroutines(reloadHandle); 
         
         foreach (var key in roundHistory.Keys.ToList())

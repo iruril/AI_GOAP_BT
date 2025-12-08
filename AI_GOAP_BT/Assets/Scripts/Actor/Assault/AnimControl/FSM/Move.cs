@@ -52,7 +52,7 @@ namespace AnimControl.Assault
 
         public override AnimState GetNextState()
         {
-            if (ctx.MyBrain.Sensor.HasTarget || ctx.AttackedDirection != Vector3.zero)
+            if (ctx.MyBrain.Sensor.IsAlert || ctx.AttackedDirection != Vector3.zero)
                 return AnimState.LookAtMove;
             if (Vector3.Distance(ctx.transform.position, ctx.MyBrain.Navigator.AI.endOfPath) <= stoppingDistance
                 && obstacle == 0)

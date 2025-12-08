@@ -1,5 +1,3 @@
-using MEC;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace AnimControl.Assault
@@ -38,7 +36,7 @@ namespace AnimControl.Assault
         {
             if (ctx.MyBrain.Navigator.AI.velocity.sqrMagnitude < 0.001f)
                 return AnimState.Idle;
-            if (!ctx.MyBrain.Sensor.HasTarget)
+            if (!ctx.MyBrain.Sensor.IsAlert)
             {
                 if (ctx.MyBrain.Navigator.AI.velocity.sqrMagnitude > 0.001f)
                     return AnimState.Move;
@@ -64,17 +62,17 @@ namespace AnimControl.Assault
             Quaternion targetRot;
             Quaternion newRot;
 
-            if (ctx.MyBrain.Sensor.HasTarget)
+            if (ctx.AttackedDirection != Vector3.zero)
+            {
+                targetRot = Quaternion.LookRotation(ctx.AttackedDirection);
+            }
+            else if (ctx.MyBrain.Sensor.IsAlert)
             {
                 targetDir = ctx.MyBrain.Sensor.LastSeenPosition - ctx.transform.position;
                 targetDir.y = 0f;
                 targetDir.Normalize();
 
                 targetRot = Quaternion.LookRotation(targetDir);
-            }
-            else if(ctx.AttackedDirection != Vector3.zero)
-            {
-                targetRot = Quaternion.LookRotation(ctx.AttackedDirection);
             }
             else
             {
