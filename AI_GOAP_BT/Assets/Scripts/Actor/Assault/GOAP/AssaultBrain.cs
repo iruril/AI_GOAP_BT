@@ -230,6 +230,7 @@ namespace GOAP.Assualt
                 },
                 OnPhysicsUpdate = () =>
                 {
+                    AttackController.TryAttack();
                     if (Sensor.MyStat.CurrentHP >= Sensor.MyStat.MaxHP * 0.75f)
                     {
                         CompleteCurrentAction();
