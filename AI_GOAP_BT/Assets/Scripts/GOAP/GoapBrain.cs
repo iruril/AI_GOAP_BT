@@ -7,19 +7,25 @@ namespace GOAP
 {
     public class GoapAction<ActionType, GoalType> where ActionType : Enum where GoalType : Enum
     {
-        public ActionType Type;
-        public int Cost = 1;
+        public ActionType Type { get; protected set; }
+        public int Cost { get; protected set; } = 1;
+        public virtual bool CheckPreconditions() => true;
+        public virtual bool IsUsefulForGoal(GoalType goal) => true;
+        public bool IsFinished { get; protected set; } = false;
 
-        public List<Func<bool>> Preconditions = new();
-        public List<Action> Effects = new();
+        public virtual void OnStart() { }
+        public virtual void OnPhysicsUpdate() { }
+        public virtual void OnUpdate() { }
+        public virtual void OnExit() { }
 
-        public Action OnStart;
-        public Action OnPhysicsUpdate;
-        public Action OnExit;
-
-        public bool IsFinished;
-
-        public Func<GoalType, bool> IsUsefulForGoal;
+        public void Complete()
+        {
+            IsFinished = true;
+        }
+        public virtual void Reset()
+        {
+            IsFinished = false;
+        }
     }
 
     public class GoapGoal<GoalType> where GoalType : Enum
@@ -61,9 +67,14 @@ namespace GOAP
 
         }
 
+        protected virtual void Update()
+        {
+            Tick_Update();
+        }
+
         protected virtual void FixedUpdate()
         {
-            Tick();
+            Tick_Physics();
         }
 
         #region Register ACTION / GOAL Section
@@ -228,13 +239,27 @@ namespace GOAP
         }
         #endregion
 
-        void Tick()
+        void Tick_Update()
+        {
+            if (!actionStarted)
+            {
+                CurrentAction.OnStart();
+                actionStarted = true;
+                return; // OnUpdate()가 같은 프레임에 절대 실행되지 않도록
+            }
+
+            CurrentAction.OnUpdate();
+        }
+
+        void Tick_Physics()
         {
             SelectGoal();
-            RunAction();
+            TryChangeAction();
 
             currentGoalType = CurrentGoal.Type;
             currentActionType = CurrentAction.Type;
+
+            if (actionStarted) CurrentAction.OnPhysicsUpdate();
         }
 
         void SelectGoal()
@@ -248,34 +273,20 @@ namespace GOAP
                 : Goals[DefaultGoalType];
         }
 
-        void RunAction()
+        void TryChangeAction()
         {
             var best = SelectBestAction(CurrentGoal);
+
             if (!ReferenceEquals(best, CurrentAction))
             {
-                CurrentAction.IsFinished = false;
-                CurrentAction?.OnExit?.Invoke();
-                actionStarted = false;
-
+                StopCurrentAction();
                 CurrentAction = best;
             }
 
-            if (!CheckPreconditions(CurrentAction))
+            if (!CheckPreconditions(CurrentAction) || CurrentAction.IsFinished)
             {
                 StopCurrentAction();
             }
-            else if (CurrentAction.IsFinished)
-            {
-                FinishCurrentAction();
-            }
-
-            if (!actionStarted)
-            {
-                CurrentAction.OnStart?.Invoke();
-                actionStarted = true;
-            }
-
-            CurrentAction.OnPhysicsUpdate?.Invoke();
         }
 
         GoapAction<ActionType, GoalType> SelectBestAction(GoapGoal<GoalType> goal)
@@ -290,7 +301,7 @@ namespace GOAP
                 if (!CheckPreconditions(action))
                     continue;
 
-                if (action.IsUsefulForGoal != null && !action.IsUsefulForGoal(goal.Type))
+                if (!action.IsUsefulForGoal(goal.Type))
                     continue;
 
                 int score = -action.Cost;
@@ -306,25 +317,14 @@ namespace GOAP
 
         bool CheckPreconditions(GoapAction<ActionType, GoalType> a)
         {
-            foreach (var cond in a.Preconditions)
-                if (!cond()) return false;
-
-            return true;
+            return a.CheckPreconditions();
         }
 
         void StopCurrentAction()
         {
-            CurrentAction.IsFinished = false;
-            CurrentAction.OnExit?.Invoke();
+            CurrentAction.OnExit();
+            CurrentAction.Reset();
             actionStarted = false;
-        }
-
-        void FinishCurrentAction()
-        {
-            foreach (var eff in CurrentAction.Effects)
-                eff?.Invoke();
-
-            StopCurrentAction();
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace GOAP
         /// </summary>
         public void CompleteCurrentAction()
         {
-            CurrentAction.IsFinished = true;
+            CurrentAction.Complete();
         }
     }
 }

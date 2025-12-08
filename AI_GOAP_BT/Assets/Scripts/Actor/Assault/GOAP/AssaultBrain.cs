@@ -1,6 +1,5 @@
 using BehaviorDesigner.Runtime;
 using System.Linq;
-using UnityEngine;
 
 namespace GOAP.Assualt
 {
@@ -49,7 +48,6 @@ namespace GOAP.Assualt
             Sensor.MyStat.OnDead += InitGOAP;
             Sensor.MyStat.OnDead += CorpseSpawner.SpawnCorpse;
             Sensor.MyStat.OnRevive += CorpseSpawner.DespawnCorpse;
-            Sensor.MyStat.OnUnderAttack += OnUnderAttackDuringCover;
         }
 
         private void OnDestroy()
@@ -57,7 +55,6 @@ namespace GOAP.Assualt
             Sensor.MyStat.OnDead -= InitGOAP;
             Sensor.MyStat.OnDead -= CorpseSpawner.SpawnCorpse;
             Sensor.MyStat.OnRevive -= CorpseSpawner.DespawnCorpse;
-            Sensor.MyStat.OnUnderAttack -= OnUnderAttackDuringCover;
         }
 
         protected override void FixedUpdate()
@@ -82,191 +79,13 @@ namespace GOAP.Assualt
 
         protected override void RegisterActions()
         {
-            Actions.Add(AssualtAction.IDLE, new GoapAction<AssualtAction, AssaultGoal>
-            {
-                Type = AssualtAction.IDLE,
-                Cost = 50,
-
-                Preconditions =
-                {
-                    () => true // 기본 Idle은 항상 실행 가능
-                },
-
-                OnStart = () => { },
-                OnPhysicsUpdate = () => { },
-                OnExit = () => { },
-
-                IsUsefulForGoal = goal => true, // 어떤 Goal에도 기본 Idle은 유효
-                IsFinished = false
-            });
-
-            Actions.Add(AssualtAction.MOVE_TO_CAPTURE, new GoapAction<AssualtAction, AssaultGoal>
-            {
-                Type = AssualtAction.MOVE_TO_CAPTURE,
-                Cost = 20,
-
-                Preconditions =
-                {
-                    () => WorldManager.Instance.IsThereUncapturedPoint(transform)
-                },
-
-                OnStart = () =>
-                {
-                    Sensor.GetClosestCapture(out var destination);
-                    Navigator.SetDestination(destination);
-                },
-                OnPhysicsUpdate = () =>
-                {
-                    if (Sensor.IsCurrentCapCapturerd())
-                    {
-                        CompleteCurrentAction();
-                    }
-                },
-                OnExit = () =>
-                {
-                    Sensor.ResetCapture();
-                },
-
-                IsUsefulForGoal = goal => goal == AssaultGoal.CAPTURE,
-                IsFinished = false
-            });
-
-            Actions.Add(AssualtAction.COMBAT, new GoapAction<AssualtAction, AssaultGoal>
-            {
-                Type = AssualtAction.COMBAT,
-                Cost = 20,
-
-                Preconditions =
-                {
-                    () => Sensor.HasTarget
-                },
-
-                OnStart = () =>
-                {
-                    BT.enabled = true;
-                },
-                OnPhysicsUpdate = () =>
-                {
-                    if (!Sensor.HasTarget)
-                    {
-                        CompleteCurrentAction();
-                    }
-                },
-                OnExit = () =>
-                {
-                    BT.enabled = false;
-                },
-
-                IsUsefulForGoal = goal =>
-                {
-                    return
-                    goal == AssaultGoal.ENGAGE_ENEMY;
-                },
-                IsFinished = false
-            });
-
-            Actions.Add(AssualtAction.RELOAD, new GoapAction<AssualtAction, AssaultGoal>
-            {
-                Type = AssualtAction.RELOAD,
-                Cost = 10,
-
-                Preconditions =
-                {
-                    () => GunController.CurrentRounds == 0
-                },
-
-                OnStart = () =>
-                {
-                    if (Sensor.LastSeenPosition != Vector3.negativeInfinity)
-                    {
-                        EQS.LoadContext("Cover");
-                        EQS.TickEQS();
-                        Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
-                    }
-                    GunController.Reload(MotionController.Anim, MotionController.FBBIK.solver.leftHandEffector);
-                },
-                OnPhysicsUpdate = () =>
-                {
-                    if (GunController.CurrentRounds > 0)
-                    {
-                        CompleteCurrentAction();
-                    }
-                },
-                OnExit = () =>
-                {
-                    if (Sensor.LastSeenPosition != Vector3.negativeInfinity)
-                    {
-                        EQS.LoadContext("Peek");
-                        EQS.TickEQS();
-                        Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
-                    }
-                },
-
-                IsUsefulForGoal = goal =>
-                {
-                    return true; //어느때나 탄약이 부족하면 즉시 재장전
-                },
-                IsFinished = false
-            });
-
-            Actions.Add(AssualtAction.COVER, new GoapAction<AssualtAction, AssaultGoal>
-            {
-                Type = AssualtAction.COVER,
-                Cost = 5,
-
-                Preconditions =
-                {
-                    () => Sensor.MyStat.CurrentHP <= Sensor.MyStat.MaxHP * 0.25f
-                },
-
-                OnStart = () =>
-                {
-                    if (Sensor.LastSeenPosition != Vector3.negativeInfinity)
-                    {
-                        EQS.LoadContext("Cover");
-                        EQS.TickEQS();
-                        Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
-                    }
-                },
-                OnPhysicsUpdate = () =>
-                {
-                    AttackController.TryAttack();
-                    if (Sensor.MyStat.CurrentHP >= Sensor.MyStat.MaxHP * 0.75f)
-                    {
-                        CompleteCurrentAction();
-                    }
-                },
-                OnExit = () =>
-                {
-                    if (Sensor.LastSeenPosition != Vector3.negativeInfinity)
-                    {
-                        EQS.LoadContext("Peek");
-                        EQS.TickEQS();
-                        Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
-                    }
-                },
-
-                IsUsefulForGoal = goal =>
-                {
-                    return true; //어느때나 체력이 부족하면 즉시 엄폐한다.
-                },
-                IsFinished = false
-            });
+            Actions.Add(AssualtAction.IDLE, new IdleAction(this, AssualtAction.IDLE, 50));
+            Actions.Add(AssualtAction.MOVE_TO_CAPTURE, new MoveToCaptureAction(this, AssualtAction.MOVE_TO_CAPTURE, 20));
+            Actions.Add(AssualtAction.COMBAT, new CombatAction(this, AssualtAction.COMBAT, 20));
+            Actions.Add(AssualtAction.RELOAD, new ReloadAction(this, AssualtAction.RELOAD, 10));
+            Actions.Add(AssualtAction.COVER, new CoverAction(this, AssualtAction.COVER, 5));
 
             DefaultActionType = AssualtAction.IDLE;
-        }
-
-        private void OnUnderAttackDuringCover(Vector3 shotOrigin)
-        {
-            if (CurrentAction.Type != AssualtAction.COVER)
-                return;
-
-            GunController.AimIKTarget.position = shotOrigin;
-
-            EQS.LoadContext("Cover");
-            EQS.TickEQS();
-
-            Navigator.SetDestination(EQS.BestItem.GetWorldPosition());
         }
 
         protected override void RegisterGoals()
