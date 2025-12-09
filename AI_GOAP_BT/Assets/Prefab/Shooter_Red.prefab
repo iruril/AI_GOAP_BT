@@ -3395,7 +3395,7 @@ MonoBehaviour:
   heightBackingField: 2
   centerBackingField: 1
   locked: 0
-  lockWhenNotMoving: 1
+  lockWhenNotMoving: 0
   agentTimeHorizon: 2
   obstacleTimeHorizon: 0.5
   maxNeighbours: 16
@@ -3486,8 +3486,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf66fb4e366983d4190f6b2ef60eae00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentActionType: 0
-  currentGoalType: 0
+  GoalCheckInterval: 0.1
 --- !u!114 &3022949711016103152
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -67,10 +67,12 @@ namespace GOAP.Assualt
             if (coverRecalcPending || brain.CurrentAction.Type != Type) return;
             coverRecalcPending = true;
 
+            Vector3 aimIKOrigin = brain.GunController.AimIKTarget.position;
             brain.GunController.AimIKTarget.position = shotOrigin;
             brain.EQS.LoadContext("Cover");
             brain.EQS.TickEQS();
             brain.Navigator.SetDestination(brain.EQS.BestItem.GetWorldPosition());
+            brain.GunController.AimIKTarget.position = aimIKOrigin;
 
             recalcHandle = Timing.RunCoroutine(ResetFlagNextFrame());
         }

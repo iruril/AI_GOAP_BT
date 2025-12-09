@@ -50,12 +50,22 @@ public class AttackHandler : MonoBehaviour
         AimIKWeightControl();
     }
 
+    Vector3 aimIkTargetPosRef;
     private void AimIKTargetTransformControl()
     {
-        myBrain.GunController.AimIKTarget.position =
-            myBrain.Sensor.IsAlert
+        Vector3 targetPos = myBrain.Sensor.IsAlert
             ? myBrain.Sensor.LastSeenPosition
             : transform.position + transform.forward * 20f + Vector3.up * 1.2f;
+
+        myBrain.GunController.AimIKTarget.position = Vector3.SmoothDamp
+        (
+            myBrain.GunController.AimIKTarget.position,
+            targetPos,
+            ref aimIkTargetPosRef,
+            0.25f,
+            float.PositiveInfinity,
+            Time.deltaTime
+        );
     }
 
 

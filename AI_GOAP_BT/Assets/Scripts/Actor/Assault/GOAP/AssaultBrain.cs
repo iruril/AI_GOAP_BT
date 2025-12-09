@@ -72,9 +72,6 @@ namespace GOAP.Assualt
 
             if (Actions.TryGetValue(DefaultActionType, out var action)) CurrentAction = action;
             else CurrentAction = Actions.First().Value;
-
-            currentGoalType = CurrentGoal.Type;
-            currentActionType = CurrentAction.Type;
         }
 
         protected override void RegisterActions()

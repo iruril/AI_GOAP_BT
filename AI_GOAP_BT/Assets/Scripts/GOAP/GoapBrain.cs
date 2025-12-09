@@ -41,14 +41,12 @@ namespace GOAP
         //public AISensor sensor;
         //public AIBlackboard blackboard;
 
-        public Dictionary<ActionType, GoapAction<ActionType, GoalType>> Actions = new();
-        public Dictionary<GoalType, GoapGoal<GoalType>> Goals = new();
+        protected Dictionary<ActionType, GoapAction<ActionType, GoalType>> Actions = new();
+        protected Dictionary<GoalType, GoapGoal<GoalType>> Goals = new();
 
         public GoapAction<ActionType, GoalType> CurrentAction { get; protected set; }
-        [SerializeField] protected ActionType currentActionType;
         
         public GoapGoal<GoalType> CurrentGoal { get; protected set; }
-        [SerializeField] protected GoalType currentGoalType;
 
         protected ActionType DefaultActionType;
         protected GoalType DefaultGoalType; 
@@ -83,7 +81,9 @@ namespace GOAP
         #region Register ACTION / GOAL Section
         protected virtual void RegisterActions()
         {
-
+            /*
+                여기에 GoapAction을 Register
+            */
         }
 
         protected virtual void RegisterGoals()
@@ -112,8 +112,6 @@ namespace GOAP
             {
                 if (Goals.TryGetValue(DefaultGoalType, out var goal)) CurrentGoal = goal;
                 else CurrentGoal = Goals.First().Value;
-
-                currentGoalType = CurrentGoal.Type;
             }
 
             if (Actions.Count == 0)
@@ -126,8 +124,6 @@ namespace GOAP
             {
                 if (Actions.TryGetValue(DefaultActionType, out var action)) CurrentAction = action;
                 else CurrentAction = Actions.First().Value;
-
-                currentActionType = CurrentAction.Type;
             }
         }
         #endregion
@@ -138,9 +134,6 @@ namespace GOAP
             {
                 SelectGoal();
                 TryChangeAction();
-
-                currentGoalType = CurrentGoal.Type;
-                currentActionType = CurrentAction.Type;
 
                 nextGoalCheck = Time.time + GoalCheckInterval;
             }
@@ -163,6 +156,7 @@ namespace GOAP
                 actionStarted = true;
                 return;
             }
+
             CurrentAction.OnPhysicsUpdate();
         }
 
