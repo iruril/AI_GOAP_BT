@@ -82,8 +82,8 @@ namespace GOAP.Assualt
             Actions.Add(AssualtAction.IDLE, new IdleAction(this, AssualtAction.IDLE, 50));
             Actions.Add(AssualtAction.MOVE_TO_CAPTURE, new MoveToCaptureAction(this, AssualtAction.MOVE_TO_CAPTURE, 20));
             Actions.Add(AssualtAction.COMBAT, new CombatAction(this, AssualtAction.COMBAT, 20));
-            Actions.Add(AssualtAction.RELOAD, new ReloadAction(this, AssualtAction.RELOAD, 10));
-            Actions.Add(AssualtAction.COVER, new CoverAction(this, AssualtAction.COVER, 5));
+            Actions.Add(AssualtAction.RELOAD, new ReloadAction(this, AssualtAction.RELOAD, 5));
+            Actions.Add(AssualtAction.COVER, new CoverAction(this, AssualtAction.COVER, 10));
 
             DefaultActionType = AssualtAction.IDLE;
         }
