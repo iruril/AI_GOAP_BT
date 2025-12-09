@@ -20,7 +20,7 @@ public class Bullet : MonoBehaviour
     [SerializeField] private LayerMask grazeMask;
 
     private Vector3 velocity;
-    private Vector3 prevPos;
+    private Vector3 prevPos; //FixedUpdate 기준 이전 위치
 
     private Vector3 shotOrigin;
 
@@ -64,47 +64,44 @@ public class Bullet : MonoBehaviour
     private void Update()
     {
         if (!initialized) return;
-        PerformContinuousHitCheck();
+
+        velocity.y += gravity * Time.deltaTime;
+        velocity *= Mathf.Exp(-drag * Time.deltaTime);
+
+        transform.position += velocity * Time.deltaTime;
     }
 
-    private void PerformContinuousHitCheck()
+    private void FixedUpdate()
     {
-        Vector3 nextPos;
-        float rayDist;
-        Vector3 rayDir;
+        if (!initialized) return; 
 
-        ApplyBallistics(out nextPos, out rayDir, out rayDist);
+        Vector3 currentPos = transform.position;
 
-        if (rayDist > 0.0001f)
+        Vector3 dir = currentPos - prevPos;
+        float dist = dir.magnitude;
+
+        if (dist > 0.00001f)
         {
-            int count = DoRaycast(prevPos, rayDir, rayDist);
+            int count = Physics.RaycastNonAlloc(
+                prevPos,
+                dir.normalized,
+                hitBuffer,
+                dist,
+                hitMask | grazeMask
+            );
 
             if (count > 0)
             {
                 ProcessGrazingHits(count);
                 if (ProcessDamageHits(count))
+                {
+                    prevPos = currentPos;
                     return;
+                }
             }
         }
 
-        transform.position = nextPos;
-        prevPos = nextPos;
-    }
-
-    private void ApplyBallistics(out Vector3 nextPos, out Vector3 rayDir, out float rayDist)
-    {
-        velocity.y += gravity * Time.deltaTime;
-        velocity *= (1f - drag * Time.deltaTime);
-
-        nextPos = transform.position + velocity * Time.deltaTime;
-        rayDir = nextPos - prevPos;
-        rayDist = rayDir.magnitude;
-    }
-
-    private int DoRaycast(Vector3 origin, Vector3 direction, float distance)
-    {
-        int combinedMask = hitMask | grazeMask;
-        return Physics.RaycastNonAlloc(origin, direction.normalized, hitBuffer, distance, combinedMask);
+        prevPos = currentPos;
     }
 
     private void ProcessGrazingHits(int count)
@@ -115,14 +112,11 @@ public class Bullet : MonoBehaviour
             var col = hit.collider;
             int layer = col.gameObject.layer;
 
-            if ((grazeMask & (1 << layer)) != 0)
-            {
-                if (col.TryGetComponent<GrazeListener>(out var listener))
-                {
-                    if (IsFriendly(listener.Owner.gameObject)) continue;
-                    listener.OnGraze(shotOrigin);
-                }
-            }
+            if ((grazeMask & (1 << layer)) == 0) continue;
+            if (IsFriendly(layer)) continue;
+
+            if (col.TryGetComponent<GrazeListener>(out var listener))
+                listener.OnGraze(shotOrigin);
         }
     }
 
@@ -132,37 +126,31 @@ public class Bullet : MonoBehaviour
         {
             var hit = hitBuffer[i];
             var col = hit.collider;
-            int layer = col.gameObject.layer;
 
+            int layer = col.gameObject.layer;
             if (IsFriendly(layer)) continue;
+
             if ((hitMask & (1 << layer)) != 0)
             {
                 ProcessDamageHit(col, hit.point, hit.normal);
                 return true;
             }
         }
+
         return false;
     }
-
-    private bool IsFriendly(int layer)
-    {
-        return ((1 << layer) & friendLayers) != 0;
-    }
-
-    private bool IsFriendly(GameObject obj) => ((1 << obj.layer) & friendLayers) != 0;
 
     private void ProcessDamageHit(Collider target, Vector3 hitPoint, Vector3 hitNormal)
     {
         if (target.TryGetComponent<HitBox>(out var hitBox))
-        {
             hitBox.ApplyDamage(damage, shotOrigin, hitPoint, friendLayers);
-        }
 
-        Quaternion rot = Quaternion.LookRotation(hitNormal);
-        EffectPoolManager.SpawnFromPool("Hit", hitPoint, rot);
+        EffectPoolManager.SpawnFromPool("Hit", hitPoint, Quaternion.LookRotation(hitNormal));
 
         Deactivate();
     }
+
+    private bool IsFriendly(int layer) => ((1 << layer) & friendLayers) != 0;
 
     private void Deactivate()
     {
