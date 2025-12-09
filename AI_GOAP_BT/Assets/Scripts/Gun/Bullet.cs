@@ -122,22 +122,33 @@ public class Bullet : MonoBehaviour
 
     private bool ProcessDamageHits(int count)
     {
+        float closestDist = float.MaxValue;
+        RaycastHit closestHit = default;
+        bool found = false;
+
         for (int i = 0; i < count; i++)
         {
             var hit = hitBuffer[i];
+            float dist = hit.distance;
             var col = hit.collider;
-
             int layer = col.gameObject.layer;
+
             if (IsFriendly(layer)) continue;
 
-            if ((hitMask & (1 << layer)) != 0)
+            if ((hitMask & (1 << layer)) == 0) continue;
+
+            if(dist < closestDist)
             {
-                ProcessDamageHit(col, hit.point, hit.normal);
-                return true;
+                closestDist = dist;
+                closestHit = hit;
+                found = true;
             }
         }
 
-        return false;
+        if (!found) return false;
+
+        ProcessDamageHit(closestHit.collider, closestHit.point, closestHit.normal);
+        return true;
     }
 
     private void ProcessDamageHit(Collider target, Vector3 hitPoint, Vector3 hitNormal)
