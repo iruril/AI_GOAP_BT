@@ -37,12 +37,14 @@ namespace Sensor.Assualt
 
         protected override void SetTarget(Transform target)
         {
+            if (!isServer) return;
             base.SetTarget(target);
             OnTargetSet?.Invoke(target);
         }
 
         protected override void ResetTarget()
         {
+            if (!isServer) return;
             base.ResetTarget();
             OnTargetReset?.Invoke();
         }

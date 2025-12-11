@@ -1,10 +1,11 @@
 using MEC;
+using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Sensor
 {
-    public abstract class ActorSensorBase : MonoBehaviour
+    public abstract class ActorSensorBase : NetworkBehaviour
     {
         public Stat MyStat { get; private set; }
 
@@ -51,16 +52,19 @@ namespace Sensor
 
         protected virtual void Start()
         {
+            if (!isServer) return;
             MyStat.OnDead += OnDead;
         }
 
         protected virtual void OnDestroy()
         {
+            if (!isServer) return;
             MyStat.OnDead -= OnDead;
         }
 
         protected virtual void Update()
         {
+            if (!isServer) return;
             UpdateLostTarget();
             UpdateLastSeenPosition(); 
             UpdateAlertTimer();
@@ -68,6 +72,7 @@ namespace Sensor
 
         protected virtual void FixedUpdate()
         {
+            if (!isServer) return;
             CheckHostileInSight();
             CheckTargetInSight();
             CheckTargetIsValid();

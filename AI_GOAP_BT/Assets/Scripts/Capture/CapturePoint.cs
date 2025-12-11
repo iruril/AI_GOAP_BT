@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using MEC;
+using Mirror;
 
 namespace CapturePoint
 {
@@ -37,7 +38,9 @@ namespace CapturePoint
         public float CaptureAmount => captureAmount;
 
         public float CaptureGauge { get; set; }
-        public CaptureState GetCurrentState() => CurrentState.StateKey;
+
+        [SyncVar(hook = nameof(OnStateChanged))]
+        public CaptureState SyncedState;
 
         private CoroutineHandle colorHandle;
 
@@ -48,9 +51,19 @@ namespace CapturePoint
             InitializeStates();
             CurrentState = States[CaptureState.Neutral];
         }
+        protected override void Start()
+        {
+            base.Start();
+
+            if (!isServer) return;
+
+            if (SyncedState == default)
+                SyncedState = CaptureState.Neutral;
+        }
 
         protected override void Update()
         {
+            if (!isServer) return;
             base.Update();
         }
 
@@ -68,6 +81,8 @@ namespace CapturePoint
 
         public void AddIntruder(Stat intruder)
         {
+            if (!isServer) return;
+
             if (intruder.CompareTag("TeamBlue"))
             {
                 blues.Add(intruder);
@@ -80,6 +95,8 @@ namespace CapturePoint
 
         public void RemoveIntruder(Stat intruder)
         {
+            if (!isServer) return;
+
             if (intruder.CompareTag("TeamBlue"))
             {
                 blues.Remove(intruder);
@@ -90,9 +107,35 @@ namespace CapturePoint
             }
         }
 
+        public override void TransitionToState(CaptureState next)
+        {
+            base.TransitionToState(next);
+
+            if (isServer)
+            {
+                SyncedState = next; // 상태 전파
+            }
+        }
+
         public bool IsEmptyPlace()
         {
             return blues.Count == 0 && reds.Count == 0;
+        }
+
+        private void OnStateChanged(CaptureState oldState, CaptureState newState)
+        {
+            switch (newState)
+            {
+                case CaptureState.Neutral:
+                    UpdateDecalColor(0);
+                    break;
+                case CaptureState.CapturedByBlue:
+                    UpdateDecalColor(1);
+                    break;
+                case CaptureState.CapturedByRed:
+                    UpdateDecalColor(-1);
+                    break;
+            }
         }
 
         /// <summary>
@@ -141,16 +184,10 @@ namespace CapturePoint
 
         public bool NeedToCapture(Transform agent)
         {
-            bool result = true;
             if (agent.CompareTag("TeamBlue"))
-            {
-                if (CurrentState.StateKey == CaptureState.CapturedByBlue) result = false;
-            }
-            else
-            {
-                if (CurrentState.StateKey == CaptureState.CapturedByRed) result = false;
-            }
-            return result;
+                return SyncedState != CaptureState.CapturedByBlue;
+
+            return SyncedState != CaptureState.CapturedByRed;
         }
     }
 }

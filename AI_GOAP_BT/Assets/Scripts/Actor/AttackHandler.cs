@@ -1,127 +1,140 @@
 using UnityEngine;
 using MEC;
 using System.Collections.Generic;
+using Mirror;
 
-public class AttackHandler : MonoBehaviour
+namespace GOAP.Assualt
 {
-    GOAP.Assualt.AssaultBrain myBrain;
-
-    [Header("공격 주기")]
-    [SerializeField] private float attackCooldown = 2.5f;
-
-    [Header("점사 탄환 수")]
-    [SerializeField] private int burstCount = 3;
-
-    private float cooldownTimer = 0f;
-    private bool isBursting = false;
-    private CoroutineHandle burstHandle;
-
-    private void Awake()
+    public class AttackHandler : NetworkBehaviour
     {
-        myBrain = GetComponent<GOAP.Assualt.AssaultBrain>();
-    }
+        AssaultBrain myBrain;
 
-    private void Start()
-    {
-        myBrain.Sensor.MyStat.OnDead += OnDead;
-        myBrain.Sensor.MyStat.OnDead += myBrain.GunController.OnDead;
-        myBrain.MotionController.AimIK.solver.OnPostUpdate += myBrain.GunController.FireCallback;
-        myBrain.MotionController.FBBIK.solver.leftHandEffector.target = myBrain.GunController.LeftHandIKTarget;
-        myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 1f;
-        myBrain.MotionController.AimIK.solver.IKPositionWeight = 0f;
-    }
+        [Header("공격 주기")]
+        [SerializeField] private float attackCooldown = 2.5f;
 
-    private void OnDestroy()
-    {
-        myBrain.Sensor.MyStat.OnDead -= OnDead;
-        myBrain.Sensor.MyStat.OnDead -= myBrain.GunController.OnDead;
-        myBrain.MotionController.AimIK.solver.OnPostUpdate -= myBrain.GunController.FireCallback;
-    }
+        [Header("점사 탄환 수")]
+        [SerializeField] private int burstCount = 3;
 
-    private void Update()
-    {
-        cooldownTimer += Time.deltaTime;
-        AimIKHandle();
-    }
+        private float cooldownTimer = 0f;
+        private bool isBursting = false;
+        private CoroutineHandle burstHandle;
 
-    private void AimIKHandle()
-    {
-        AimIKTargetTransformControl();
-        AimIKWeightControl();
-    }
+        [SyncVar] private Vector3 syncedAimTarget;
+        [SyncVar] private float syncedAimWeight;
 
-    Vector3 aimIkTargetPosRef;
-    private void AimIKTargetTransformControl()
-    {
-        Vector3 targetPos = myBrain.Sensor.IsAlert
-            ? myBrain.Sensor.LastSeenPosition
-            : transform.position + transform.forward * 20f + Vector3.up * 1.2f;
-
-        myBrain.GunController.AimIKTarget.position = Vector3.SmoothDamp
-        (
-            myBrain.GunController.AimIKTarget.position,
-            targetPos,
-            ref aimIkTargetPosRef,
-            0.25f,
-            float.PositiveInfinity,
-            Time.deltaTime
-        );
-    }
-
-
-    float _refTargetValue;
-    private void AimIKWeightControl()
-    {
-        float _targetVaule = myBrain.MotionController.Aimable() && !myBrain.GunController.OnReload ? 1f : 0f;
-
-        myBrain.MotionController.AimIK.solver.IKPositionWeight = Mathf.SmoothDamp(
-            myBrain.MotionController.AimIK.solver.IKPositionWeight,
-            _targetVaule,
-            ref _refTargetValue,
-            0.1f
-        );
-    }
-
-    public void TryAttack()
-    {
-        if (!myBrain.MotionController.Shootable())
-            return;
-
-        if (cooldownTimer < attackCooldown)
-            return;
-
-        if (isBursting)
-            return;
-
-        burstHandle = Timing.RunCoroutine(BurstRoutine());
-    }
-
-    private IEnumerator<float> BurstRoutine()
-    {
-        isBursting = true;
-        cooldownTimer = 0f;
-
-        var gunStat = myBrain.GunController;
-        int fireCount = burstCount;
-
-        while (fireCount > 0)
+        private void Awake()
         {
-            if (!myBrain.MotionController.Shootable()) break;
-            if (gunStat.CurrentRounds <= 0) break;
-
-            myBrain.GunController.Fire();
-            fireCount--;
-
-            yield return Timing.WaitForSeconds(myBrain.GunController.CurrentGun.GunInfo.ShotInterval);
+            myBrain = GetComponent<AssaultBrain>();
         }
 
-        isBursting = false;
-    }
+        private void Start()
+        {
+            if (isServer)
+            {
+                myBrain.Sensor.MyStat.OnDead += OnDead;
+                myBrain.Sensor.MyStat.OnDead += myBrain.GunController.OnDead;
+                myBrain.MotionController.AimIK.solver.OnPostUpdate += myBrain.GunController.FireCallback;
 
-    private void OnDead()
-    {
-        cooldownTimer = 0f;
-        isBursting = false;
-        Timing.KillCoroutines(burstHandle);
+                myBrain.MotionController.FBBIK.solver.leftHandEffector.target =
+                    myBrain.GunController.LeftHandIKTarget;
+
+                myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 1f;
+            }
+
+            myBrain.MotionController.AimIK.solver.IKPositionWeight = 0f;
+        }
+
+        private void OnDestroy()
+        {
+            if (!isServer) return;
+
+            myBrain.Sensor.MyStat.OnDead -= OnDead;
+            myBrain.Sensor.MyStat.OnDead -= myBrain.GunController.OnDead;
+            myBrain.MotionController.AimIK.solver.OnPostUpdate -= myBrain.GunController.FireCallback;
+        }
+
+        private void Update()
+        {
+            if (isServer)
+            {
+                cooldownTimer += Time.deltaTime;
+                ServerUpdateAimValues();
+            }
+
+            ClientUpdateIK();
+        }
+
+        private void ServerUpdateAimValues()
+        {
+            syncedAimTarget = myBrain.Sensor.IsAlert
+                ? myBrain.Sensor.LastSeenPosition
+                : transform.position + transform.forward * 20f + Vector3.up * 1.2f;
+
+            syncedAimWeight = (myBrain.MotionController.Aimable() &&
+                               !myBrain.GunController.OnReload)
+                               ? 1f : 0f;
+        }
+
+        Vector3 aimPosVel;
+        float aimWeightVel;
+        private void ClientUpdateIK()
+        {
+            myBrain.GunController.AimIKTarget.position =
+                Vector3.SmoothDamp(
+                    myBrain.GunController.AimIKTarget.position,
+                    syncedAimTarget,
+                    ref aimPosVel,
+                    0.25f,
+                    Mathf.Infinity,
+                    Time.deltaTime
+                );
+
+            myBrain.MotionController.AimIK.solver.IKPositionWeight =
+                Mathf.SmoothDamp(
+                    myBrain.MotionController.AimIK.solver.IKPositionWeight,
+                    syncedAimWeight,
+                    ref aimWeightVel,
+                    0.1f
+                );
+        }
+
+        public void TryAttack()
+        {
+            if (!isServer) return;
+            if (!myBrain.MotionController.Shootable()) return;
+            if (cooldownTimer < attackCooldown) return;
+            if (isBursting) return;
+
+            burstHandle = Timing.RunCoroutine(BurstRoutine());
+        }
+
+        private IEnumerator<float> BurstRoutine()
+        {
+            isBursting = true;
+            cooldownTimer = 0f;
+
+            var gunStat = myBrain.GunController;
+            int fireCount = burstCount;
+
+            while (fireCount > 0)
+            {
+                if (!myBrain.MotionController.Shootable()) break;
+                if (gunStat.CurrentRounds <= 0) break;
+
+                myBrain.GunController.ServerRequestFire();
+                fireCount--;
+
+                yield return Timing.WaitForSeconds(myBrain.GunController.CurrentGun.GunInfo.ShotInterval);
+            }
+
+            isBursting = false;
+        }
+
+        private void OnDead()
+        {
+            cooldownTimer = 0f;
+            isBursting = false;
+            Timing.KillCoroutines(burstHandle);
+        }
     }
 }

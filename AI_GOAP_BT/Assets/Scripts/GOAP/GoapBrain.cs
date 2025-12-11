@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 namespace GOAP
 {
@@ -36,7 +37,7 @@ namespace GOAP
         public bool Repeatable = true;
     }
 
-    public abstract class GoapBrain<ActionType, GoalType> : MonoBehaviour where ActionType : Enum where GoalType : Enum
+    public abstract class GoapBrain<ActionType, GoalType> : NetworkBehaviour where ActionType : Enum where GoalType : Enum
     {
         //public AISensor sensor;
         //public AIBlackboard blackboard;
@@ -44,9 +45,9 @@ namespace GOAP
         protected Dictionary<ActionType, GoapAction<ActionType, GoalType>> Actions = new();
         protected Dictionary<GoalType, GoapGoal<GoalType>> Goals = new();
 
-        public GoapAction<ActionType, GoalType> CurrentAction { get; protected set; }
-        
-        public GoapGoal<GoalType> CurrentGoal { get; protected set; }
+        public GoapAction<ActionType, GoalType> CurrentAction;
+
+        public GoapGoal<GoalType> CurrentGoal;
 
         protected ActionType DefaultActionType;
         protected GoalType DefaultGoalType; 
@@ -70,11 +71,13 @@ namespace GOAP
 
         protected virtual void Update()
         {
+            if (!isServer) return;
             Tick_Update();
         }
 
         protected virtual void FixedUpdate()
         {
+            if (!isServer) return;
             Tick_Physics();
         }
 
@@ -177,7 +180,14 @@ namespace GOAP
                 }
             }
 
-            CurrentGoal = best ?? Goals[DefaultGoalType];
+            if (best != null)
+            {
+                CurrentGoal = best;
+            }
+            else if (!Goals.TryGetValue(DefaultGoalType, out CurrentGoal))
+            {
+                CurrentGoal = Goals.Values.First();
+            }
         }
 
         void TryChangeAction()

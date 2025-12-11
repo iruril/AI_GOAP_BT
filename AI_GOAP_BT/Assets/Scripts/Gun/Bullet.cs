@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MEC;
+using Mirror;
 
 public class Bullet : MonoBehaviour
 {
     private BulletPool myPool;
+    private GunHandler owner; 
+    public void SetOwner(GunHandler gun) => owner = gun;
 
     [SerializeField]
     private float lifeTime = 5f;
@@ -92,7 +95,9 @@ public class Bullet : MonoBehaviour
 
             if (count > 0)
             {
-                ProcessGrazingHits(count);
+
+                if (NetworkServer.active) 
+                    ProcessGrazingHits(count);
                 if (ProcessDamageHits(count))
                 {
                     prevPos = currentPos;
@@ -153,10 +158,13 @@ public class Bullet : MonoBehaviour
 
     private void ProcessDamageHit(Collider target, Vector3 hitPoint, Vector3 hitNormal)
     {
-        if (target.TryGetComponent<HitBox>(out var hitBox))
-            hitBox.ApplyDamage(damage, shotOrigin, hitPoint, friendLayers);
+        if (NetworkServer.active)
+        {
+            if (target.TryGetComponent<HitBox>(out var hitBox))
+                hitBox.ApplyDamage(damage, shotOrigin, hitPoint, friendLayers);
 
-        EffectPoolManager.SpawnFromPool("Hit", hitPoint, Quaternion.LookRotation(hitNormal));
+            owner.ServerReportHit(hitPoint, hitNormal);
+        }
 
         Deactivate();
     }

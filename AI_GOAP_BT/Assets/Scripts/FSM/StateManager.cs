@@ -1,10 +1,11 @@
+using Mirror;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace FSM
 {
-    public abstract class StateManager<EState> : MonoBehaviour where EState : Enum
+    public abstract class StateManager<EState> : NetworkBehaviour where EState : Enum
     {
         protected Dictionary<EState, BaseState<EState>> States = new();
 
@@ -17,11 +18,15 @@ namespace FSM
 
         protected virtual void Start()
         {
+            if (!isServer) return;
+
             CurrentState.EnterState();
         }
 
         protected virtual void Update()
         {
+            if (!isServer) return;
+
             _nextStateKey = CurrentState.GetNextState();
 
             if (!IsTransitioningState && _nextStateKey.Equals(CurrentState.StateKey))
@@ -36,6 +41,8 @@ namespace FSM
 
         protected virtual void FixedUpdate()
         {
+            if (!isServer) return;
+
             if (!IsTransitioningState && _nextStateKey.Equals(CurrentState.StateKey))
             {
                 CurrentState.PhysicsUpdateState();
@@ -49,7 +56,7 @@ namespace FSM
         /// 이후 CurrentState의 EnterState()를 실행한다.
         /// </summary>
         /// <param name="stateKey"> 다음 State의 KeyValue </param>
-        public void TransitionToState(EState stateKey)
+        public virtual void TransitionToState(EState stateKey)
         {
             IsTransitioningState = true;
             _prevStateKey = CurrentState.StateKey;
@@ -73,16 +80,22 @@ namespace FSM
 
         private void OnTriggerEnter(Collider other)
         {
+            if (!isServer) return;
+
             CurrentState.OnTriggerEnter(other);
         }
 
         private void OnTriggerStay(Collider other)
         {
+            if (!isServer) return;
+
             CurrentState.OnTriggerStay(other);
         }
 
         private void OnTriggerExit(Collider other)
         {
+            if (!isServer) return;
+
             CurrentState.OnTriggerExit(other);
         }
     }

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using MEC;
 using System.Linq;
 using RootMotion.FinalIK;
+using Mirror;
 
-public class GunHandler : MonoBehaviour
+public class GunHandler : NetworkBehaviour
 {
     [Header("Gun 트랜스폼 세팅")]
     [SerializeField] Transform gunPos;
@@ -24,11 +25,13 @@ public class GunHandler : MonoBehaviour
 
     private Dictionary<string, (Gun gun, GameObject instance)> gunHistory = new();
     private Dictionary<string, int> roundHistory = new();
-    
-    private bool pendingFire = false;
+
+    private bool pendingFire = false; 
+    private Vector3 pendingMuzzlePos;
+    private Vector3 pendingMuzzleDir;
 
     private float currentSpread = 0;
-    public int CurrentRounds { get; private set; } = 0;
+    [SyncVar] public int CurrentRounds = 0;
     public bool OnReload { get; private set; }
     CoroutineHandle reloadHandle;
 
@@ -39,28 +42,45 @@ public class GunHandler : MonoBehaviour
 
     void Start()
     {
-        LoadGun("AK-15");
+        if (isServer)
+            LoadGun("AK-15");
     }
 
     void Update()
     {
+        if (!isServer) return;
         SpreadHandle();
     }
 
-    void LoadGun(string gunName)
+    [Server]
+    private void LoadGun(string gunName)
     {
-        bool cached = false;
+        LoadGunVisual(gunName);
+
+        if (!roundHistory.ContainsKey(gunName))
+            roundHistory.Add(gunName, currentGun.GunInfo.MagazineCapacity);
+
+        CurrentRounds = roundHistory[gunName];
+
+        RpcLoadGun(gunName);
+    }
+
+    [ClientRpc]
+    private void RpcLoadGun(string gunName)
+    {
+        if (isServer) return;
+        LoadGunVisual(gunName);
+    }
+
+    private void LoadGunVisual(string gunName)
+    {
+        bool cached = gunHistory.ContainsKey(gunName);
         (Gun gun, GameObject instance) gunData;
 
-        if (gunHistory.ContainsKey(gunName))
-        {
-            cached = true;
+        if (cached)
             gunData = gunHistory[gunName];
-        }
         else
-        {
             gunData = GameManager.GetInstance().GunTable[gunName];
-        }
 
         currentGun = gunData.gun;
 
@@ -69,10 +89,9 @@ public class GunHandler : MonoBehaviour
 
         if (!cached)
         {
-            GameObject gunModel = Instantiate(gunData.instance);
-            gunHistory.Add(gunName, (gunData.gun, gunModel));
-            currentGunModel = gunModel;
-            roundHistory.Add(gunName, gunData.gun.GunInfo.MagazineCapacity);
+            GameObject model = Instantiate(gunData.instance);
+            gunHistory.Add(gunName, (gunData.gun, model));
+            currentGunModel = model;
         }
         else
         {
@@ -82,8 +101,6 @@ public class GunHandler : MonoBehaviour
         currentGunModel.transform.SetParent(gunPos, false);
         currentGunModel.transform.localPosition = Vector3.zero;
         currentGunModel.transform.localRotation = Quaternion.identity;
-        currentSpread = 0;
-        CurrentRounds = roundHistory[currentGun.GunName];
 
         ApplyGunTransforms(currentGun);
     }
@@ -93,7 +110,13 @@ public class GunHandler : MonoBehaviour
         roundHistory[currentGun.GunName] = CurrentRounds;
     }
 
-    public void SwapGun(string gunName)
+    [Command]
+    public void CmdSwapGun(string gunName)
+    {
+        SwapGun(gunName);
+    }
+
+    private void SwapGun(string gunName)
     {
         if (currentGun != null) SaveGun();
         LoadGun(gunName);
@@ -116,22 +139,38 @@ public class GunHandler : MonoBehaviour
         currentSpread = Mathf.Clamp(currentSpread, 0f, currentGun.GunInfo.Spread);
     }
 
-    public void Fire()
+    [Server]
+    public void ServerRequestFire()
     {
-        if (currentGun == null) return;
-        if (CurrentRounds == 0) return;
+        if (CurrentRounds <= 0) return;
+
         pendingFire = true;
+        pendingMuzzlePos = muzzle.position;
+        pendingMuzzleDir = muzzle.forward;
+    }
+
+    [Command]
+    private void CmdRequestFire(Vector3 muzzlePos, Vector3 muzzleDir)
+    {
+        if (!isLocalPlayer) return;
+        if (CurrentRounds <= 0) return;
+
+        pendingFire = true;
+        pendingMuzzlePos = muzzlePos;
+        pendingMuzzleDir = muzzleDir;
     }
 
     public void FireCallback()
     {
-        if (CurrentRounds == 0) return;
+        if (!isServer) return;
         if (!pendingFire) return;
+
         pendingFire = false;
-        ExecuteFire();
+        ServerExecuteFire(pendingMuzzlePos, pendingMuzzleDir);
     }
 
-    private void ExecuteFire()
+    [Server]
+    private void ServerExecuteFire(Vector3 muzzlePos, Vector3 muzzleDir)
     {
         if (CurrentRounds == 0) return;
         CurrentRounds = Mathf.Clamp(CurrentRounds - 1, 0, int.MaxValue);
@@ -139,26 +178,47 @@ public class GunHandler : MonoBehaviour
         float xError = MathUtility.SampleGaussian(0f, currentSpread);
         float yError = MathUtility.SampleGaussian(0f, currentSpread);
 
-        currentSpread += 1f / currentGun.GunInfo.Stability;
+        currentSpread += 1f / currentGun.GunInfo.Stability; 
+        
+        Vector3 right = Vector3.Cross(Vector3.up, muzzleDir).normalized;
+        Vector3 up = Vector3.Cross(muzzleDir, right).normalized;
 
-        Vector3 aimDir = muzzle.forward;
-        aimDir = Quaternion.AngleAxis(yError, muzzle.up) * aimDir;
-        aimDir = Quaternion.AngleAxis(xError, muzzle.right) * aimDir;
+        Vector3 finalDir = muzzleDir;
+        finalDir = Quaternion.AngleAxis(yError, up) * muzzleDir;
+        finalDir = Quaternion.AngleAxis(xError, right) * muzzleDir;
 
-        Quaternion bulletRotation = Quaternion.LookRotation(aimDir);
-
-        //머즐 플래쉬
-        EffectPoolManager.SpawnFromPool("MuzzleFlash", muzzle.position, muzzle.rotation);
+        Quaternion bulletRotation = Quaternion.LookRotation(finalDir);
 
         //총알 발사
         bulletPool.SpawnBullet(
-            muzzle.position,
+            this,
+            muzzlePos,
             bulletRotation,
             1 << gameObject.layer,
-            muzzle.position,                             // shotOrigin
+            muzzlePos,                                   // shotOrigin
             currentGun.GunInfo.ProjectileSpeed,          // 총알 속도
             currentGun.GunInfo.RoundDamage               // 데미지
         );
+
+        RpcPlayMuzzleFlash(muzzlePos, Quaternion.LookRotation(muzzleDir));
+    }
+
+    [ClientRpc]
+    private void RpcPlayMuzzleFlash(Vector3 muzzlePos, Quaternion rot)
+    {
+        EffectPoolManager.SpawnFromPool("MuzzleFlash", muzzlePos, rot);
+    }
+
+    [Server]
+    public void ServerReportHit(Vector3 point, Vector3 normal)
+    {
+        RpcSpawnHitEffect(point, normal);
+    }
+
+    [ClientRpc]
+    private void RpcSpawnHitEffect(Vector3 point, Vector3 normal)
+    {
+        EffectPoolManager.SpawnFromPool("Hit", point, Quaternion.LookRotation(normal));
     }
 
     public void OnDead()

@@ -2,8 +2,9 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using MEC;
+using Mirror;
 
-public class Stat : MonoBehaviour, IDamageable
+public class Stat : NetworkBehaviour, IDamageable
 {
     public event Action OnDead;
     public event Action OnRevive;
@@ -14,8 +15,8 @@ public class Stat : MonoBehaviour, IDamageable
     [SerializeField] private float rotateSpeedToTarget = 90f;
     public float RotateSpeedToTarget => rotateSpeedToTarget;
 
-    public float CurrentHP { get; private set; }
-    public bool IsDead { get; private set; } = false;
+    [SyncVar] public float CurrentHP;
+    [SyncVar] public bool IsDead = false;
 
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
@@ -33,11 +34,14 @@ public class Stat : MonoBehaviour, IDamageable
         spawnPosition = transform.position;
         spawnRotation = transform.rotation;
 
-        InitHP();
+        if (isServer)
+            InitHP();
     }
 
     private void Start()
     {
+        if (!isServer) return;
+
         OnDead += ReleaseCapturePoint;
         OnRevive += Revive;
 
@@ -46,6 +50,8 @@ public class Stat : MonoBehaviour, IDamageable
 
     private void OnDestroy()
     {
+        if (!isServer) return;
+
         OnDead -= ReleaseCapturePoint;
         OnRevive -= Revive;
 
@@ -60,6 +66,7 @@ public class Stat : MonoBehaviour, IDamageable
     #region Damageable Field
     public virtual void ApplyDamage(float dmg, Vector3 shotOrigin, Vector3 hitPoint)
     {
+        if (!isServer) return;
         if (IsDead) return;
 
         CurrentHP -= dmg;
@@ -79,6 +86,7 @@ public class Stat : MonoBehaviour, IDamageable
 
     public void OnGraze(Vector3 shotOrigin)
     {
+        if (!isServer) return;
         OnUnderAttack?.Invoke(shotOrigin);
     }
 

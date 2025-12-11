@@ -48,6 +48,8 @@ namespace AnimControl.Assault
 
         protected override void Start()
         {
+            if (!isServer) return;
+
             base.Start();
             MyBrain.Sensor.MyStat.OnUnderAttack += SetAttackedDirection;
             MyBrain.Sensor.MyStat.OnDead += OnDead;
@@ -56,13 +58,16 @@ namespace AnimControl.Assault
 
         private void OnDestroy()
         {
-            MyBrain.Sensor.MyStat.OnUnderAttack += SetAttackedDirection;
+            if (!isServer) return;
+
+            MyBrain.Sensor.MyStat.OnUnderAttack -= SetAttackedDirection;
             MyBrain.Sensor.MyStat.OnDead -= OnDead;
             MyBrain.Navigator.OnSetDestination -= DecideAccelByDistance;
         }
 
         void OnAnimatorMove()
         {
+            if (!isServer) return;
             if (MyBrain.Sensor.MyStat.IsDead) return;
             if (Time.deltaTime <= 0) return;
 
@@ -83,6 +88,8 @@ namespace AnimControl.Assault
 
         protected override void Update()
         {
+            if (!isServer) return;
+
             if (MyBrain.Sensor.MyStat.IsDead) return;
             base.Update();
             CurrentStateKey = CurrentState.StateKey;
@@ -91,6 +98,8 @@ namespace AnimControl.Assault
 
         protected override void FixedUpdate()
         {
+            if (!isServer) return;
+
             if (MyBrain.Sensor.MyStat.IsDead) return;
             base.FixedUpdate();
             UpdateMoveAxis();

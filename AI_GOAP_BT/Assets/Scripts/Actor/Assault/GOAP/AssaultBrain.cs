@@ -40,11 +40,14 @@ namespace GOAP.Assualt
             CorpseSpawner = GetComponent<CorpseGenerator>();
             EQS = GetComponent<EnvQuery>();
             BT = GetComponent<BehaviorTree>();
+
             base.Awake();
         }
 
         protected override void Start()
         {
+            if (!isServer) return;
+
             Sensor.MyStat.OnDead += InitGOAP;
             Sensor.MyStat.OnDead += CorpseSpawner.SpawnCorpse;
             Sensor.MyStat.OnRevive += CorpseSpawner.DespawnCorpse;
@@ -52,6 +55,8 @@ namespace GOAP.Assualt
 
         private void OnDestroy()
         {
+            if (!isServer) return;
+
             Sensor.MyStat.OnDead -= InitGOAP;
             Sensor.MyStat.OnDead -= CorpseSpawner.SpawnCorpse;
             Sensor.MyStat.OnRevive -= CorpseSpawner.DespawnCorpse;
@@ -59,19 +64,16 @@ namespace GOAP.Assualt
 
         protected override void FixedUpdate()
         {
+            if (!isServer) return;
+
             if (Sensor.MyStat.IsDead) return;
             base.FixedUpdate();
         }
 
         protected override void InitGOAP()
         {
+            base.InitGOAP();
             BT.enabled = false;
-
-            if (Goals.TryGetValue(DefaultGoalType, out var goal)) CurrentGoal = goal;
-            else CurrentGoal = Goals.First().Value;
-
-            if (Actions.TryGetValue(DefaultActionType, out var action)) CurrentAction = action;
-            else CurrentAction = Actions.First().Value;
         }
 
         protected override void RegisterActions()
