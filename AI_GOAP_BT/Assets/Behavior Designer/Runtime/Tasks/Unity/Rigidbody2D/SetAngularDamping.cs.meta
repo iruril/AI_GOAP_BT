@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f357c8e5586a0b0448d31458b10d068e
+guid: 1717a737318274e4caa244f86c908851
 MonoImporter:
   serializedVersion: 2
   defaultReferences: []
@@ -10,6 +10,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 15277
   packageName: Behavior Designer - Behavior Trees for Everyone
-  packageVersion: 1.7.12
+  packageVersion: 1.7.13
   assetPath: Assets/Behavior Designer/Runtime/Tasks/Unity/Rigidbody2D/SetAngularDamping.cs
-  uploadId: 732694
+  uploadId: 829470
