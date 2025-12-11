@@ -27,8 +27,10 @@ public class GunHandler : NetworkBehaviour
     private Dictionary<string, int> roundHistory = new();
 
     private bool pendingFire = false; 
-    private Vector3 pendingMuzzlePos;
-    private Vector3 pendingMuzzleDir;
+    
+    // 플레이어용: 클라이언트가 계산한 muzzle 정보
+    private Vector3 clientMuzzlePos;
+    private Vector3 clientMuzzleDir;
 
     private float currentSpread = 0;
     [SyncVar] public int CurrentRounds = 0;
@@ -139,25 +141,28 @@ public class GunHandler : NetworkBehaviour
         currentSpread = Mathf.Clamp(currentSpread, 0f, currentGun.GunInfo.Spread);
     }
 
-    [Server]
-    public void ServerRequestFire()
+    public void Fire()
     {
         if (CurrentRounds <= 0) return;
-
         pendingFire = true;
-        pendingMuzzlePos = muzzle.position;
-        pendingMuzzleDir = muzzle.forward;
+    }
+
+    public void LocalFireCallback()
+    {
+        if (!pendingFire) return;
+        pendingFire = false;
+
+        clientMuzzlePos = muzzle.position;
+        clientMuzzleDir = muzzle.forward;
+
+        CmdFire(clientMuzzlePos, clientMuzzleDir);
     }
 
     [Command]
-    private void CmdRequestFire(Vector3 muzzlePos, Vector3 muzzleDir)
+    private void CmdFire(Vector3 pos, Vector3 dir)
     {
-        if (!isLocalPlayer) return;
         if (CurrentRounds <= 0) return;
-
-        pendingFire = true;
-        pendingMuzzlePos = muzzlePos;
-        pendingMuzzleDir = muzzleDir;
+        ServerExecuteFire(pos, dir);
     }
 
     public void FireCallback()
@@ -166,7 +171,11 @@ public class GunHandler : NetworkBehaviour
         if (!pendingFire) return;
 
         pendingFire = false;
-        ServerExecuteFire(pendingMuzzlePos, pendingMuzzleDir);
+
+        Vector3 pos = muzzle.position;
+        Vector3 dir = muzzle.forward;
+
+        ServerExecuteFire(pos, dir);
     }
 
     [Server]

@@ -1855,8 +1855,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad5e5a7ba8f1b014da22637a3c01d372, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.01
   maxHP: 100
   rotateSpeedToTarget: 300
+  CurrentHP: 0
+  IsDead: 0
 --- !u!114 &2621712713207012491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1885,8 +1890,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54b90bf538ad98f4f8c62561d1badf54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.01
   CurrentStateKey: 0
   RootRotation: 0
+  IsAimable: 0
 --- !u!114 &-2168579121952372337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1899,6 +1908,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcc5bb94738aae449a01c84cfa62b061, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   myEyes: {fileID: 7382681831241405966}
   alertDuration: 7.5
   captureOffsetRadius: 4
@@ -1920,10 +1932,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 095816f8425ac3546bbc5cf2fcf154b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.01
   gunPos: {fileID: 5334469523889394733}
   leftHandIKTarget: {fileID: 7063086038202589735}
   muzzle: {fileID: 2255073588551578324}
   aimIKTarget: {fileID: 1252107706366356699}
+  CurrentRounds: 0
 --- !u!114 &1856504431268464514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1936,6 +1952,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27ec43e3efbf88549a6eb6f98c72024b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.01
   attackCooldown: 1.25
   burstCount: 4
 --- !u!114 &1464119152950905832

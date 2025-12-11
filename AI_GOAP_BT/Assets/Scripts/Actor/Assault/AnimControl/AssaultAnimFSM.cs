@@ -1,6 +1,7 @@
 using UnityEngine;
 using FSM;
 using RootMotion.FinalIK;
+using Mirror;
 
 namespace AnimControl.Assault
 {
@@ -30,6 +31,7 @@ namespace AnimControl.Assault
         public float StateTime { get; set; }
         public bool RootRotation = false;
 
+        [SyncVar] public bool IsAimable;
         private float aimWeight;
 
         public Vector3 AttackedDirection { get; set; } = Vector3.zero;
@@ -92,8 +94,9 @@ namespace AnimControl.Assault
 
             if (MyBrain.Sensor.MyStat.IsDead) return;
             base.Update();
-            CurrentStateKey = CurrentState.StateKey;
+            CurrentStateKey = CurrentState.StateKey; 
             UpdateAimWeight();
+            IsAimable = Aimable();
         }
 
         protected override void FixedUpdate()
@@ -196,12 +199,10 @@ namespace AnimControl.Assault
                 ? Vector3.zero : AttackedDirection;
         }
 
-        public bool Aimable()
+        private bool Aimable()
         {
-            bool stateValid = false;
             var StateInfo = Anim.GetCurrentAnimatorStateInfo(0);
-            stateValid = StateInfo.shortNameHash == AnimHash.Strafe;
-            return stateValid && aimWeight >= 0.99f;
+            return StateInfo.shortNameHash == AnimHash.Strafe && aimWeight >= 0.99f;
         }
 
         public bool Shootable()

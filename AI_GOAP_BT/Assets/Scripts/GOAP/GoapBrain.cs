@@ -59,6 +59,7 @@ namespace GOAP
 
         protected virtual void Awake()
         {
+            syncInterval = 0.01f;
             RegisterActions();
             RegisterGoals();
             InitGOAP();

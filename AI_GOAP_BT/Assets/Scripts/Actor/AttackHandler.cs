@@ -70,7 +70,7 @@ namespace GOAP.Assualt
                 ? myBrain.Sensor.LastSeenPosition
                 : transform.position + transform.forward * 20f + Vector3.up * 1.2f;
 
-            syncedAimWeight = (myBrain.MotionController.Aimable() &&
+            syncedAimWeight = (myBrain.MotionController.IsAimable &&
                                !myBrain.GunController.OnReload)
                                ? 1f : 0f;
         }
@@ -121,7 +121,7 @@ namespace GOAP.Assualt
                 if (!myBrain.MotionController.Shootable()) break;
                 if (gunStat.CurrentRounds <= 0) break;
 
-                myBrain.GunController.ServerRequestFire();
+                myBrain.GunController.Fire();
                 fireCount--;
 
                 yield return Timing.WaitForSeconds(myBrain.GunController.CurrentGun.GunInfo.ShotInterval);
