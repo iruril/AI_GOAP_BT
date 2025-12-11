@@ -59,7 +59,7 @@ public class GunHandler : MonoBehaviour
         }
         else
         {
-            gunData = GameManager.Instance.GunTable[gunName];
+            gunData = GameManager.GetInstance().GunTable[gunName];
         }
 
         currentGun = gunData.gun;

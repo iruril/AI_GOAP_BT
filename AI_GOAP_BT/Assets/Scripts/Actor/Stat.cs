@@ -115,7 +115,7 @@ public class Stat : MonoBehaviour, IDamageable
     private IEnumerator<float> Respawn()
     {
         gameObject.SetActive(false);
-        yield return Timing.WaitForSeconds(GameManager.Instance.RespawnTime);
+        yield return Timing.WaitForSeconds(GameManager.GetInstance().RespawnTime);
 
         transform.position = spawnPosition;
         transform.rotation = spawnRotation;

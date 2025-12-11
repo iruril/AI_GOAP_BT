@@ -1,13 +1,11 @@
 using UnityEngine;
+using Mirror;
 
 namespace Observer
 {
-    using Player.Input;
-
-    public class Observer : MonoBehaviour
+    public class Observer : NetworkBehaviour
     {
-        private InputRecorder inputMap;
-        private Rigidbody rb;
+        private CharacterController cc;
 
         [Header("Move")]
         [SerializeField] private float maxSpeed = 5f;
@@ -23,38 +21,63 @@ namespace Observer
 
         private void Awake()
         {
-            inputMap = GetComponent<InputRecorder>();
-            rb = GetComponent<Rigidbody>();
+            cc = GetComponent<CharacterController>();
+        }
+
+        public override void OnStartLocalPlayer()
+        {
+            GameManager.GetInstance().MyPlayer = this.gameObject;
+            MainCamManager.Instance.SetCamTarget(this.transform);
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
 
-        void Update()
+        public override void OnStopLocalPlayer()
         {
-            yaw = yaw + inputMap.CamInputMap.x * sensitivity;
-            pitch = pitch + inputMap.CamInputMap.y * sensitivity;
-            pitch = Mathf.Clamp(pitch, -75, 75);
+            GameManager.GetInstance().MyPlayer = null;
+            MainCamManager.Instance.SetCamTarget(null);
 
-            transform.rotation = Quaternion.Euler(-pitch, yaw, 0);
-            rb.linearVelocity = currentVelocity;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
 
-        private void FixedUpdate()
+        void Update()
         {
+            if (!isLocalPlayer) return;
+
+            HandleRotation();
+            HandleMovement();
+        }
+
+        private void HandleRotation()
+        {
+            yaw += GameManager.GetInstance().InputMap.CamInputMap.x * sensitivity;
+            pitch += GameManager.GetInstance().InputMap.CamInputMap.y * sensitivity;
+            pitch = Mathf.Clamp(pitch, -75f, 75f);
+
+            transform.rotation = Quaternion.Euler(-pitch, yaw, 0);
+        }
+
+        private void HandleMovement()
+        {
+            var input = GameManager.GetInstance().InputMap.MoveInputMap;
+
             Vector3 dir =
-                transform.forward * inputMap.MoveInputMap.y +
-                transform.right * inputMap.MoveInputMap.x;
+                transform.forward * input.y +
+                transform.right * input.x;
 
             dir.Normalize();
 
             Vector3 targetVelocity = dir * maxSpeed;
 
-            currentVelocity = Vector3.MoveTowards(
-                currentVelocity,
-                targetVelocity,
-                acceleration * Time.fixedDeltaTime
-            );
+            Vector3 diff = targetVelocity - currentVelocity;
+            float maxDelta = acceleration * Time.deltaTime;
+
+            Vector3 delta = Vector3.ClampMagnitude(diff, maxDelta);
+            currentVelocity += delta;
+
+            cc.Move(currentVelocity * Time.deltaTime);
         }
     }
 }

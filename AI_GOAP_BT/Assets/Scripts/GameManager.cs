@@ -1,12 +1,14 @@
 using UnityEngine;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Player.Input;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance = null;
+    private static GameManager instance = null;
 
     public GameObject MyPlayer { get; set; }
+    public InputRecorder InputMap { get; private set; }
 
     private byte[] _connectionToken;
 
@@ -20,10 +22,10 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
+        if (instance == null)
         {
-            Instance = this;
-            DontDestroyOnLoad(this);
+            instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -35,8 +37,13 @@ public class GameManager : MonoBehaviour
             _connectionToken = TokenUtility.NewToken();
         }
 
+        InputMap = GetComponent<InputRecorder>();
         BetterStreamingAssets.Initialize();
-        WeaponDataLoad(); 
+        WeaponDataLoad();
+    }
+    public static GameManager GetInstance()
+    {
+        return instance;
     }
 
     public void SetConnectionToken(byte[] token)

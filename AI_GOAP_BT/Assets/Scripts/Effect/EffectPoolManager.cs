@@ -23,7 +23,18 @@ public class EffectPoolManagerEditor : Editor
 public class EffectPoolManager : MonoBehaviour
 {
     private static EffectPoolManager _instance;
-    void Awake() => _instance = this;
+    void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(this);
+        }
+    }
 
     [Serializable]
     public class Pool
