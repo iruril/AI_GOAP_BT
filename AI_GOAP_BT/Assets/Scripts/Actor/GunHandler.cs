@@ -44,10 +44,9 @@ public class GunHandler : NetworkBehaviour
         bulletPool = GetComponent<BulletPool>();
     }
 
-    void Start()
+    public override void OnStartServer()
     {
-        if (isServer)
-            LoadGun("AK-15");
+        LoadGun("AK-15");
     }
 
     void Update()
@@ -103,7 +102,8 @@ public class GunHandler : NetworkBehaviour
         currentGunModel.transform.localPosition = Vector3.zero;
         currentGunModel.transform.localRotation = Quaternion.identity;
 
-        ApplyGunTransforms(currentGun);
+        ApplyGunTransforms(currentGun); 
+        currentGunModel.SetActive(true);
     }
 
     void SaveGun()
@@ -113,15 +113,6 @@ public class GunHandler : NetworkBehaviour
 
     [Command]
     public void CmdSwapGun(string gunName)
-    {
-        if (currentGun != null)
-            SaveGun();
-
-        LoadGun(gunName);
-    }
-
-
-    private void SwapGun(string gunName)
     {
         if (currentGun != null) SaveGun();
         LoadGun(gunName);

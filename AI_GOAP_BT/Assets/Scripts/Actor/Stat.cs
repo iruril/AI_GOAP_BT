@@ -15,8 +15,8 @@ public class Stat : NetworkBehaviour, IDamageable
     [SerializeField] private float rotateSpeedToTarget = 90f;
     public float RotateSpeedToTarget => rotateSpeedToTarget;
 
-    [SyncVar] public float CurrentHP;
-    [SyncVar] public bool IsDead = false;
+    [SyncVar(hook = nameof(OnHPChanged))] public float CurrentHP;
+    [SyncVar(hook = nameof(OnDeathStateChanged))] public bool IsDead = false;
 
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
@@ -41,20 +41,12 @@ public class Stat : NetworkBehaviour, IDamageable
     private void Start()
     {
         if (!isServer) return;
-
-        OnDead += ReleaseCapturePoint;
-        OnRevive += Revive;
-
         hpRegenHandle = Timing.RunCoroutine(HPRegenHandle());
     }
 
     private void OnDestroy()
     {
         if (!isServer) return;
-
-        OnDead -= ReleaseCapturePoint;
-        OnRevive -= Revive;
-
         Timing.KillCoroutines(hpRegenHandle);
     }
 
@@ -76,10 +68,7 @@ public class Stat : NetworkBehaviour, IDamageable
 
         if (CurrentHP <= 0f)
         {
-            CurrentHP = 0f;
-            IsDead = true;
-
-            OnDead?.Invoke();
+            Die();
             Timing.RunCoroutine(Respawn());
         }
     }
@@ -91,17 +80,6 @@ public class Stat : NetworkBehaviour, IDamageable
     }
 
     #endregion
-
-    private void ReleaseCapturePoint()
-    {
-        CurrentCapture?.RemoveIntruder(this);
-    }
-
-    private void Revive()
-    {
-        InitHP();
-        IsDead = false;
-    }
 
     private IEnumerator<float> HPRegenHandle()
     {
@@ -120,15 +98,44 @@ public class Stat : NetworkBehaviour, IDamageable
         }
     }
 
-    private IEnumerator<float> Respawn()
+    private void Die()
     {
-        gameObject.SetActive(false);
-        yield return Timing.WaitForSeconds(GameManager.GetInstance().RespawnTime);
+        CurrentHP = 0f;
+        IsDead = true;
+        CurrentCapture?.RemoveIntruder(this);
+    }
+
+    private void Revive()
+    {
+        IsDead = false;
+        InitHP();
 
         transform.position = spawnPosition;
         transform.rotation = spawnRotation;
-        gameObject.SetActive(true);
+    }
 
-        OnRevive?.Invoke();
+    private IEnumerator<float> Respawn()
+    {
+        yield return Timing.WaitForSeconds(GameManager.GetInstance().RespawnTime);
+        Revive();
+    }
+
+    private void OnHPChanged(float oldHp, float newHp)
+    {
+        // 필요하면 HP바 UI 갱신 등 클라이언트 처리
+    }
+
+    private void OnDeathStateChanged(bool oldState, bool newState)
+    {
+        if (newState)
+        {
+            OnDead?.Invoke();
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            gameObject.SetActive(true);
+            OnRevive?.Invoke();
+        }
     }
 }
