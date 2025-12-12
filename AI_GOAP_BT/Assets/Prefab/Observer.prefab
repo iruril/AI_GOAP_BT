@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4437687519969997267}
   - component: {fileID: 3243450127639289958}
   - component: {fileID: 4178687474302916390}
-  - component: {fileID: 2836214741359253710}
+  - component: {fileID: 6043701651822953603}
   m_Layer: 10
   m_Name: Observer
   m_TagString: Player
@@ -150,7 +150,7 @@ MonoBehaviour:
   maxSpeed: 12
   acceleration: 30
   sensitivity: 0.08
---- !u!114 &2836214741359253710
+--- !u!114 &6043701651822953603
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -159,7 +159,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 716823206449695420}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncDirection: 1
@@ -179,8 +179,8 @@ MonoBehaviour:
   showGizmos: 0
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  onlySyncOnChangeCorrectionMultiplier: 2
+  bufferResetMultiplier: 3
   useFixedUpdate: 0
+  positionSensitivity: 0.01
   rotationSensitivity: 0.01
-  positionPrecision: 0.01
-  scalePrecision: 0.01
+  scaleSensitivity: 0.01

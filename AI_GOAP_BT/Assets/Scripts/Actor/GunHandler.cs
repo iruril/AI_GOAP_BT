@@ -17,6 +17,8 @@ public class GunHandler : NetworkBehaviour
     [SerializeField] Transform aimIKTarget;
     public Transform AimIKTarget { get { return aimIKTarget; } }
 
+    [SyncVar(hook = nameof(OnGunNameChanged))]
+    private string syncedGunName;
     private Gun currentGun;
     public Gun CurrentGun { get { return currentGun; } }
     private GameObject currentGunModel;
@@ -57,21 +59,18 @@ public class GunHandler : NetworkBehaviour
     [Server]
     private void LoadGun(string gunName)
     {
+        syncedGunName = gunName;
         LoadGunVisual(gunName);
 
         if (!roundHistory.ContainsKey(gunName))
             roundHistory.Add(gunName, currentGun.GunInfo.MagazineCapacity);
 
         CurrentRounds = roundHistory[gunName];
-
-        RpcLoadGun(gunName);
     }
 
-    [ClientRpc]
-    private void RpcLoadGun(string gunName)
+    private void OnGunNameChanged(string oldName, string newName)
     {
-        if (isServer) return;
-        LoadGunVisual(gunName);
+        LoadGunVisual(newName);
     }
 
     private void LoadGunVisual(string gunName)
@@ -115,8 +114,12 @@ public class GunHandler : NetworkBehaviour
     [Command]
     public void CmdSwapGun(string gunName)
     {
-        SwapGun(gunName);
+        if (currentGun != null)
+            SaveGun();
+
+        LoadGun(gunName);
     }
+
 
     private void SwapGun(string gunName)
     {
@@ -196,20 +199,52 @@ public class GunHandler : NetworkBehaviour
         finalDir = Quaternion.AngleAxis(yError, up) * muzzleDir;
         finalDir = Quaternion.AngleAxis(xError, right) * muzzleDir;
 
-        Quaternion bulletRotation = Quaternion.LookRotation(finalDir);
+        Quaternion bulletRotation = Quaternion.LookRotation(finalDir); 
+        int teamLayer = 1 << gameObject.layer;
+        float speed = currentGun.GunInfo.ProjectileSpeed;
+        float damage = currentGun.GunInfo.RoundDamage;
 
-        //총알 발사
         bulletPool.SpawnBullet(
             this,
             muzzlePos,
             bulletRotation,
-            1 << gameObject.layer,
-            muzzlePos,                                   // shotOrigin
-            currentGun.GunInfo.ProjectileSpeed,          // 총알 속도
-            currentGun.GunInfo.RoundDamage               // 데미지
+            teamLayer,
+            muzzlePos,      // shotOrigin
+            speed,          // 총알 속도
+            damage          // 데미지
+        );
+
+        RpcSpawnBullet(
+            muzzlePos,
+            bulletRotation,
+            teamLayer,
+            muzzlePos,      // shotOrigin
+            speed,          // 총알 속도
+            damage          // 데미지
         );
 
         RpcPlayMuzzleFlash(muzzlePos, Quaternion.LookRotation(muzzleDir));
+    }
+
+    [ClientRpc]
+    private void RpcSpawnBullet(
+        Vector3 position,
+        Quaternion rotation,
+        LayerMask myTeamLayer,
+        Vector3 origin,
+        float projectileSpeed,
+        float damage)
+    {
+        if (isServer) return;
+
+        bulletPool.SpawnBullet(
+            position,
+            rotation,
+            myTeamLayer,
+            origin,
+            projectileSpeed,
+            damage
+        );
     }
 
     [ClientRpc]

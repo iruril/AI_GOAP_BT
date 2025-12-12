@@ -2558,7 +2558,7 @@ GameObject:
   - component: {fileID: 4328736312465415461}
   - component: {fileID: 2963785031195651985}
   - component: {fileID: 4690398914605992927}
-  - component: {fileID: 1453063854231348770}
+  - component: {fileID: 5414463152717617714}
   - component: {fileID: 2391099099591568198}
   m_Layer: 9
   m_Name: Shooter_Red
@@ -4612,7 +4612,7 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
---- !u!114 &1453063854231348770
+--- !u!114 &5414463152717617714
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4621,7 +4621,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8480867171744423372}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Script: {fileID: 11500000, guid: 3b20dc110904e47f8a154cdcf6433eae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncDirection: 0
@@ -4636,16 +4636,16 @@ MonoBehaviour:
   interpolatePosition: 1
   interpolateRotation: 1
   interpolateScale: 1
-  coordinateSpace: 0
+  coordinateSpace: 1
   timelineOffset: 1
   showGizmos: 0
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  onlySyncOnChangeCorrectionMultiplier: 2
+  bufferResetMultiplier: 3
   useFixedUpdate: 0
+  positionSensitivity: 0.01
   rotationSensitivity: 0.01
-  positionPrecision: 0.01
-  scalePrecision: 0.01
+  scaleSensitivity: 0.01
 --- !u!114 &2391099099591568198
 MonoBehaviour:
   m_ObjectHideFlags: 0

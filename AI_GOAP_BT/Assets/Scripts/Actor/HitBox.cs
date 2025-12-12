@@ -9,13 +9,16 @@ public class HitBox : MonoBehaviour
     [SerializeField] private Transform owner;
     [SerializeField] private int ownerLayer;
 
-    public void ApplyDamage(float dmg, Vector3 shotOrigin, Vector3 hitPoint, LayerMask friendLayer)
+    public void ApplyDamage(float dmg, Vector3 shotOrigin, Vector3 hitPoint, LayerMask friendLayer, bool isServer)
     {
         if ((friendLayer & (1 << ownerLayer)) != 0) return;
 
         if (owner.TryGetComponent<IDamageable>(out var damageable))
         {
-            damageable.ApplyDamage(dmg, shotOrigin, hitPoint);
+            if (isServer)
+            {
+                damageable.ApplyDamage(dmg, shotOrigin, hitPoint);
+            }
             corpseGenerator.LatestHittedPart = this.transform.name;
             corpseGenerator.ShotOrigin = shotOrigin;
             Vector3 hitforce = (transform.position - shotOrigin).normalized;

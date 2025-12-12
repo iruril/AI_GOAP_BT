@@ -40,6 +40,7 @@ public class Bullet : MonoBehaviour
     private void OnDisable()
     {
         initialized = false;
+        owner = null;
         Timing.KillCoroutines(lifeHandle);
         myPool?.ReturnToPool(gameObject);
     }
@@ -95,7 +96,6 @@ public class Bullet : MonoBehaviour
 
             if (count > 0)
             {
-
                 if (NetworkServer.active) 
                     ProcessGrazingHits(count);
                 if (ProcessDamageHits(count))
@@ -158,13 +158,10 @@ public class Bullet : MonoBehaviour
 
     private void ProcessDamageHit(Collider target, Vector3 hitPoint, Vector3 hitNormal)
     {
-        if (NetworkServer.active)
-        {
-            if (target.TryGetComponent<HitBox>(out var hitBox))
-                hitBox.ApplyDamage(damage, shotOrigin, hitPoint, friendLayers);
+        if (target.TryGetComponent<HitBox>(out var hitBox))
+            hitBox.ApplyDamage(damage, shotOrigin, hitPoint, friendLayers, owner != null);
 
-            owner.ServerReportHit(hitPoint, hitNormal);
-        }
+        owner?.ServerReportHit(hitPoint, hitNormal);
 
         Deactivate();
     }

@@ -48,6 +48,18 @@ public class BulletPool : MonoBehaviour
         return obj;
     }
 
+    public GameObject SpawnBullet(Vector3 position, Quaternion rotation, LayerMask myTeamLayer, Vector3 origin, float projectileSpeed, float damage)
+    {
+        GameObject obj = _SpawnBullet(position, rotation);
+
+        if (obj.TryGetComponent<Bullet>(out var bullet))
+        {
+            bullet.Init(myTeamLayer, origin, projectileSpeed, damage);
+        }
+
+        return obj;
+    }
+
     private GameObject _SpawnBullet(Vector3 position, Quaternion rotation)
     {
         if (_bulletQueue.Count <= 0)

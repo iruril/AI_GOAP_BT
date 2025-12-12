@@ -1,5 +1,4 @@
 using BehaviorDesigner.Runtime;
-using System.Linq;
 
 namespace GOAP.Assualt
 {
