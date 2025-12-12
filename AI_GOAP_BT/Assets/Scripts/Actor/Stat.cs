@@ -109,9 +109,6 @@ public class Stat : NetworkBehaviour, IDamageable
     {
         IsDead = false;
         InitHP();
-
-        transform.position = spawnPosition;
-        transform.rotation = spawnRotation;
     }
 
     private IEnumerator<float> Respawn()
@@ -134,6 +131,8 @@ public class Stat : NetworkBehaviour, IDamageable
         }
         else
         {
+            transform.position = spawnPosition;
+            transform.rotation = spawnRotation;
             gameObject.SetActive(true);
             OnRevive?.Invoke();
         }
