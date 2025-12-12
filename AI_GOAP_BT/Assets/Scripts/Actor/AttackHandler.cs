@@ -27,27 +27,22 @@ namespace GOAP.Assualt
             myBrain = GetComponent<AssaultBrain>();
         }
 
-        private void Start()
+        public override void OnStartServer()
         {
-            if (isServer)
-            {
-                myBrain.Sensor.MyStat.OnDead += OnDead;
-                myBrain.Sensor.MyStat.OnDead += myBrain.GunController.OnDead;
-                myBrain.MotionController.AimIK.solver.OnPostUpdate += myBrain.GunController.FireCallback;
-
-                myBrain.MotionController.FBBIK.solver.leftHandEffector.target =
-                    myBrain.GunController.LeftHandIKTarget;
-
-                myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 1f;
-            }
-
-            myBrain.MotionController.AimIK.solver.IKPositionWeight = 0f;
+            myBrain.Sensor.MyStat.OnDead += OnDead;
+            myBrain.Sensor.MyStat.OnDead += myBrain.GunController.OnDead;
+            myBrain.MotionController.AimIK.solver.OnPostUpdate += myBrain.GunController.FireCallback;
         }
 
-        private void OnDestroy()
+        public override void OnStartClient()
         {
-            if (!isServer) return;
+            myBrain.MotionController.AimIK.solver.IKPositionWeight = 0f;
+            myBrain.MotionController.FBBIK.solver.leftHandEffector.target = myBrain.GunController.LeftHandIKTarget;
+            myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 1f;
+        }
 
+        public override void OnStopServer()
+        {
             myBrain.Sensor.MyStat.OnDead -= OnDead;
             myBrain.Sensor.MyStat.OnDead -= myBrain.GunController.OnDead;
             myBrain.MotionController.AimIK.solver.OnPostUpdate -= myBrain.GunController.FireCallback;

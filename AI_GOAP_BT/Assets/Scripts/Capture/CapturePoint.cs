@@ -51,9 +51,10 @@ namespace CapturePoint
             InitializeStates();
             CurrentState = States[CaptureState.Neutral];
         }
-        protected override void Start()
+
+        public override void OnStartServer()
         {
-            base.Start();
+            base.OnStartServer();
 
             if (!isServer) return;
 

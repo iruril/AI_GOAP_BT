@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using Mirror;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -25,7 +25,7 @@ public class CorpseGeneratorEditor : Editor
 }
 #endif
 
-public class CorpseGenerator : MonoBehaviour
+public class CorpseGenerator : NetworkBehaviour
 {
     [Header("º»")]
     [SerializeField] private Transform root;

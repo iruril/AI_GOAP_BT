@@ -48,20 +48,16 @@ namespace AnimControl.Assault
             CurrentState = States[AnimState.Idle];
         }
 
-        protected override void Start()
+        public override void OnStartServer()
         {
-            if (!isServer) return;
-
-            base.Start();
+            base.OnStartServer();
             MyBrain.Sensor.MyStat.OnUnderAttack += SetAttackedDirection;
             MyBrain.Sensor.MyStat.OnDead += OnDead;
             MyBrain.Navigator.OnSetDestination += DecideAccelByDistance;
         }
 
-        private void OnDestroy()
+        public override void OnStopServer()
         {
-            if (!isServer) return;
-
             MyBrain.Sensor.MyStat.OnUnderAttack -= SetAttackedDirection;
             MyBrain.Sensor.MyStat.OnDead -= OnDead;
             MyBrain.Navigator.OnSetDestination -= DecideAccelByDistance;

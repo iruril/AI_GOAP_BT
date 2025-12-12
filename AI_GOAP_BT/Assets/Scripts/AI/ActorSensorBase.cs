@@ -1,6 +1,5 @@
 using MEC;
 using Mirror;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Sensor
@@ -50,15 +49,13 @@ namespace Sensor
             cosHalfFov = Mathf.Cos((sightAngle * 0.5f) * Mathf.Deg2Rad);
         }
 
-        protected virtual void Start()
+        public override void OnStartServer()
         {
-            if (!isServer) return;
             MyStat.OnDead += OnDead;
         }
 
-        protected virtual void OnDestroy()
+        public override void OnStopServer()
         {
-            if (!isServer) return;
             MyStat.OnDead -= OnDead;
         }
 

@@ -16,10 +16,8 @@ namespace FSM
         private EState _nextStateKey; //다음 State의 키 값
         private EState _prevStateKey; //이전 State의 키 값
 
-        protected virtual void Start()
+        public override void OnStartServer()
         {
-            if (!isServer) return;
-
             CurrentState.EnterState();
         }
 

@@ -43,20 +43,24 @@ namespace GOAP.Assualt
             base.Awake();
         }
 
-        protected override void Start()
+        public override void OnStartServer()
         {
-            if (!isServer) return;
-
             Sensor.MyStat.OnDead += InitGOAP;
+        }
+
+        public override void OnStartClient()
+        {
             Sensor.MyStat.OnDead += CorpseSpawner.SpawnCorpse;
             Sensor.MyStat.OnRevive += CorpseSpawner.DespawnCorpse;
         }
 
-        private void OnDestroy()
+        public override void OnStopServer()
         {
-            if (!isServer) return;
-
             Sensor.MyStat.OnDead -= InitGOAP;
+        }
+
+        public override void OnStopClient()
+        {
             Sensor.MyStat.OnDead -= CorpseSpawner.SpawnCorpse;
             Sensor.MyStat.OnRevive -= CorpseSpawner.DespawnCorpse;
         }

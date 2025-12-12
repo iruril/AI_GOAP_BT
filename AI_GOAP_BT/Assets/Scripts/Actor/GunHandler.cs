@@ -284,17 +284,41 @@ public class GunHandler : NetworkBehaviour
     private void StartReload(Animator anim, IKEffector leftHand)
     {
         OnReload = true;
+
+        RpcStartReload();
         Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.15f));
+
         anim.CrossFade(AnimHash.Reload, 0.1f);
     }
 
     private void CompleteReload(Animator anim, IKEffector leftHand)
     {
+        RpcCompleteReload();
         Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.15f));
+
         CurrentRounds = CurrentRounds == 0
             ? currentGun.GunInfo.MagazineCapacity
             : currentGun.GunInfo.MagazineCapacity + 1;
+
         OnReload = false;
+    }
+
+    [ClientRpc]
+    private void RpcStartReload()
+    {
+        if (isServer) return;
+        Animator anim = GetComponent<Animator>();
+        IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
+        Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.15f));
+    }
+
+    [ClientRpc]
+    private void RpcCompleteReload()
+    {
+        if (isServer) return;
+        Animator anim = GetComponent<Animator>();
+        IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
+        Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.15f));
     }
 
     private IEnumerator<float> LerpIKAndLayer(Animator anim, IKEffector leftHand,
