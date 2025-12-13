@@ -164971,7 +164971,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5417977021176553505}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &3407736160461526166
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164985,7 +164985,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5417977020730363302}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &3407736160465546515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164999,7 +164999,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5417977020724392995}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &3407736160892007631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165013,7 +165013,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5417977020891295231}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &3407736160936557630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165027,7 +165027,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5417977022404928782}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &3407736160977126928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165041,7 +165041,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5417977022410874656}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &3407736161286913553
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165055,7 +165055,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5417977022587512609}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &3407736161700668388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165069,7 +165069,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5417977021691542228}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &3407736161706309671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165083,7 +165083,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5417977021698220311}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &3407736161840512638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165097,7 +165097,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5417977022100891470}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!4 &3424227629563389968
 Transform:
   m_ObjectHideFlags: 0
@@ -196161,7 +196161,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 2027008115
-  _assetId: 1989815425
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -196178,7 +196178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 2732334036
-  _assetId: 1989815425
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -196195,7 +196195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 184680091
-  _assetId: 1989815425
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -196212,7 +196212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 2692824173
-  _assetId: 1989815425
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -196229,7 +196229,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 4291612069
-  _assetId: 1989815425
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -196246,7 +196246,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 1825312108
-  _assetId: 1989815425
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -196263,7 +196263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 2129769344
-  _assetId: 1989815425
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -196280,7 +196280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 2806705799
-  _assetId: 1989815425
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -196297,7 +196297,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 3399223098
-  _assetId: 1989815425
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -196314,7 +196314,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 3417329446
-  _assetId: 1989815425
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -202880,6 +202880,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 7114761626708548778}
   bones:
   - {fileID: 7114761626708548778}
@@ -202959,6 +202962,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 7114761626701596521}
   bones:
   - {fileID: 7114761626701596521}
@@ -203038,6 +203044,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 7114761626305911539}
   bones:
   - {fileID: 7114761626305911539}
@@ -203117,6 +203126,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 7114761625944547997}
   bones:
   - {fileID: 7114761625944547997}
@@ -203196,6 +203208,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 7114761626005969075}
   bones:
   - {fileID: 7114761626005969075}
@@ -203275,6 +203290,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 7114761625785637532}
   bones:
   - {fileID: 7114761625785637532}
@@ -203354,6 +203372,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 7114761625539375131}
   bones:
   - {fileID: 7114761625539375131}
@@ -203433,6 +203454,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 7114761625533909406}
   bones:
   - {fileID: 7114761625533909406}
@@ -203512,6 +203536,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 7114761625364746306}
   bones:
   - {fileID: 7114761625364746306}
@@ -203591,6 +203618,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 7114761625046031772}
   bones:
   - {fileID: 7114761625046031772}
@@ -234941,7 +234971,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 1882597698232088675}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &6719161524436295512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234955,7 +234985,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 1882597698236069853}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &6719161524454544014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234969,7 +234999,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 1882597698259827211}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &6719161524809677431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234983,7 +235013,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 1882597698950648562}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &6719161525419691538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234997,7 +235027,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 1882597697277896343}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &6719161525630841172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235011,7 +235041,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 1882597697083005393}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &6719161525646464160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235025,7 +235055,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 1882597697031666725}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &6719161525668531304
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235039,7 +235069,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 1882597697053697261}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &6719161525915629283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235053,7 +235083,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 1882597697836768870}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!114 &6719161526015938119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235067,7 +235097,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 1882597697736517314}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!1 &6723143878177248606
 GameObject:
   m_ObjectHideFlags: 0
@@ -249530,7 +249560,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 3551881529
-  _assetId: 1230781199
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -249547,7 +249577,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 1054984014
-  _assetId: 1230781199
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -249564,7 +249594,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 2710773496
-  _assetId: 1230781199
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -249581,7 +249611,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 621903731
-  _assetId: 1230781199
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -249598,7 +249628,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 106532400
-  _assetId: 1230781199
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -249615,7 +249645,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 4226101726
-  _assetId: 1230781199
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -249632,7 +249662,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 1463092828
-  _assetId: 1230781199
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -249649,7 +249679,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 3873432379
-  _assetId: 1230781199
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -249666,7 +249696,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 243283969
-  _assetId: 1230781199
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -249683,7 +249713,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 4245628661
-  _assetId: 1230781199
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -271111,6 +271141,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 2259078557518506954}
   bones:
   - {fileID: 2259078557518506954}
@@ -271190,6 +271223,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 2259078557351105390}
   bones:
   - {fileID: 2259078557351105390}
@@ -271269,6 +271305,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 2259078557769215101}
   bones:
   - {fileID: 2259078557769215101}
@@ -271348,6 +271387,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 2259078557807038785}
   bones:
   - {fileID: 2259078557807038785}
@@ -271427,6 +271469,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 2259078557787130249}
   bones:
   - {fileID: 2259078557787130249}
@@ -271506,6 +271551,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 2259078558098346811}
   bones:
   - {fileID: 2259078558098346811}
@@ -271585,6 +271633,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 2259078558565214046}
   bones:
   - {fileID: 2259078558565214046}
@@ -271664,6 +271715,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 2259078559013162919}
   bones:
   - {fileID: 2259078559013162919}
@@ -271743,6 +271797,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 2259078558985457103}
   bones:
   - {fileID: 2259078558985457103}
@@ -271822,6 +271879,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 2259078558989468273}
   bones:
   - {fileID: 2259078558989468273}

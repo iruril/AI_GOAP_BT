@@ -158,11 +158,20 @@ public class Bullet : MonoBehaviour
 
     private void ProcessDamageHit(Collider target, Vector3 hitPoint, Vector3 hitNormal)
     {
+        Quaternion rot = Quaternion.LookRotation(hitNormal);
+        string vfxName = "Hit";
+
         if (target.TryGetComponent<HitBox>(out var hitBox))
+        {
             hitBox.ApplyDamage(damage, shotOrigin, hitPoint, friendLayers, owner != null);
+        }
 
-        owner?.ServerReportHit(hitPoint, hitNormal);
+        if (((1 << target.gameObject.layer) & WorldManager.Instance.GetBleedLayers()) != 0)
+            vfxName = "Blood";
+        else 
+            vfxName = "Hit";
 
+        owner?.ServerReportHit(hitPoint, rot, vfxName);
         Deactivate();
     }
 

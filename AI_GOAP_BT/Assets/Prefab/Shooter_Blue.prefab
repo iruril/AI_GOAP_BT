@@ -1986,6 +1986,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 7114761626121677571}
   bones:
   - {fileID: 7114761626121677571}
@@ -5133,7 +5136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5417977022252455614}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!1001 &8998387009326069476
 PrefabInstance:
   m_ObjectHideFlags: 0

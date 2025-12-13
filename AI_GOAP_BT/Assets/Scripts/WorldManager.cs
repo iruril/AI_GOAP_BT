@@ -8,6 +8,7 @@ public class WorldManager : MonoBehaviour
     [SerializeField] LayerMask levelLayers;
     [SerializeField] LayerMask vfxLayers;
     [SerializeField] LayerMask actorLayers;
+    [SerializeField] LayerMask bleedLayers;
     [SerializeField] CapturePoint.CapturePoint[] captures;
 
     private void Awake()
@@ -33,6 +34,11 @@ public class WorldManager : MonoBehaviour
     public LayerMask GetActorLayers()
     {
         return actorLayers;
+    }
+
+    public LayerMask GetBleedLayers()
+    {
+        return bleedLayers;
     }
 
     public bool IsThereUncapturedPoint(Transform agent)

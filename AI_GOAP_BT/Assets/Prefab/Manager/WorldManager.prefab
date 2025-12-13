@@ -53,6 +53,9 @@ MonoBehaviour:
   actorLayers:
     serializedVersion: 2
     m_Bits: 768
+  bleedLayers:
+    serializedVersion: 2
+    m_Bits: 1088
   captures:
   - {fileID: 0}
   - {fileID: 0}

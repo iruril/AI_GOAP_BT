@@ -245,15 +245,15 @@ public class GunHandler : NetworkBehaviour
     }
 
     [Server]
-    public void ServerReportHit(Vector3 point, Vector3 normal)
+    public void ServerReportHit(Vector3 point, Quaternion rot, string vfxName)
     {
-        RpcSpawnHitEffect(point, normal);
+        RpcSpawnHitEffect(point, rot, vfxName);
     }
 
     [ClientRpc]
-    private void RpcSpawnHitEffect(Vector3 point, Vector3 normal)
+    private void RpcSpawnHitEffect(Vector3 point, Quaternion rot, string vfxName)
     {
-        EffectPoolManager.SpawnFromPool("Hit", point, Quaternion.LookRotation(normal));
+        EffectPoolManager.SpawnFromPool(vfxName, point, rot);
     }
 
     public void OnDead()

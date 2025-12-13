@@ -2232,7 +2232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 1882597698345154371}
-  setCooldown: 2
+  setCooldown: 1
 --- !u!1 &5921549475999327437
 GameObject:
   m_ObjectHideFlags: 0
@@ -3604,6 +3604,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d922a53e027483c4fafe0367209d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   root: {fileID: 2259078559165596399}
   bones:
   - {fileID: 2259078559165596399}

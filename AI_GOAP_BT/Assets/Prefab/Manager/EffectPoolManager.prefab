@@ -51,3 +51,6 @@ MonoBehaviour:
   - Tag: Hit
     PoolObject: {fileID: 2260296087517024354, guid: c02083b1627cc40449e4e7c3ed1f2a65, type: 3}
     Size: 32
+  - Tag: Blood
+    PoolObject: {fileID: 6432013271008551149, guid: 6c851558e24bb2742a2b061764564f3f, type: 3}
+    Size: 32
