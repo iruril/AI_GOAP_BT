@@ -1,5 +1,6 @@
 using Pathfinding;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WorldManager : MonoBehaviour
 {
@@ -13,12 +14,42 @@ public class WorldManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
         else
         {
             Destroy(this.gameObject);
             return;
         }
+    }
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
+    /// <summary>
+    /// 씬 로드 완료 시 CapturePoint 자동 재수집
+    /// </summary>
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        RefreshCapturePoints();
+    }
+
+    private void RefreshCapturePoints()
+    {
+        captures = FindObjectsByType<CapturePoint.CapturePoint>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+#if UNITY_EDITOR
+        Debug.Log($"[WorldManager] CapturePoints refreshed: {captures.Length}");
+#endif
     }
 
     public LayerMask GetLevelLayers()
