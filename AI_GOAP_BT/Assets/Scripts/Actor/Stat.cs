@@ -10,6 +10,9 @@ public class Stat : NetworkBehaviour, IDamageable
     public event Action OnRevive;
     public event Action<Vector3> OnUnderAttack;
 
+    [SyncVar]
+    public string Nickname;
+
     [SerializeField] private float maxHP = 100f;
     public float MaxHP => maxHP;
     [SerializeField] private float rotateSpeedToTarget = 90f;
@@ -25,6 +28,9 @@ public class Stat : NetworkBehaviour, IDamageable
 
     private float lastDamageTime = -999f;
     private CoroutineHandle hpRegenHandle;
+
+    public string KillerNickname { get; set; }
+    public bool IsKillerBlue { get; set; }
 
     private const float NO_DAMAGE_DURATION = 5f;
     private const float REGEN_RATE = 0.1f;
@@ -102,6 +108,12 @@ public class Stat : NetworkBehaviour, IDamageable
     {
         CurrentHP = 0f;
         IsDead = true;
+        LogManager.Instance.ReportKill(
+            KillerNickname,
+            Nickname,
+            IsKillerBlue,
+            WorldManager.Instance.IsBlueTeam(1 << gameObject.layer)
+        );
         CurrentCapture?.RemoveIntruder(this);
     }
 

@@ -26,6 +26,18 @@ public class HitBox : MonoBehaviour
         }
     }
 
+    public void SendShooterInfo(Transform killer, bool isBlueTeam)
+    {
+        if (killer.TryGetComponent<Stat>(out var killerStat))
+        {
+            if (owner.TryGetComponent<Stat>(out var victimStat))
+            {
+                victimStat.KillerNickname = killerStat.Nickname;
+                victimStat.IsKillerBlue = isBlueTeam;
+            }
+        }
+    }
+
 #if UNITY_EDITOR
     public void InitHitBox(Transform owner, CorpseGenerator corpseGenerator, HitReaction hitReactIK, int ownerLayer)
     {

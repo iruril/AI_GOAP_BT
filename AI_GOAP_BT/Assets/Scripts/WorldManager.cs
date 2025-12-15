@@ -1,3 +1,4 @@
+using Mirror.BouncyCastle.Asn1.Mozilla;
 using Pathfinding;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,8 @@ public class WorldManager : MonoBehaviour
     [SerializeField] LayerMask vfxLayers;
     [SerializeField] LayerMask actorLayers;
     [SerializeField] LayerMask bleedLayers;
+    [SerializeField] LayerMask blueTeamLayers;
+    [SerializeField] LayerMask redTeamLayers;
     [SerializeField] CapturePoint.CapturePoint[] captures;
 
     private void Awake()
@@ -25,6 +28,7 @@ public class WorldManager : MonoBehaviour
             return;
         }
     }
+
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -70,6 +74,16 @@ public class WorldManager : MonoBehaviour
     public LayerMask GetBleedLayers()
     {
         return bleedLayers;
+    }
+
+    public bool IsBlueTeam(LayerMask layerMask)
+    {
+        return (layerMask & blueTeamLayers) != 0;
+    }
+
+    public bool IsRedTeam(LayerMask layerMask)
+    {
+        return (layerMask & redTeamLayers) != 0;
     }
 
     public bool IsThereUncapturedPoint(Transform agent)

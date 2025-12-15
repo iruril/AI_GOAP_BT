@@ -56,8 +56,10 @@ MonoBehaviour:
   bleedLayers:
     serializedVersion: 2
     m_Bits: 1088
-  captures:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  blueTeamLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  redTeamLayers:
+    serializedVersion: 2
+    m_Bits: 512
+  captures: []

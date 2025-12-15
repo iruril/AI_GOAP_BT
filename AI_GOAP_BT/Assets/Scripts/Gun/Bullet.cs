@@ -6,8 +6,11 @@ using Mirror;
 public class Bullet : MonoBehaviour
 {
     private BulletPool myPool;
-    private GunHandler owner; 
-    public void SetOwner(GunHandler gun) => owner = gun;
+    private GunHandler owner;
+    public void SetOwner(GunHandler gun)
+    {
+        owner = gun;
+    }
 
     [SerializeField]
     private float lifeTime = 5f;
@@ -163,6 +166,13 @@ public class Bullet : MonoBehaviour
 
         if (target.TryGetComponent<HitBox>(out var hitBox))
         {
+            if (NetworkServer.active && owner != null)
+            {
+                hitBox.SendShooterInfo(
+                    owner.gameObject.transform,
+                    WorldManager.Instance.IsBlueTeam(friendLayers)
+                );
+            }
             hitBox.ApplyDamage(damage, shotOrigin, hitPoint, friendLayers, owner != null);
         }
 
@@ -171,7 +181,8 @@ public class Bullet : MonoBehaviour
         else 
             vfxName = "Hit";
 
-        owner?.ServerReportHit(hitPoint, rot, vfxName);
+        if (NetworkServer.active && owner != null) 
+            owner.ServerReportHit(hitPoint, rot, vfxName);
         Deactivate();
     }
 
