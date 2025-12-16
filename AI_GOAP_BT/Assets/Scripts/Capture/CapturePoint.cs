@@ -1,4 +1,5 @@
 using FSM;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -16,14 +17,22 @@ namespace CapturePoint
 
     public class CapturePoint : StateManager<CaptureState>
     {
+        public event Action<Color> OnColorChanged;
+        public event Action<float> OnGaugeChanged;
+
         private CapturePoint _context => this;
         private HashSet<Stat> blues = new(32);
         private HashSet<Stat> reds = new(32);
         private Material decalMat;
 
+        [SerializeField]
+        private string captureName = "A";
+        public string CaptureName => captureName;
+
         [Header("Neutral Color")]
         [SerializeField]
         private Color def = Color.white;
+        public Color Def => def;
 
         [Header("Blue Color")]
         [SerializeField]
@@ -37,7 +46,8 @@ namespace CapturePoint
         [SerializeField] private float captureAmount = 1.666f;
         public float CaptureAmount => captureAmount;
 
-        public float CaptureGauge { get; set; }
+        [SyncVar(hook = nameof(OnGaugeSync))]
+        public float CaptureGauge;
 
         [SyncVar(hook = nameof(OnStateChanged))]
         public CaptureState SyncedState;
@@ -60,6 +70,7 @@ namespace CapturePoint
 
             if (SyncedState == default)
                 SyncedState = CaptureState.Neutral;
+            CaptureGauge = 0f;
         }
 
         protected override void Update()
@@ -139,6 +150,14 @@ namespace CapturePoint
             }
         }
 
+        private void OnGaugeSync(float oldValue, float newValue)
+        {
+            float abs = Mathf.Abs(newValue);
+            float normalized = Mathf.Clamp01(abs / 100);
+
+            OnGaugeChanged?.Invoke(normalized);
+        }
+
         /// <summary>
         /// 1이면 Blue, 0이면 중립, -1이면 Red.
         /// </summary>
@@ -147,18 +166,16 @@ namespace CapturePoint
         {
             Timing.KillCoroutines(colorHandle);
 
-            switch (value)
+            Color target = value switch
             {
-                case -1:
-                    colorHandle = Timing.RunCoroutine(DecalColorLerp(red, 0.25f));
-                    break;
-                case 0:
-                    colorHandle = Timing.RunCoroutine(DecalColorLerp(def, 0.25f));
-                    break;
-                case 1:
-                    colorHandle = Timing.RunCoroutine(DecalColorLerp(blue, 0.25f));
-                    break;
-            }
+                -1 => red,
+                0 => def,
+                1 => blue,
+                _ => def
+            };
+
+            OnColorChanged?.Invoke(target);
+            colorHandle = Timing.RunCoroutine(DecalColorLerp(target, 0.25f));
         }
 
         private IEnumerator<float> DecalColorLerp(Color targetCol, float time)

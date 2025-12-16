@@ -1,4 +1,3 @@
-using Mirror.BouncyCastle.Asn1.Mozilla;
 using Pathfinding;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -84,6 +83,11 @@ public class WorldManager : MonoBehaviour
     public bool IsRedTeam(LayerMask layerMask)
     {
         return (layerMask & redTeamLayers) != 0;
+    }
+
+    public CapturePoint.CapturePoint[] GetCaptures()
+    {
+        return captures;
     }
 
     public bool IsThereUncapturedPoint(Transform agent)
