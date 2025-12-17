@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ public class ChatLog : MonoBehaviour
     public GameObject ChatItemPrefab;
     public RectTransform ContentRect;
     public ScrollRect ScrollRect;
+    public TMP_InputField InputField;
 
     private void Awake()
     {
@@ -16,24 +18,19 @@ public class ChatLog : MonoBehaviour
 
     private void Start()
     {
-        SendMessage("Alice", "Hi!", Color.cyan);
 
-        SendMessage(
-            "Charlie",
-            "This is a long chat message used for testing. " +
-            "It checks whether the chat item automatically resizes " +
-            "its height based on the length of the text content.",
-            Color.green
-        );
-
-        SendMessage(
-            "Bob_The_Great_Executioner_Of_The_World",
-            "That gameplay today was pretty fun.",
-            Color.yellow
-        );
     }
 
-    public void SendMessage(string sender, string message, Color color)
+    public void SendChat()
+    {
+        if (string.IsNullOrWhiteSpace(InputField.text))
+            return;
+
+        LogManager.Instance.CmdSendChat("TESTER", InputField.text, Color.green);
+        InputField.text = string.Empty;
+    }
+
+    public void PrintMsg(string sender, string message, Color color)
     {
         GameObject itemObj = Instantiate(ChatItemPrefab, ContentRect);
         ChatItem item = itemObj.GetComponent<ChatItem>();
