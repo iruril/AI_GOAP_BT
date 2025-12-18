@@ -17,6 +17,11 @@ public class ChatLog : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        InputField.gameObject.SetActive(false);
+    }
+
     public void SendChat()
     {
         GameObject player = GameManager.GetInstance().MyPlayer;
