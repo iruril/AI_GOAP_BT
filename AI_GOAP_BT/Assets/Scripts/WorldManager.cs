@@ -6,13 +6,25 @@ public class WorldManager : MonoBehaviour
 {
     public static WorldManager Instance = null;
 
+    [Header("Layer Masks")]
     [SerializeField] LayerMask levelLayers;
     [SerializeField] LayerMask vfxLayers;
     [SerializeField] LayerMask actorLayers;
     [SerializeField] LayerMask bleedLayers;
     [SerializeField] LayerMask blueTeamLayers;
     [SerializeField] LayerMask redTeamLayers;
+
+    [Header("Capture Points")]
     [SerializeField] CapturePoint.CapturePoint[] captures;
+
+    [Header("Team Colors")]
+    [SerializeField] Color blueTeamColor;
+    [SerializeField] Color redTeamColor;
+    [SerializeField] Color defColor;
+
+    public Color BlueTeamColor { get => blueTeamColor;}
+    public Color RedTeamColor { get => redTeamColor;}
+    public Color DefColor { get => defColor;}
 
     private void Awake()
     {

@@ -7,6 +7,7 @@ namespace Player.Input
     {
         public Vector2 CamInputMap { get; private set; }
         public Vector2 MoveInputMap { get; private set; }
+        public bool ChatKeyDown { get; private set; }
 
         public void OnCamInput(InputAction.CallbackContext context)
         {
@@ -18,6 +19,18 @@ namespace Player.Input
         {
             Vector2 value = context.ReadValue<Vector2>(); 
             MoveInputMap = value;
+        }
+
+        public void OnChatKey(InputAction.CallbackContext context)
+        {
+            ChatKeyDown = context.performed;
+        }
+
+        public bool ConsumeChatKeyDown()
+        {
+            if (!ChatKeyDown) return false;
+            ChatKeyDown = false;
+            return true;
         }
     }
 }

@@ -1,3 +1,4 @@
+using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,18 +17,23 @@ public class ChatLog : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
-    {
-
-    }
-
     public void SendChat()
     {
-        if (string.IsNullOrWhiteSpace(InputField.text))
+        GameObject player = GameManager.GetInstance().MyPlayer;
+        if (player == null)
             return;
 
-        LogManager.Instance.CmdSendChat("TESTER", InputField.text, Color.green);
+        if (!string.IsNullOrWhiteSpace(InputField.text))
+        {
+            LogManager.Instance.CmdSendChat(
+                player.GetComponent<NetworkIdentity>().netId.ToString(),
+                InputField.text,
+                Color.white
+            );
+        }
+
         InputField.text = string.Empty;
+        player.GetComponent<Observer.Observer>().ForceExitChat();
     }
 
     public void PrintMsg(string sender, string message, Color color)

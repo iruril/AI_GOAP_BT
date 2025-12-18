@@ -56,7 +56,7 @@ public class CaptureHUD : MonoBehaviour
                 item.gameObject.SetActive(true);
                 item.ResetContent();
                 item.SetText(cap.CaptureName);
-                item.SetColor(cap.Def);
+                item.SetColor(WorldManager.Instance.DefColor);
                 item.SetFillAmout(0f);
 
                 cap.OnColorChanged += item.SetColor;

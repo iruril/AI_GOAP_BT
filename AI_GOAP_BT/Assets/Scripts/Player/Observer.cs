@@ -19,6 +19,8 @@ namespace Observer
 
         private Vector3 currentVelocity = Vector3.zero;
 
+        private bool isChatting = false;
+
         private void Awake()
         {
             cc = GetComponent<CharacterController>();
@@ -29,8 +31,7 @@ namespace Observer
             GameManager.GetInstance().MyPlayer = this.gameObject;
             MainCamManager.Instance.SetCamTarget(this.transform);
 
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            LockCursor(true);
         }
 
         public override void OnStopLocalPlayer()
@@ -38,16 +39,59 @@ namespace Observer
             GameManager.GetInstance().MyPlayer = null;
             MainCamManager.Instance.SetCamTarget(null);
 
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            LockCursor(false);
         }
 
         void Update()
         {
             if (!isLocalPlayer) return;
 
+            HandleChatToggle();
+
+            if (isChatting)
+                return;
+
             HandleRotation();
             HandleMovement();
+        }
+
+        private void HandleChatToggle()
+        {
+            if (isChatting)
+                return;
+
+            if (!GameManager.GetInstance().InputMap.ConsumeChatKeyDown())
+                return;
+
+            isChatting = true;
+            EnterChatMode();
+        }
+
+        private void EnterChatMode()
+        {
+            LockCursor(false);
+
+            ChatLog.Instance.InputField.gameObject.SetActive(true);
+            ChatLog.Instance.InputField.ActivateInputField();
+            ChatLog.Instance.InputField.Select();
+
+            currentVelocity = Vector3.zero;
+        }
+
+        public void ForceExitChat()
+        {
+            if (!isChatting) return;
+
+            isChatting = false;
+            ExitChatMode();
+        }
+
+        private void ExitChatMode()
+        {
+            LockCursor(true);
+
+            ChatLog.Instance.InputField.DeactivateInputField();
+            ChatLog.Instance.InputField.gameObject.SetActive(false);
         }
 
         private void HandleRotation()
@@ -78,6 +122,12 @@ namespace Observer
             currentVelocity += delta;
 
             cc.Move(currentVelocity * Time.deltaTime);
+        }
+
+        private void LockCursor(bool locked)
+        {
+            Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = !locked;
         }
     }
 }

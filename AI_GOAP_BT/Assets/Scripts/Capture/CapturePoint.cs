@@ -29,19 +29,6 @@ namespace CapturePoint
         private string captureName = "A";
         public string CaptureName => captureName;
 
-        [Header("Neutral Color")]
-        [SerializeField]
-        private Color def = Color.white;
-        public Color Def => def;
-
-        [Header("Blue Color")]
-        [SerializeField]
-        private Color blue = Color.blue;
-
-        [Header("Red Color")]
-        [SerializeField]
-        private Color red = Color.red;
-
         [Header("Capture Amount/s of Agent")]
         [SerializeField] private float captureAmount = 1.666f;
         public float CaptureAmount => captureAmount;
@@ -168,10 +155,10 @@ namespace CapturePoint
 
             Color target = value switch
             {
-                -1 => red,
-                0 => def,
-                1 => blue,
-                _ => def
+                -1 => WorldManager.Instance.RedTeamColor,
+                0 => WorldManager.Instance.DefColor,
+                1 => WorldManager.Instance.BlueTeamColor,
+                _ => WorldManager.Instance.DefColor
             };
 
             OnColorChanged?.Invoke(target);
