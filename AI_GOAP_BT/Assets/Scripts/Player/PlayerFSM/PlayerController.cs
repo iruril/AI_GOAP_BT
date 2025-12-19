@@ -1,4 +1,5 @@
 using FSM;
+using RootMotion.FinalIK;
 using UnityEngine;
 
 namespace Player.FSM
@@ -17,13 +18,14 @@ namespace Player.FSM
     public class PlayerController : StateManager<PlayerState>
     {
         public float StateTime { get; set; }
+        public PlayerInputReciever InputMap { get; private set; }
         public GroundChecker GroundChecker { get; private set; }
         public CharacterController PlayerCC { get; private set; }
+        public TPSCamController CamController { get; private set; }
         public Animator Anim { get; private set; }
         public Stat Stat { get; private set; }
 
         public Vector3 PlayerVelocity { get; set; } = Vector3.zero;
-        public Vector3 PlayerCurrentVelocity { get; set; } = Vector3.zero;
         public float PlayerCurrentSpeed { get; set; }
         public Vector3 SnapGroundForce { get; set; } = Vector3.zero;
         public Vector3 PlayerForward { get; set; }
@@ -35,7 +37,9 @@ namespace Player.FSM
 
         void Awake()
         {
+            InputMap = GetComponent<PlayerInputReciever>();
             PlayerCC = GetComponent<CharacterController>();
+            CamController = GetComponent<TPSCamController>();
             Anim = GetComponent<Animator>();
             Stat = GetComponent<Stat>();
             GroundChecker = GetComponent<GroundChecker>();
@@ -45,9 +49,15 @@ namespace Player.FSM
             PlayerRotation = transform.rotation;
         }
 
+        protected override void Update()
+        {
+            base.Update();
+            PlayerVectorHandler();
+        }
+
         private void PlayerVectorHandler()
         {
-            float yRotation = transform.rotation.y; //CamController.GetCameraRotaionY();
+            float yRotation = CamController.GetCameraRotaionY();
 
             if (!IsOnJumping)
             {

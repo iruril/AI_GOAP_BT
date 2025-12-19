@@ -46,7 +46,7 @@ namespace Player.FSM
 
             if (player != null)
             {
-                rayOrigin = transform.position + (player.PlayerCurrentVelocity.normalized * stepMinDepth) + (Vector3.up * stepMaxHeight);
+                rayOrigin = transform.position + (playerCC.velocity.normalized * stepMinDepth) + (Vector3.up * stepMaxHeight);
                 rayEndPos = rayOrigin + Vector3.down * stepMaxHeight * 2;
 
                 Gizmos.DrawLine(rayOrigin, rayEndPos);
@@ -76,7 +76,7 @@ namespace Player.FSM
 
         private bool CheckSnapGround()
         {
-            rayOrigin = transform.position + (player.PlayerCurrentVelocity.normalized * stepMinDepth) + (Vector3.up * stepMaxHeight);
+            rayOrigin = transform.position + (playerCC.velocity.normalized * stepMinDepth) + (Vector3.up * stepMaxHeight);
             rayEndPos = rayOrigin + Vector3.down * stepMaxHeight * 2;
             return Physics.Linecast(rayOrigin, rayEndPos, WorldManager.Instance.GetLevelLayers());
         }
