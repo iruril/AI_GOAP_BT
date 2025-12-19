@@ -96,8 +96,8 @@ namespace Observer
 
         private void HandleRotation()
         {
-            yaw += GameManager.GetInstance().InputMap.CamInputMap.x * sensitivity;
-            pitch += GameManager.GetInstance().InputMap.CamInputMap.y * sensitivity;
+            yaw += GameManager.GetInstance().InputMap.XRotationEuler * sensitivity;
+            pitch += GameManager.GetInstance().InputMap.YRotationEuler * sensitivity;
             pitch = Mathf.Clamp(pitch, -75f, 75f);
 
             transform.rotation = Quaternion.Euler(-pitch, yaw, 0);

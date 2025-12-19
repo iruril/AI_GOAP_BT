@@ -5,13 +5,6 @@ public class TPSCamController : MonoBehaviour
 {
     private Player.FSM.PlayerController player;
 
-    [Header("카메라를 바라볼 각도 범위")]
-    [SerializeField] private float _viewAngleY = 160;
-    [SerializeField] private float _viewAngleX = 90;
-
-    [Header("카메라를 바라보는 캐릭터의 Y축 회전 오프셋")]
-    [SerializeField] private float _viewAngleYOffset = 45;
-
     public Camera MyLocalCamera;
     [SerializeField] private Transform camTarget;
     public Transform CamTarget { get { return camTarget; } }
