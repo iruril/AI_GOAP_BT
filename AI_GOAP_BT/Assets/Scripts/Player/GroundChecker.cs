@@ -6,7 +6,7 @@ namespace Player.FSM
     public class GroundChecker : MonoBehaviour
     {
         private PlayerController player;
-        private CharacterController playerCC;
+        private Rigidbody rb;
 
         [Header("Boxcast로 감지할 최대 거리")]
         [SerializeField] private float detectionMaxDist;
@@ -18,20 +18,19 @@ namespace Player.FSM
         public bool IsGrounded;
         public bool IsSnapGround;
 
-        private float stepOffset = 0.2f;
+        private float stepOffset = 0.3f;
         private float stepMinDepth;
         private float stepMaxHeight;
 
         private Vector3 rayOrigin;
         private Vector3 rayEndPos;
 
-        private const float STEP_HEIGHT_ERROR = 0.2f;
+        private const float STEP_HEIGHT_ERROR = 0.3f;
 
         private void Start()
         {
             player = GetComponent<PlayerController>();
-            playerCC = GetComponent<CharacterController>();
-            stepOffset = playerCC.stepOffset;
+            rb = GetComponent<Rigidbody>();
             stepMaxHeight = stepOffset + STEP_HEIGHT_ERROR;
             stepMinDepth = stepOffset;
         }
@@ -48,7 +47,7 @@ namespace Player.FSM
 
             if (player != null)
             {
-                rayOrigin = transform.position + (playerCC.velocity.normalized * stepMinDepth) + (Vector3.up * stepMaxHeight);
+                rayOrigin = transform.position + (rb.linearVelocity.normalized * stepMinDepth) + (Vector3.up * stepMaxHeight);
                 rayEndPos = rayOrigin + Vector3.down * stepMaxHeight * 2;
 
                 Gizmos.DrawLine(rayOrigin, rayEndPos);
@@ -68,16 +67,12 @@ namespace Player.FSM
         private bool CheckGround()
         {
             bool result = Physics.BoxCast(transform.position + transform.up * 0.5f, boxHalfExtent, -transform.up, transform.rotation, detectionMaxDist, WorldManager.Instance.GetLevelLayers());
-            if (!result)
-            {
-                result = playerCC.isGrounded;
-            }
             return result;
         }
 
         private bool CheckSnapGround()
         {
-            rayOrigin = transform.position + (playerCC.velocity.normalized * stepMinDepth) + (Vector3.up * stepMaxHeight);
+            rayOrigin = transform.position + (rb.linearVelocity.normalized * stepMinDepth) + (Vector3.up * stepMaxHeight);
             rayEndPos = rayOrigin + Vector3.down * stepMaxHeight * 2;
             return Physics.Linecast(rayOrigin, rayEndPos, WorldManager.Instance.GetLevelLayers());
         }

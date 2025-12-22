@@ -19,7 +19,7 @@ namespace Player.FSM
         public float StateTime { get; set; }
         public InputRecorder Input { get; private set; }
         public GroundChecker GroundChecker { get; private set; }
-        public CharacterController PlayerCC { get; private set; }
+        public Rigidbody Rb { get; private set; }
         public TPSCamController CamController { get; private set; }
         public Animator Anim { get; private set; }
         public Stat Stat { get; private set; }
@@ -39,7 +39,7 @@ namespace Player.FSM
 
         void Awake()
         {
-            PlayerCC = GetComponent<CharacterController>();
+            Rb = GetComponent<Rigidbody>();
             CamController = GetComponent<TPSCamController>();
             Anim = GetComponent<Animator>();
             Stat = GetComponent<Stat>();

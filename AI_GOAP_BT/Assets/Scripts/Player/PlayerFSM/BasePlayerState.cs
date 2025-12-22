@@ -48,7 +48,7 @@ namespace Player.FSM
                 ctx.SnapGroundForce = Vector3.down;
             }
 
-            ctx.PlayerCC.Move(ctx.PlayerVelocity * Time.deltaTime + ctx.SnapGroundForce);
+            ctx.Rb.linearVelocity = ctx.PlayerVelocity * Time.deltaTime + ctx.SnapGroundForce;
         }
     }
 }
