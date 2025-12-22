@@ -1,4 +1,3 @@
-using Unity.Cinemachine;
 using UnityEngine;
 
 public class TPSCamController : MonoBehaviour
@@ -34,8 +33,8 @@ public class TPSCamController : MonoBehaviour
 
     private void CamTargetRotate()
     {
-        yRotation = CamTarget.transform.eulerAngles.y + player.InputMap.Input.YRotationEuler;
-        xRotation = xRotation + player.InputMap.Input.XRotationEuler;
+        yRotation = CamTarget.transform.eulerAngles.y + player.Input.YRotationEuler;
+        xRotation = xRotation + player.Input.XRotationEuler;
         xRotation = Mathf.Clamp(xRotation, -60, 60);
 
         CamTarget.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);

@@ -4,6 +4,7 @@ using UnityEngine;
 public class MainCamManager : MonoBehaviour
 {
     [SerializeField] Camera cam;
+    public Camera MainCamera { get { return cam; } }
     [SerializeField] CinemachineCamera defaultCam;
     [SerializeField] CinemachineCamera aimCam;
 

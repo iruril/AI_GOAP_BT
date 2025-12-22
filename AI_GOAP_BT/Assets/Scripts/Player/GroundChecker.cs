@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Player.FSM
 {
-    public class GroundChecker : NetworkBehaviour
+    public class GroundChecker : MonoBehaviour
     {
         private PlayerController player;
         private CharacterController playerCC;
@@ -38,7 +38,10 @@ namespace Player.FSM
 
         private void OnDrawGizmos()
         {
-            if (!drawGizmo) return;
+            if (!drawGizmo) return; 
+            
+            Debug.DrawRay(transform.position, transform.forward * 2f, Color.red);
+            Debug.DrawRay(transform.position, transform.right * 2f, Color.blue);
 
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(transform.position + transform.up * 0.5f - transform.up * detectionMaxDist, boxHalfExtent * 2);
@@ -58,7 +61,6 @@ namespace Player.FSM
 
         private void FixedUpdate()
         {
-            if (!isServer) return;
             IsGrounded = CheckGround();
             IsSnapGround = CheckSnapGround();
         }

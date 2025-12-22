@@ -1,33 +1,26 @@
-using MEC;
+﻿using MEC;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AnimControl.Assault
+namespace Player.FSM
 {
-    public class TurnOpposite : BaseAssaultAnimState
+    public class TurnOpposite : BasePlayerState
     {
         private float turnTime;
 
-        public TurnOpposite(AssaultAnimFSM ctx, AnimState key) : base(ctx, key)
+        public TurnOpposite(PlayerController ctx, PlayerState key) : base(ctx, key)
         {
-            this.ctx = ctx;
         }
 
         public override void EnterState()
         {
-            base.EnterState();
-            ctx.MyBrain.Navigator.AI.enableRotation = false;
-            ctx.RootRotation = true;
+            base.EnterState(); 
 
-            Vector3 tgt = ctx.transform.position - ctx.MyBrain.Navigator.AI.steeringTarget;
+            Vector3 tgt = ctx.CamController.CamTarget.forward;
             tgt.y = 0f;
             tgt.Normalize();
 
-            Quaternion startRot = ctx.transform.rotation;
-            Quaternion endRot = Quaternion.LookRotation(tgt);
-            Timing.RunCoroutine(SmoothRotate(startRot, endRot, 0.1f));
-
-            int snapSpeed = Mathf.Clamp(Mathf.RoundToInt(ctx.Accel), 1, 4);
+            int snapSpeed = Mathf.Clamp(Mathf.RoundToInt(ctx.Anim.GetFloat(AnimHash.Accelation)), 1, 4);
             ctx.Anim.SetFloat(AnimHash.TransitionAccel, snapSpeed);
 
             if (MathUtility.IsRightDirection(ctx.transform.forward, tgt, 0f))
@@ -41,9 +34,6 @@ namespace AnimControl.Assault
 
             switch (snapSpeed)
             {
-                case 3:
-                    turnTime = 1.9f;
-                    break;
                 case 4:
                     turnTime = 1.1f;
                     break;
@@ -55,32 +45,39 @@ namespace AnimControl.Assault
 
         public override void ExitState()
         {
-
         }
 
         public override void UpdateState()
         {
             base.UpdateState();
+            CalculatePlayerTransform();
         }
 
         public override void PhysicsUpdateState()
         {
-
+            base.PhysicsUpdateState();
         }
 
-        public override AnimState GetNextState()
+        public override PlayerState GetNextState()
         {
-            if (ctx.AttackedDirection != Vector3.zero)
-                return AnimState.LookAtMove;
-            if (ctx.StateTime >= turnTime) return AnimState.Move;
+            if (ctx.StateTime >= turnTime)
+            {
+                return PlayerState.Move;
+            }
             return StateKey;
         }
 
-        public override void OnTriggerEnter(Collider other) { }
+        public override void OnTriggerEnter(Collider other)
+        {
+        }
 
-        public override void OnTriggerStay(Collider other) { }
+        public override void OnTriggerExit(Collider other)
+        {
+        }
 
-        public override void OnTriggerExit(Collider other) { }
+        public override void OnTriggerStay(Collider other)
+        {
+        }
 
         IEnumerator<float> SmoothRotate(Quaternion startRot, Quaternion endRot, float duration)
         {

@@ -128,7 +128,7 @@ public class MathUtility
 
         if (dot >= threshold) return false;
 
-        return crossY < 0f;
+        return crossY > 0f;
     }
 
     public static bool IsLeftDirection(Vector3 forward, Vector3 direction, float error)
@@ -144,7 +144,7 @@ public class MathUtility
 
         if (dot >= threshold) return false;
 
-        return crossY > 0f;
+        return crossY < 0f;
     }
 
     public static bool IsSameDirection(Vector3 forward, Vector3 direction, float error)

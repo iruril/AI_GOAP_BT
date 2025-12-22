@@ -1,7 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using MEC;
-using System.Collections.Generic;
 
 namespace Player.Input
 {
@@ -39,7 +37,9 @@ namespace Player.Input
         public Vector2 MoveInputMap { get; private set; }
         public bool ChatKeyDown { get; private set; }
         public bool Jump { get; set; } = false;
-        public bool IsOnMoveInput { get; private set; } = false;
+        public bool Aim { get; set; } = false;
+        public bool Run { get; set; } = false;
+        public bool Trigger { get; set; } = false;
 
         public float HorizontalInput { get; private set; }
         public float VerticalInput { get; private set; }
@@ -47,11 +47,8 @@ namespace Player.Input
         public float RawVerticalInput { get; private set; }
 
         private Vector2 _smoothInputMap = Vector3.zero;
-        private Vector2 _currentInputMap = Vector3.zero;
         public Vector2 CurrentInputMap { get; private set; }
         private const float _smoothTimeOnGround = 0.15f;
-
-        private CoroutineHandle resetCoroutine;
 
         private void Update()
         {
@@ -79,26 +76,7 @@ namespace Player.Input
 
         public void OnMoveInput(InputAction.CallbackContext context)
         {
-            Vector2 value = context.ReadValue<Vector2>();
-
-            if (value != Vector2.zero)
-            {
-                IsOnMoveInput = true;
-                Timing.KillCoroutines(resetCoroutine);
-            }
-            else
-            {
-                IsOnMoveInput = false;
-                if (resetCoroutine == null)
-                {
-                    resetCoroutine = Timing.RunCoroutine(ResetMoveInputMap());
-                }
-            }
-
-            if (IsOnMoveInput)
-            {
-                MoveInputMap = context.ReadValue<Vector2>();
-            }
+            MoveInputMap = context.ReadValue<Vector2>();
         }
 
         public void OnChatKey(InputAction.CallbackContext context)
@@ -111,10 +89,18 @@ namespace Player.Input
             Jump = context.performed;
         }
 
-        private IEnumerator<float> ResetMoveInputMap()
+        public void OnAimInput(InputAction.CallbackContext context)
         {
-            yield return Timing.WaitForSeconds(0.2f);
-            MoveInputMap = Vector2.zero;
+            Aim = context.performed;
+        }
+        public void OnRunInput(InputAction.CallbackContext context)
+        {
+            Run = context.performed;
+        }
+
+        public void OnTrrigerInput(InputAction.CallbackContext context)
+        {
+            Trigger = context.performed;
         }
 
         public bool ConsumeChatKeyDown()
@@ -126,14 +112,12 @@ namespace Player.Input
 
         private void InputMapCompensate()
         {
-            Vector2 _moveInputMap = GameManager.GetInstance().InputMap.MoveInputMap;
-            _currentInputMap = Vector2.SmoothDamp(_currentInputMap, _moveInputMap, ref _smoothInputMap, _smoothTimeOnGround);
+            CurrentInputMap = Vector2.SmoothDamp(CurrentInputMap, MoveInputMap, ref _smoothInputMap, _smoothTimeOnGround);
 
-            VerticalInput = _currentInputMap.y;
-            HorizontalInput = _currentInputMap.x;
-            Vector2 rawInput = _moveInputMap.normalized;
-            RawHorizontalInput = rawInput.x;
-            RawVerticalInput = rawInput.y;
+            VerticalInput = CurrentInputMap.y;
+            HorizontalInput = CurrentInputMap.x;
+            RawHorizontalInput = MoveInputMap.x;
+            RawVerticalInput = MoveInputMap.y;
         }
     }
 }

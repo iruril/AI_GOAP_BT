@@ -1,5 +1,5 @@
 using FSM;
-using RootMotion.FinalIK;
+using Player.Input;
 using UnityEngine;
 
 namespace Player.FSM
@@ -7,11 +7,8 @@ namespace Player.FSM
     public enum PlayerState
     {
         Idle,
-        Start,
-        Walk,
-        Run,
-        Aim,
-        Stop,
+        Move,
+        TurnOpposite,
         Jump,
         Fall,
         Land
@@ -20,7 +17,7 @@ namespace Player.FSM
     public class PlayerController : StateManager<PlayerState>
     {
         public float StateTime { get; set; }
-        public PlayerInputReciever InputMap { get; private set; }
+        public InputRecorder Input { get; private set; }
         public GroundChecker GroundChecker { get; private set; }
         public CharacterController PlayerCC { get; private set; }
         public TPSCamController CamController { get; private set; }
@@ -37,9 +34,11 @@ namespace Player.FSM
         public bool IsSnapGround => GroundChecker.IsSnapGround;
         public bool IsGrounded => GroundChecker.IsGrounded;
 
+        public float PrevYaw { get; private set; }
+        public float DeltaYaw { get; private set; }
+
         void Awake()
         {
-            InputMap = GetComponent<PlayerInputReciever>();
             PlayerCC = GetComponent<CharacterController>();
             CamController = GetComponent<TPSCamController>();
             Anim = GetComponent<Animator>();
@@ -53,14 +52,18 @@ namespace Player.FSM
 
         public override void OnStartServer()
         {
-            InitStates();
-            base.OnStartServer();
+            return;
         }
 
         public override void OnStartLocalPlayer()
         {
+            InitStates();
+            base.OnStartLocalPlayer();
+
+            Input = GameManager.GetInstance().InputMap;
             GameManager.GetInstance().MyPlayer = this.gameObject;
             CamController.InitCam();
+            PrevYaw = CamController.CamTarget.eulerAngles.y;
 
             LockCursor(true);
         }
@@ -78,14 +81,16 @@ namespace Player.FSM
             PlayerVectorHandler();
         }
 
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+        }
+
         private void InitStates()
         {
             States.Add(PlayerState.Idle, new Idle(this, PlayerState.Idle));
-            States.Add(PlayerState.Start, new Start(this, PlayerState.Start));
-            States.Add(PlayerState.Walk, new Walk(this, PlayerState.Walk));
-            States.Add(PlayerState.Run, new Run(this, PlayerState.Run));
-            States.Add(PlayerState.Aim, new Aim(this, PlayerState.Aim));
-            States.Add(PlayerState.Stop, new Stop(this, PlayerState.Stop));
+            States.Add(PlayerState.Move, new Move(this, PlayerState.Move));
+            States.Add(PlayerState.TurnOpposite, new TurnOpposite(this, PlayerState.TurnOpposite));
             States.Add(PlayerState.Jump, new Jump(this, PlayerState.Jump));
             States.Add(PlayerState.Fall, new Fall(this, PlayerState.Fall));
             States.Add(PlayerState.Land, new Land(this, PlayerState.Land));
@@ -93,6 +98,7 @@ namespace Player.FSM
             CurrentState = States[PlayerState.Idle];
         }
 
+        float accelRef;
         private void PlayerVectorHandler()
         {
             float yRotation = MainCamManager.Instance.GetCameraRotaionY();
@@ -102,6 +108,19 @@ namespace Player.FSM
                 PlayerForward = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.forward;
                 PlayerRight = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.right;
             }
+
+            float targetAccel;
+            if (Input.MoveInputMap == Vector2.zero)
+                targetAccel = 0f;
+            else
+                targetAccel = Input.Run ? 4f : 2f;
+
+            float currentAccel = Anim.GetFloat(AnimHash.Accelation);
+            Anim.SetFloat(AnimHash.Accelation, Mathf.SmoothDamp(currentAccel, targetAccel, ref accelRef, 0.25f));
+
+            float currYaw = CamController.CamTarget.eulerAngles.y;
+            DeltaYaw = Mathf.DeltaAngle(PrevYaw, currYaw);
+            PrevYaw = currYaw;
         }
 
         private void LockCursor(bool locked)

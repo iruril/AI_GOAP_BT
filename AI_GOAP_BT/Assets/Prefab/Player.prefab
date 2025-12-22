@@ -1029,7 +1029,6 @@ GameObject:
   - component: {fileID: 1195883400668731909}
   - component: {fileID: 8762477888000404853}
   - component: {fileID: 9168033542482783614}
-  - component: {fileID: 1924412620645864122}
   - component: {fileID: 1234930754468531374}
   - component: {fileID: 5403546167173456416}
   - component: {fileID: 1599727747282717117}
@@ -1080,13 +1079,13 @@ Animator:
   m_GameObject: {fileID: 3633421393629289014}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: c0426d61788399a4aa9702989176ee68, type: 3}
-  m_Controller: {fileID: 9100000, guid: a9aa3d83258ee674db37acf02abdd7eb, type: 2}
+  m_Controller: {fileID: 9100000, guid: 5222bd2b898f0bf41990094e811cfb56, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 1
-  m_ApplyRootMotion: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_AnimatePhysics: 1
+  m_AnimatePhysics: 0
   m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
     are already bound by a Humanoid avatar. These transforms can only be changed
     by Humanoid clips.\n\tTransform 'index_03_l'\n\tTransform 'index_03_r'\n\tTransform
@@ -1714,21 +1713,6 @@ MonoBehaviour:
     poleTarget: {fileID: 1070870983125213175}
     clampWeight: 0.5
     clampSmoothing: 2
---- !u!114 &1924412620645864122
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3633421393629289014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8498d60f82c390a418c2e2d36ce78515, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
 --- !u!114 &1234930754468531374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1744,6 +1728,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  ServerOnly: 0
 --- !u!114 &5403546167173456416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1756,11 +1741,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ca7b361b94e87f498fa7ca71f9a9ece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   detectionMaxDist: 0.545
-  boxHalfExtent: {x: 0.09, y: 0.03, z: 0.09}
+  boxHalfExtent: {x: 0.1, y: 0.06, z: 0.1}
   drawGizmo: 1
   IsGrounded: 0
   IsSnapGround: 0
@@ -2741,7 +2723,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
+  syncDirection: 1
   syncMode: 0
   syncInterval: 0.01
   target: {fileID: 4530299076479977941}
@@ -2775,10 +2757,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
+  syncDirection: 1
   syncMode: 0
   syncInterval: 0.01
-  clientAuthority: 0
+  clientAuthority: 1
   animator: {fileID: 4460953585574970759}
 --- !u!1 &3634317800044561053
 GameObject:

@@ -77,11 +77,11 @@ namespace AnimControl.Assault
             if (targetDir.sqrMagnitude < 0.001f)
                 return;
 
-            if (MathUtility.IsRightDirection(ctx.transform.forward, targetDir, 60))
+            if (MathUtility.IsRightDirection(ctx.transform.forward, targetDir, 75))
             {
                 turnHandle = Timing.RunCoroutine(DoTurn(false, targetDir), Segment.FixedUpdate);
             }
-            else if (MathUtility.IsLeftDirection(ctx.transform.forward, targetDir, 60))
+            else if (MathUtility.IsLeftDirection(ctx.transform.forward, targetDir, 75))
             {
                 turnHandle = Timing.RunCoroutine(DoTurn(true, targetDir), Segment.FixedUpdate);
             }
@@ -89,15 +89,25 @@ namespace AnimControl.Assault
 
         private IEnumerator<float> DoTurn(bool leftTurn, Vector3 targetDir)
         {
-            float animTime = 0.66f;
+            float animTime;
 
             turning = true;
             Quaternion startRot = ctx.transform.rotation;
             Quaternion endRot = Quaternion.LookRotation(targetDir);
 
-            int turnHash = leftTurn ? AnimHash.AimTurn_L : AnimHash.AimTurn_R;
+            int turnHash;
+            if (ctx.IsAimable)
+            {
+                animTime = 0.66f;
+                turnHash = leftTurn ? AnimHash.AimTurn_L : AnimHash.AimTurn_R;
+            }
+            else
+            {
+                animTime = 0.86f;
+                turnHash = leftTurn ? AnimHash.Turn_L : AnimHash.Turn_R;
+            }
 
-            ctx.Anim.CrossFadeInFixedTime(turnHash, 0.1f);
+            ctx.Anim.CrossFadeInFixedTime(turnHash, 0.25f);
 
             float time = 0;
             while (time <= animTime)
@@ -113,7 +123,7 @@ namespace AnimControl.Assault
             }
 
             ctx.MyRigid.MoveRotation(endRot);
-            ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.1f);
+            ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.25f);
             turning = false;
         }
     }

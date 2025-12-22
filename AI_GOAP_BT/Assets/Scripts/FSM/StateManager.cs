@@ -7,6 +7,8 @@ namespace FSM
 {
     public abstract class StateManager<EState> : NetworkBehaviour where EState : Enum
     {
+        [SerializeField] protected bool ServerOnly = true;
+
         protected Dictionary<EState, BaseState<EState>> States = new();
 
         protected BaseState<EState> CurrentState;
@@ -18,12 +20,29 @@ namespace FSM
 
         public override void OnStartServer()
         {
-            CurrentState.EnterState();
+            if (ServerOnly)
+            {
+                CurrentState.EnterState();
+            }
+        }
+        public override void OnStartLocalPlayer()
+        {
+            if (!ServerOnly)
+            {
+                CurrentState.EnterState();
+            }
         }
 
         protected virtual void Update()
         {
-            if (!isServer) return;
+            if (ServerOnly)
+            {
+                if (!isServer) return;
+            }
+            else
+            {
+                if (!isLocalPlayer) return;
+            }
 
             _nextStateKey = CurrentState.GetNextState();
 
@@ -39,7 +58,14 @@ namespace FSM
 
         protected virtual void FixedUpdate()
         {
-            if (!isServer) return;
+            if (ServerOnly)
+            {
+                if (!isServer) return;
+            }
+            else
+            {
+                if (!isLocalPlayer) return;
+            }
 
             if (!IsTransitioningState && _nextStateKey.Equals(CurrentState.StateKey))
             {
@@ -78,21 +104,42 @@ namespace FSM
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!isServer) return;
+            if (ServerOnly)
+            {
+                if (!isServer) return;
+            }
+            else
+            {
+                if (!isLocalPlayer) return;
+            }
 
             CurrentState.OnTriggerEnter(other);
         }
 
         private void OnTriggerStay(Collider other)
         {
-            if (!isServer) return;
+            if (ServerOnly)
+            {
+                if (!isServer) return;
+            }
+            else
+            {
+                if (!isLocalPlayer) return;
+            }
 
             CurrentState.OnTriggerStay(other);
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if (!isServer) return;
+            if (ServerOnly)
+            {
+                if (!isServer) return;
+            }
+            else
+            {
+                if (!isLocalPlayer) return;
+            }
 
             CurrentState.OnTriggerExit(other);
         }
