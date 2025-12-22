@@ -77,12 +77,28 @@ namespace Player.FSM
 
         protected override void Update()
         {
+            if (ServerOnly)
+            {
+                if (!isServer) return;
+            }
+            else
+            {
+                if (!isLocalPlayer) return;
+            }
             base.Update();
             PlayerVectorHandler();
         }
 
         protected override void FixedUpdate()
         {
+            if (ServerOnly)
+            {
+                if (!isServer) return;
+            }
+            else
+            {
+                if (!isLocalPlayer) return;
+            }
             base.FixedUpdate();
         }
 
