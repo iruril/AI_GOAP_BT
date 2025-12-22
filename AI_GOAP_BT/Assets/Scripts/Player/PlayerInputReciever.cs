@@ -1,5 +1,4 @@
 using Mirror;
-using UnityEngine;
 using Player.Input;
 
 namespace Player.FSM
@@ -10,7 +9,7 @@ namespace Player.FSM
 
         public override void OnStartLocalPlayer()
         {
-            Input = GetComponent<InputRecorder>();
+            Input = GameManager.GetInstance().InputMap;
         }
     }
 }

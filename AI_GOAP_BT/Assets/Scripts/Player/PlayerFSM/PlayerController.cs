@@ -57,6 +57,21 @@ namespace Player.FSM
             base.OnStartServer();
         }
 
+        public override void OnStartLocalPlayer()
+        {
+            GameManager.GetInstance().MyPlayer = this.gameObject;
+            CamController.InitCam();
+
+            LockCursor(true);
+        }
+
+        public override void OnStopLocalPlayer()
+        {
+            GameManager.GetInstance().MyPlayer = null;
+
+            LockCursor(false);
+        }
+
         protected override void Update()
         {
             base.Update();
@@ -80,13 +95,19 @@ namespace Player.FSM
 
         private void PlayerVectorHandler()
         {
-            float yRotation = CamController.GetCameraRotaionY();
+            float yRotation = MainCamManager.Instance.GetCameraRotaionY();
 
             if (!IsOnJumping)
             {
                 PlayerForward = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.forward;
                 PlayerRight = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.right;
             }
+        }
+
+        private void LockCursor(bool locked)
+        {
+            Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = !locked;
         }
     }
 }

@@ -65,15 +65,15 @@ namespace Player.Input
             {
                 float sensitivity = _rotateSpeedOnMouse;
 
-                XRotationEuler = value.x * sensitivity;
-                YRotationEuler = value.y * sensitivity;
+                XRotationEuler = -value.y * sensitivity;
+                YRotationEuler = value.x * sensitivity;
             }
             else
             {
                 float sensitivity = _rotateSpeedOnGamepad * Time.deltaTime;
 
-                XRotationEuler = value.x * sensitivity;
-                YRotationEuler = value.y * sensitivity;
+                XRotationEuler = -value.y * sensitivity;
+                YRotationEuler = value.x * sensitivity;
             }
         }
 

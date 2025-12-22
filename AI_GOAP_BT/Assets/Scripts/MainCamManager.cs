@@ -3,7 +3,9 @@ using UnityEngine;
 
 public class MainCamManager : MonoBehaviour
 {
-    [SerializeField] CinemachineCamera mainCam;
+    [SerializeField] Camera cam;
+    [SerializeField] CinemachineCamera defaultCam;
+    [SerializeField] CinemachineCamera aimCam;
 
     public static MainCamManager Instance = null;
 
@@ -19,6 +21,22 @@ public class MainCamManager : MonoBehaviour
 
     public void SetCamTarget(Transform target)
     {
-        mainCam.Target.TrackingTarget = target;
+        defaultCam.Target.TrackingTarget = target;
+        aimCam.Target.TrackingTarget = target;
+    }
+
+    public float GetCameraRotaionY()
+    {
+        return cam.transform.eulerAngles.y;
+    }
+
+    public void ActivateAimModeCam()
+    {
+        aimCam.Prioritize();
+    }
+
+    public void ActivateDefaultModeCam()
+    {
+        defaultCam.Prioritize();
     }
 }
