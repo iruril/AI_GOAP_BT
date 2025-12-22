@@ -38,7 +38,6 @@ namespace Player.FSM
 
         private void OnDrawGizmos()
         {
-            if (!isServer) return;
             if (!drawGizmo) return;
 
             Gizmos.color = Color.green;

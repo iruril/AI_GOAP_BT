@@ -7,12 +7,14 @@ namespace Player.FSM
     public enum PlayerState
     {
         Idle,
+        Start,
         Walk,
         Run,
-        ToIdle,
+        Aim,
+        Stop,
         Jump,
         Fall,
-        Land,
+        Land
     }
 
     public class PlayerController : StateManager<PlayerState>
@@ -49,10 +51,31 @@ namespace Player.FSM
             PlayerRotation = transform.rotation;
         }
 
+        public override void OnStartServer()
+        {
+            InitStates();
+            base.OnStartServer();
+        }
+
         protected override void Update()
         {
             base.Update();
             PlayerVectorHandler();
+        }
+
+        private void InitStates()
+        {
+            States.Add(PlayerState.Idle, new Idle(this, PlayerState.Idle));
+            States.Add(PlayerState.Start, new Start(this, PlayerState.Start));
+            States.Add(PlayerState.Walk, new Walk(this, PlayerState.Walk));
+            States.Add(PlayerState.Run, new Run(this, PlayerState.Run));
+            States.Add(PlayerState.Aim, new Aim(this, PlayerState.Aim));
+            States.Add(PlayerState.Stop, new Stop(this, PlayerState.Stop));
+            States.Add(PlayerState.Jump, new Jump(this, PlayerState.Jump));
+            States.Add(PlayerState.Fall, new Fall(this, PlayerState.Fall));
+            States.Add(PlayerState.Land, new Land(this, PlayerState.Land));
+
+            CurrentState = States[PlayerState.Idle];
         }
 
         private void PlayerVectorHandler()
