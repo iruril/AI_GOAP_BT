@@ -45,6 +45,10 @@ namespace Player.FSM
             Stat = GetComponent<Stat>();
             GroundChecker = GetComponent<GroundChecker>();
 
+            PlayerCC.enabled = false;
+            CamController.enabled = false;
+            GroundChecker.enabled = false;
+
             PlayerForward = transform.forward;
             PlayerRight = transform.right;
             PlayerRotation = transform.rotation;
@@ -57,6 +61,10 @@ namespace Player.FSM
 
         public override void OnStartLocalPlayer()
         {
+            PlayerCC.enabled = true;
+            CamController.enabled = true;
+            GroundChecker.enabled = true;
+
             InitStates();
             base.OnStartLocalPlayer();
 
