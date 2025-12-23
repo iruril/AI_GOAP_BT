@@ -117,7 +117,7 @@ namespace Player
             if (player.GunController.CurrentRounds >= player.GunController.CurrentGun.GunInfo.MagazineCapacity + 1)
                 return;
 
-            player.GunController.Reload(player.Anim, player.IKManager.FBBIK.solver.leftHandEffector);
+            player.GunController.Reload();
         }
     }
 }

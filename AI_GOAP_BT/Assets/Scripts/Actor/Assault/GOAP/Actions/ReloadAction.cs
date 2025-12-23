@@ -55,12 +55,12 @@ namespace GOAP.Assualt
                 if (timer >= RELOAD_EXECUTE_TIME || brain.GunController.CurrentRounds == 0 || !brain.Sensor.HasTarget)
                 {
                     reloadStarted = true;
-                    brain.GunController.Reload(brain.MotionController.Anim, brain.MotionController.FBBIK.solver.leftHandEffector);
+                    brain.GunController.Reload();
                 }
-            }
 
-            if (brain.GunController.CurrentRounds >= brain.GunController.CurrentGun.GunInfo.MagazineCapacity)
-                Complete();
+                if (brain.GunController.CurrentRounds >= brain.GunController.CurrentGun.GunInfo.MagazineCapacity)
+                    Complete();
+            }
         }
 
         public override void OnExit()

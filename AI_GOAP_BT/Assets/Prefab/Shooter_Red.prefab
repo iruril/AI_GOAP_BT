@@ -3238,7 +3238,7 @@ MonoBehaviour:
     polePosition: {x: 1.8913171, y: 1.2969149, z: -6.0667386}
     poleWeight: 0
     poleTarget: {fileID: 8209724355860480771}
-    clampWeight: 0.75
+    clampWeight: 0.5
     clampSmoothing: 2
 --- !u!114 &4829177616594499623
 MonoBehaviour:
