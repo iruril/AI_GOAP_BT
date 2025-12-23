@@ -36,7 +36,7 @@ public class GunHandler : NetworkBehaviour
 
     private float currentSpread = 0;
     [SyncVar] public int CurrentRounds = 0;
-    public bool OnReload { get; private set; }
+    [SyncVar] public bool OnReload;
     CoroutineHandle reloadHandle;
 
     void Awake()

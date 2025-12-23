@@ -39,11 +39,11 @@ namespace Player
 
         private void Update()
         {
-            UpdateAimValues();
             UpdateIK();
 
             if (!isLocalPlayer) return;
 
+            UpdateAimValues();
             UpdateRateOfFire();
             TryShoot(); 
             TryReload();
@@ -51,11 +51,11 @@ namespace Player
 
         private void UpdateAimValues()
         {
-            syncedAimTarget = player.Input.Aim
+            syncedAimTarget = player.IKManager.IsOnAim
                 ? player.CamController.GetCenterWorldPoint()
                 : transform.position + transform.forward * 20f + Vector3.up * 1.2f;
 
-            syncedAimWeight = player.Input.Aim ? 1f : 0f;
+            syncedAimWeight = player.IKManager.IsOnAim && !player.GunController.OnReload ? 1f : 0f;
         }
 
         Vector3 aimPosVel;
