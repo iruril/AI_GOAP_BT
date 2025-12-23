@@ -67,7 +67,7 @@ namespace Player
                     player.GunController.AimIKTarget.position,
                     syncedAimTarget,
                     ref aimPosVel,
-                    0.1f,
+                    0.05f,
                     Mathf.Infinity,
                     Time.deltaTime
                 );
