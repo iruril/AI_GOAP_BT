@@ -40,6 +40,7 @@ namespace Player.Input
         public bool Aim { get; set; } = false;
         public bool Run { get; set; } = false;
         public bool Trigger { get; set; } = false;
+        public bool Reload { get; set; } = false;
 
         public float HorizontalInput { get; private set; }
         public float VerticalInput { get; private set; }
@@ -101,6 +102,11 @@ namespace Player.Input
         public void OnTrrigerInput(InputAction.CallbackContext context)
         {
             Trigger = context.performed;
+        }
+
+        public void OnReloadInput(InputAction.CallbackContext context)
+        {
+            Reload = context.performed;
         }
 
         public bool ConsumeChatKeyDown()

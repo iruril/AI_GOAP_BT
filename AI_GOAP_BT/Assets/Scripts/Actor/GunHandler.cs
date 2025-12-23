@@ -141,7 +141,7 @@ public class GunHandler : NetworkBehaviour
         pendingFire = true;
     }
 
-    public void ClientFire()
+    public void ClientFireCallback()
     {
         if (!pendingFire) return;
         pendingFire = false;
