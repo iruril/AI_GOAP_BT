@@ -1030,11 +1030,13 @@ GameObject:
   - component: {fileID: 8762477888000404853}
   - component: {fileID: 9168033542482783614}
   - component: {fileID: 1234930754468531374}
+  - component: {fileID: 7099295165716268656}
   - component: {fileID: 5403546167173456416}
   - component: {fileID: 1599727747282717117}
   - component: {fileID: 3658632373033495448}
   - component: {fileID: 4766842133617169138}
   - component: {fileID: 2940715734856470731}
+  - component: {fileID: 1903201351979385258}
   - component: {fileID: 2491643124357154010}
   - component: {fileID: 3668782218158599331}
   - component: {fileID: 5029229617567992135}
@@ -1687,31 +1689,13 @@ MonoBehaviour:
       length: 0
       sqrMag: 0
       axis: {x: 0, y: 0, z: 0}
-    - transform: {fileID: 3832447109775096670}
-      weight: 1
-      solverPosition: {x: 0, y: 0, z: 0}
-      solverRotation: {x: 0, y: 0, z: 0, w: 0}
-      defaultLocalPosition: {x: -0.16917916, y: -0.022026991, z: -0.00000002996996}
-      defaultLocalRotation: {x: 2.1996505e-10, y: 0.00000028538085, z: -0.116905056, w: 0.9931431}
-      length: 0
-      sqrMag: 0
-      axis: {x: 0, y: 0, z: 0}
-    - transform: {fileID: 1823679091223645444}
-      weight: 1
-      solverPosition: {x: 0, y: 0, z: 0}
-      solverRotation: {x: 0, y: 0, z: 0, w: 0}
-      defaultLocalPosition: {x: -0.09708038, y: 0, z: 0.000000008121133}
-      defaultLocalRotation: {x: 0.000000975692, y: -0.00000077741805, z: 0.11933394, w: 0.9928542}
-      length: 0
-      sqrMag: 0
-      axis: {x: 0, y: 0, z: 0}
     transform: {fileID: 2724882029711215099}
     axis: {x: 0, y: 0, z: 1}
     poleAxis: {x: 1, y: 0, z: 0}
     polePosition: {x: -7.1306906, y: 1.2969149, z: -0.009156227}
     poleWeight: 0
     poleTarget: {fileID: 1070870983125213175}
-    clampWeight: 0.5
+    clampWeight: 0.75
     clampSmoothing: 2
 --- !u!114 &1234930754468531374
 MonoBehaviour:
@@ -1729,6 +1713,18 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   ServerOnly: 0
+--- !u!114 &7099295165716268656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3633421393629289014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b21ea38d078c1014b8ad2b5844c11036, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &5403546167173456416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1814,6 +1810,21 @@ MonoBehaviour:
   _bulletPool:
     Bullet: {fileID: 1648555099801315958, guid: 36ba956664d8c524483e29bd15b0527d, type: 3}
     Size: 8
+--- !u!114 &1903201351979385258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3633421393629289014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc601d086e4dd374aa1457e9631dfece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0.01
 --- !u!114 &2491643124357154010
 MonoBehaviour:
   m_ObjectHideFlags: 0

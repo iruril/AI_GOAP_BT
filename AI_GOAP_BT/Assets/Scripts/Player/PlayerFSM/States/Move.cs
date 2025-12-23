@@ -75,6 +75,10 @@ namespace Player.FSM
 
         private bool IsOnTurnOppsiteCondition()
         {
+            if (ctx.Input.Aim) return false;
+            if (!MathUtility.IsSameDirection(ctx.transform.forward, ctx.PlayerXZVelocity.normalized, 45f)) 
+                return false;
+
             if (ctx.DeltaYaw > 100f)
                 return true;
 

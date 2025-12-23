@@ -68,11 +68,11 @@ namespace Player.FSM
             targetDir.y = 0;
             targetDir.Normalize();
 
-            if (MathUtility.IsRightDirection(ctx.transform.forward, targetDir, 75))
+            if (MathUtility.IsRightDirection(ctx.transform.forward, targetDir, 60))
             {
                 turnHandle = Timing.RunCoroutine(DoTurn(false, targetDir, ctx.Input.Aim), Segment.FixedUpdate);
             }
-            else if (MathUtility.IsLeftDirection(ctx.transform.forward, targetDir, 75))
+            else if (MathUtility.IsLeftDirection(ctx.transform.forward, targetDir, 60))
             {
                 turnHandle = Timing.RunCoroutine(DoTurn(true, targetDir, ctx.Input.Aim), Segment.FixedUpdate);
             }

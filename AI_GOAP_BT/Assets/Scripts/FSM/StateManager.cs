@@ -20,29 +20,17 @@ namespace FSM
 
         public override void OnStartServer()
         {
-            if (ServerOnly)
-            {
-                CurrentState.EnterState();
-            }
+            CurrentState.EnterState();
         }
+
         public override void OnStartLocalPlayer()
         {
-            if (!ServerOnly)
-            {
-                CurrentState.EnterState();
-            }
+            CurrentState.EnterState();
         }
 
         protected virtual void Update()
         {
-            if (ServerOnly)
-            {
-                if (!isServer) return;
-            }
-            else
-            {
-                if (!isLocalPlayer) return;
-            }
+            if (!CanProcess()) return;
 
             _nextStateKey = CurrentState.GetNextState();
 
@@ -58,14 +46,7 @@ namespace FSM
 
         protected virtual void FixedUpdate()
         {
-            if (ServerOnly)
-            {
-                if (!isServer) return;
-            }
-            else
-            {
-                if (!isLocalPlayer) return;
-            }
+            if (!CanProcess()) return;
 
             if (!IsTransitioningState && _nextStateKey.Equals(CurrentState.StateKey))
             {
@@ -104,44 +85,28 @@ namespace FSM
 
         private void OnTriggerEnter(Collider other)
         {
-            if (ServerOnly)
-            {
-                if (!isServer) return;
-            }
-            else
-            {
-                if (!isLocalPlayer) return;
-            }
+            if (!CanProcess()) return;
 
             CurrentState.OnTriggerEnter(other);
         }
 
         private void OnTriggerStay(Collider other)
         {
-            if (ServerOnly)
-            {
-                if (!isServer) return;
-            }
-            else
-            {
-                if (!isLocalPlayer) return;
-            }
+            if (!CanProcess()) return;
 
             CurrentState.OnTriggerStay(other);
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if (ServerOnly)
-            {
-                if (!isServer) return;
-            }
-            else
-            {
-                if (!isLocalPlayer) return;
-            }
+            if (!CanProcess()) return;
 
             CurrentState.OnTriggerExit(other);
+        }
+
+        protected bool CanProcess()
+        {
+            return ServerOnly ? isServer : isLocalPlayer;
         }
     }
 }

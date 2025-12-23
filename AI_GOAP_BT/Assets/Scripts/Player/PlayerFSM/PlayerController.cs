@@ -21,11 +21,13 @@ namespace Player.FSM
         public GroundChecker GroundChecker { get; private set; }
         public CharacterController PlayerCC { get; private set; }
         public TPSCamController CamController { get; private set; }
+        public GunHandler GunController { get; private set; }
         public Animator Anim { get; private set; }
+        public PlayerIKHandler IKManager { get; private set; }
         public Stat Stat { get; private set; }
 
         public Vector3 PlayerVelocity { get; set; } = Vector3.zero;
-        public float PlayerCurrentSpeed { get; set; }
+        public Vector3 PlayerXZVelocity { get; set; } = Vector3.zero;
         public Vector3 SnapGroundForce { get; set; } = Vector3.zero;
         public Vector3 PlayerForward { get; set; }
         public Vector3 PlayerRight { get; set; }
@@ -40,8 +42,10 @@ namespace Player.FSM
         void Awake()
         {
             PlayerCC = GetComponent<CharacterController>();
+            GunController = GetComponent<GunHandler>();
             CamController = GetComponent<TPSCamController>();
             Anim = GetComponent<Animator>();
+            IKManager = GetComponent<PlayerIKHandler>();
             Stat = GetComponent<Stat>();
             GroundChecker = GetComponent<GroundChecker>();
 
@@ -85,28 +89,19 @@ namespace Player.FSM
 
         protected override void Update()
         {
-            if (ServerOnly)
-            {
-                if (!isServer) return;
-            }
-            else
-            {
-                if (!isLocalPlayer) return;
-            }
+            if (!CanProcess()) return;
+
             base.Update();
-            PlayerVectorHandler();
+            UpdateStandardNormals();
+            UpdateXZProjectionVelocity();
+            UpdateAccelation();
+            UpdateCamYRotationDelta();
         }
 
         protected override void FixedUpdate()
         {
-            if (ServerOnly)
-            {
-                if (!isServer) return;
-            }
-            else
-            {
-                if (!isLocalPlayer) return;
-            }
+            if (!CanProcess()) return;
+
             base.FixedUpdate();
         }
 
@@ -122,17 +117,16 @@ namespace Player.FSM
             CurrentState = States[PlayerState.Idle];
         }
 
-        float accelRef;
-        private void PlayerVectorHandler()
+        private void UpdateCamYRotationDelta()
         {
-            float yRotation = MainCamManager.Instance.GetCameraRotaionY();
+            float currYaw = CamController.CamTarget.eulerAngles.y;
+            DeltaYaw = Mathf.DeltaAngle(PrevYaw, currYaw);
+            PrevYaw = currYaw;
+        }
 
-            if (!IsOnJumping)
-            {
-                PlayerForward = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.forward;
-                PlayerRight = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.right;
-            }
-
+        float accelRef;
+        void UpdateAccelation()
+        {
             float targetAccel;
             if (Input.MoveInputMap == Vector2.zero)
                 targetAccel = 0f;
@@ -141,10 +135,22 @@ namespace Player.FSM
 
             float currentAccel = Anim.GetFloat(AnimHash.Accelation);
             Anim.SetFloat(AnimHash.Accelation, Mathf.SmoothDamp(currentAccel, targetAccel, ref accelRef, 0.25f));
+        }
 
-            float currYaw = CamController.CamTarget.eulerAngles.y;
-            DeltaYaw = Mathf.DeltaAngle(PrevYaw, currYaw);
-            PrevYaw = currYaw;
+        private void UpdateXZProjectionVelocity()
+        {
+            PlayerXZVelocity = new Vector3(PlayerCC.velocity.x, 0, PlayerCC.velocity.z);
+        }
+
+        private void UpdateStandardNormals()
+        {
+            float yRotation = MainCamManager.Instance.GetCameraRotaionY();
+
+            if (!IsOnJumping)
+            {
+                PlayerForward = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.forward;
+                PlayerRight = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.right;
+            }
         }
 
         private void LockCursor(bool locked)

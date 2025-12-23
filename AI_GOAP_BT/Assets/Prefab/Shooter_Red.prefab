@@ -3232,31 +3232,13 @@ MonoBehaviour:
       length: 0
       sqrMag: 0
       axis: {x: 0, y: 0, z: 0}
-    - transform: {fileID: 4944944584424222299}
-      weight: 1
-      solverPosition: {x: 0, y: 0, z: 0}
-      solverRotation: {x: 0, y: 0, z: 0, w: 0}
-      defaultLocalPosition: {x: -0.16917916, y: -0.022026991, z: -0.00000002996996}
-      defaultLocalRotation: {x: 2.1996505e-10, y: 0.00000028538085, z: -0.116905056, w: 0.9931431}
-      length: 0
-      sqrMag: 0
-      axis: {x: 0, y: 0, z: 0}
-    - transform: {fileID: 7896263592819095609}
-      weight: 1
-      solverPosition: {x: 0, y: 0, z: 0}
-      solverRotation: {x: 0, y: 0, z: 0, w: 0}
-      defaultLocalPosition: {x: -0.09708038, y: 0, z: 0.000000008121133}
-      defaultLocalRotation: {x: 0.000000975692, y: -0.00000077741805, z: 0.11933394, w: 0.9928542}
-      length: 0
-      sqrMag: 0
-      axis: {x: 0, y: 0, z: 0}
     transform: {fileID: 5282911154098719872}
     axis: {x: 0, y: 0, z: 1}
     poleAxis: {x: 1, y: 0, z: 0}
     polePosition: {x: 1.8913171, y: 1.2969149, z: -6.0667386}
     poleWeight: 0
     poleTarget: {fileID: 8209724355860480771}
-    clampWeight: 0.5
+    clampWeight: 0.75
     clampSmoothing: 2
 --- !u!114 &4829177616594499623
 MonoBehaviour:
@@ -3514,6 +3496,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.01
+  ServerOnly: 1
   CurrentStateKey: 0
   RootRotation: 0
   IsAimable: 0
