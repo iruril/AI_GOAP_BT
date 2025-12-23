@@ -893,8 +893,8 @@ ModelImporter:
   assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
-  productId: 303120
-  packageName: Female Rifle Animset - Free Walk&Jog
-  packageVersion: 1.1
-  assetPath: Assets/FemaleRunnerAnimset/Humanoid_Bot/Models/Humanoid_FeRifle.fbx
-  uploadId: 786034
+  productId: 340068
+  packageName: Female Rifle Animset - Jumps
+  packageVersion: 1.0
+  assetPath: Assets/Animations/Humanoid_Bot/Models/Humanoid_FeRifle.fbx
+  uploadId: 806044

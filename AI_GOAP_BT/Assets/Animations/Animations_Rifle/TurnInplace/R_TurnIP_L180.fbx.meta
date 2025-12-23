@@ -1042,8 +1042,8 @@ ModelImporter:
   assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
-  productId: 303120
-  packageName: Female Rifle Animset - Free Walk&Jog
-  packageVersion: 1.1
-  assetPath: Assets/FemaleRunnerAnimset/Animations_Rifle/TurnInplace/R_TurnIP_L180.fbx
-  uploadId: 786034
+  productId: 340068
+  packageName: Female Rifle Animset - Jumps
+  packageVersion: 1.0
+  assetPath: Assets/Animations/Animations_Rifle/TurnInplace/R_TurnIP_L180.fbx
+  uploadId: 806044

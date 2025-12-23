@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 2379b35afffce7c45bf2d7f4bdc19fae
+guid: d0e570df11527334680aea87681fbae5
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable:
   - first:
-      74: -5668051909495296783
-    second: Mvm_TurnIP_R180
+      74: 8851784343546294154
+    second: R_Flip_FwdDiver
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -36,11 +36,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: R_TurnIP_R180
-      takeName: Take 001
-      internalID: 1827226128182048838
+      name: R_Flip_FwdDiver
+      takeName: Flip_FwdDiver
+      internalID: 0
       firstFrame: 0
-      lastFrame: 68
+      lastFrame: 34
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -1045,5 +1045,5 @@ AssetOrigin:
   productId: 340068
   packageName: Female Rifle Animset - Jumps
   packageVersion: 1.0
-  assetPath: Assets/Animations/Animations_Rifle/TurnInplace/R_TurnIP_R180.fbx
+  assetPath: Assets/FemaleRunnerAnimset/Animations_Rifle/Jumps/Flip/R_Flip_FwdDiver.fbx
   uploadId: 806044

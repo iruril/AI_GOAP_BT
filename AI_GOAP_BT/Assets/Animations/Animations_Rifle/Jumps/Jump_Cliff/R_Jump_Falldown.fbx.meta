@@ -1,11 +1,18 @@
 fileFormatVersion: 2
-guid: 2379b35afffce7c45bf2d7f4bdc19fae
+guid: a05e2b0db27f8de498a74a53c497a85d
+AssetOrigin:
+  serializedVersion: 1
+  productId: 340068
+  packageName: Female Rifle Animset - Jumps
+  packageVersion: 1.0
+  assetPath: Assets/FemaleRunnerAnimset/Animations_Rifle/Jumps/Jump_Cliff/R_Jump_Falldown.fbx
+  uploadId: 806044
 ModelImporter:
-  serializedVersion: 21300
+  serializedVersion: 22200
   internalIDToNameTable:
   - first:
-      74: -5668051909495296783
-    second: Mvm_TurnIP_R180
+      74: 7940966767567518899
+    second: R_Jump_Falldown
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -19,8 +26,6 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 1
     motionNodeName: root
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -36,11 +41,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: R_TurnIP_R180
-      takeName: Take 001
-      internalID: 1827226128182048838
+      name: R_Jump_Falldown
+      takeName: Jump_Falldown
+      internalID: 0
       firstFrame: 0
-      lastFrame: 68
+      lastFrame: 22
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -208,6 +213,7 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -235,6 +241,7 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -768,8 +775,7 @@ ModelImporter:
     - name: index_03_l
       parentName: index_02_l
       position: {x: -0.021126784, y: 0, z: 0}
-      rotation: {x: -0.000000037261646, y: -0.0000000074067517, z: -0.0011764629,
-        w: 0.99999934}
+      rotation: {x: -0.000000037261646, y: -0.0000000074067517, z: -0.0011764629, w: 0.99999934}
       scale: {x: 1, y: 1, z: 1}
     - name: middle_01_l
       parentName: hand_l
@@ -1028,22 +1034,15 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: c0426d61788399a4aa9702989176ee68,
-    type: 3}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: c0426d61788399a4aa9702989176ee68, type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
   avatarSetup: 2
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 0
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 340068
-  packageName: Female Rifle Animset - Jumps
-  packageVersion: 1.0
-  assetPath: Assets/Animations/Animations_Rifle/TurnInplace/R_TurnIP_R180.fbx
-  uploadId: 806044

@@ -122,8 +122,8 @@ TextureImporter:
   assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
-  productId: 303120
-  packageName: Female Rifle Animset - Free Walk&Jog
-  packageVersion: 1.1
-  assetPath: Assets/FemaleRunnerAnimset/Humanoid_Bot/Texture/Humanoid_Body_Normal.png
-  uploadId: 786034
+  productId: 340068
+  packageName: Female Rifle Animset - Jumps
+  packageVersion: 1.0
+  assetPath: Assets/Animations/Humanoid_Bot/Texture/Humanoid_Body_Normal.png
+  uploadId: 806044
