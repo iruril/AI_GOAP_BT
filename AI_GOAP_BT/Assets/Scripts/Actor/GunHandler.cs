@@ -180,17 +180,12 @@ public class GunHandler : NetworkBehaviour
         if (CurrentRounds == 0) return;
         CurrentRounds = Mathf.Clamp(CurrentRounds - 1, 0, int.MaxValue);
 
-        float xError = MathUtility.SampleGaussian(0f, currentSpread);
-        float yError = MathUtility.SampleGaussian(0f, currentSpread);
-
-        currentSpread += 1f / currentGun.GunInfo.Stability; 
-        
-        Vector3 right = Vector3.Cross(Vector3.up, muzzleDir).normalized;
-        Vector3 up = Vector3.Cross(muzzleDir, right).normalized;
-
-        Vector3 finalDir = muzzleDir;
-        finalDir = Quaternion.AngleAxis(yError, up) * muzzleDir;
-        finalDir = Quaternion.AngleAxis(xError, right) * muzzleDir;
+        float spreadRad = currentSpread * Mathf.Deg2Rad;
+        Vector2 error = MathUtility.SampleGaussian2D(spreadRad); 
+        Vector3 localDir = new Vector3(error.x, error.y, 1f);
+        localDir.Normalize();
+        Quaternion basis = Quaternion.LookRotation(muzzleDir);
+        Vector3 finalDir = basis * localDir;
 
         Quaternion bulletRotation = Quaternion.LookRotation(finalDir); 
         int teamLayer = 1 << gameObject.layer;
@@ -217,6 +212,8 @@ public class GunHandler : NetworkBehaviour
         );
 
         RpcPlayMuzzleFlash(muzzlePos, Quaternion.LookRotation(muzzleDir));
+
+        currentSpread += 1f / currentGun.GunInfo.Stability;
     }
 
     [ClientRpc]

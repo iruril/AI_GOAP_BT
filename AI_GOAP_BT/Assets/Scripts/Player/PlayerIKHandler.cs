@@ -46,7 +46,7 @@ namespace Player
         {
             if (!isLocalPlayer) return;
 
-            IsOnAim = player.Input.Aim;
+            IsOnAim = player.Input.Aim && player.IsGrounded;
         }
     }
 }

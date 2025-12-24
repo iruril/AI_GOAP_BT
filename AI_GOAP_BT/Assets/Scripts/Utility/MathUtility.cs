@@ -57,6 +57,7 @@ public class MathUtility
           );
     }
 
+    private static readonly System.Random rng = new();
     /// <summary>
     /// 가우시안 분포값(정규분포)을 반환한다.
     /// </summary>
@@ -65,21 +66,27 @@ public class MathUtility
     /// <returns> 표준편차에 의한 출현한 값 </returns>
     public static float SampleGaussian(float mean, float standard)
     {
-        Random random = new();
-
-        double x1 = 1 - random.NextDouble();
-        double x2 = 1 - random.NextDouble();
+        double x1 = 1 - rng.NextDouble();
+        double x2 = 1 - rng.NextDouble();
 
         double y1 = Math.Sqrt(-2.0 * Math.Log(x1)) * Math.Cos(2.0 * Math.PI * x2);
         return (float)y1 * standard + mean;
     }
-    
+
+    public static Vector2 SampleGaussian2D(float stdDev)
+    {
+        return new Vector2(
+            SampleGaussian(0f, stdDev),
+            SampleGaussian(0f, stdDev)
+        );
+    }
+
     /// <summary>
-     /// focus의 값을 기준으로 2차원 벡터 축 입력을 받았을 시 라디안 회전값을 반환한다.
-     /// </summary>
-     /// <param name="focus"> 기준이 되는 회전값. ex) camRotationY </param>
-     /// <param name="axis"> 입력된 축 값. axis.x는 horizontal, axis.y는 vertical이다. </param>
-     /// <returns> Rad.Rotation </returns>
+    /// focus의 값을 기준으로 2차원 벡터 축 입력을 받았을 시 라디안 회전값을 반환한다.
+    /// </summary>
+    /// <param name="focus"> 기준이 되는 회전값. ex) camRotationY </param>
+    /// <param name="axis"> 입력된 축 값. axis.x는 horizontal, axis.y는 vertical이다. </param>
+    /// <returns> Rad.Rotation </returns>
     public static float CalculateRotationAngle(float focus, Vector2 axis)
     {
         return focus + Mathf.Atan2(axis.x, axis.y) * Mathf.Rad2Deg;

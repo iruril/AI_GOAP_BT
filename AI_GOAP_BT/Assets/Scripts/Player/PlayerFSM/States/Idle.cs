@@ -99,7 +99,8 @@ namespace Player.FSM
                 turnHash = leftTurn ? AnimHash.Turn_L : AnimHash.Turn_R;
             }
 
-            ctx.Anim.CrossFade(turnHash, 0.25f);
+            ctx.Anim.applyRootMotion = false;
+            ctx.Anim.CrossFadeInFixedTime(turnHash, 0.1f);
 
             float time = 0;
             while (time <= animTime)
@@ -115,7 +116,8 @@ namespace Player.FSM
 
             ctx.transform.rotation = endRot;
             turning = false;
-            ctx.Anim.CrossFade(AnimHash.Strafe, 0.25f);
+            ctx.Anim.applyRootMotion = true;
+            ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.1f);
         }
     }
 }
