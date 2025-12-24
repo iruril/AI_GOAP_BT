@@ -59,7 +59,7 @@ namespace Player.FSM
             }
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             IsGrounded = CheckGround();
             IsSnapGround = CheckSnapGround();

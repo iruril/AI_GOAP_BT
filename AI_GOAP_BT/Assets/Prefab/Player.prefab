@@ -1713,6 +1713,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   ServerOnly: 0
+  maxJumpHeight: 0.75
+  maxJumpTime: 1
 --- !u!114 &7099295165716268656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1728,6 +1730,7 @@ MonoBehaviour:
   syncDirection: 1
   syncMode: 0
   syncInterval: 0.01
+  IsOnAim: 0
 --- !u!114 &5403546167173456416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1798,6 +1801,7 @@ MonoBehaviour:
   muzzle: {fileID: 2724882029711215099}
   aimIKTarget: {fileID: 7175498607167974741}
   CurrentRounds: 0
+  OnReload: 0
 --- !u!114 &2940715734856470731
 MonoBehaviour:
   m_ObjectHideFlags: 0

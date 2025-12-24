@@ -16,7 +16,8 @@ namespace Player.FSM
         public override void EnterState()
         {
             base.EnterState();
-            ctx.Anim.CrossFade(AnimHash.Strafe, 0.1f);
+            ctx.Anim.applyRootMotion = true;
+            ctx.Anim.CrossFade(AnimHash.Strafe, 0.25f);
             turning = false;
         }
 
@@ -39,8 +40,8 @@ namespace Player.FSM
 
         public override PlayerState GetNextState()
         {
-            //if (ctx.Input.Jump) return PlayerState.Jump;
-            //if (!ctx.IsGrounded) return PlayerState.Fall;
+            if (ctx.Input.Jump) return PlayerState.Jump;
+            if (!ctx.IsGrounded) return PlayerState.Fall;
             if (ctx.Input.MoveInputMap != Vector2.zero)
             {
                 return PlayerState.Move;
@@ -98,7 +99,7 @@ namespace Player.FSM
                 turnHash = leftTurn ? AnimHash.Turn_L : AnimHash.Turn_R;
             }
 
-            ctx.Anim.CrossFadeInFixedTime(turnHash, 0.25f);
+            ctx.Anim.CrossFade(turnHash, 0.25f);
 
             float time = 0;
             while (time <= animTime)
@@ -114,7 +115,7 @@ namespace Player.FSM
 
             ctx.transform.rotation = endRot;
             turning = false;
-            ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.25f);
+            ctx.Anim.CrossFade(AnimHash.Strafe, 0.25f);
         }
     }
 }

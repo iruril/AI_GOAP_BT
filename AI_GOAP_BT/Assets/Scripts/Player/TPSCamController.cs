@@ -32,7 +32,8 @@ namespace Player
             if (!player.isLocalPlayer) return;
 
             camTarget.position = transform.position + Vector3.up;
-            CamTargetRotate();
+            CamTargetRotate(); 
+            ZoonHandle();
         }
 
         private void CamTargetRotate()
@@ -80,6 +81,14 @@ namespace Player
             }
 
             return result;
+        }
+
+        private void ZoonHandle()
+        {
+            if (player.Input.Aim)
+                MainCamManager.Instance.ActivateAimModeCam();
+            else
+                MainCamManager.Instance.ActivateDefaultModeCam();
         }
     }
 }

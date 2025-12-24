@@ -14,7 +14,8 @@ namespace Player.FSM
 
         public override void EnterState()
         {
-            base.EnterState(); 
+            base.EnterState();
+            ctx.Anim.applyRootMotion = true;
 
             Vector3 tgt = ctx.CamController.CamTarget.forward;
             tgt.y = 0f;

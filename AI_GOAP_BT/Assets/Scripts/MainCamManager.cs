@@ -33,11 +33,13 @@ public class MainCamManager : MonoBehaviour
 
     public void ActivateAimModeCam()
     {
-        aimCam.Prioritize();
+        aimCam.Priority = 100;
+        defaultCam.Priority = 0;
     }
 
     public void ActivateDefaultModeCam()
     {
-        defaultCam.Prioritize();
+        aimCam.Priority = 0;
+        defaultCam.Priority = 100;
     }
 }

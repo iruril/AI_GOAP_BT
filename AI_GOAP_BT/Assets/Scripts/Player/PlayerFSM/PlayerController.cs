@@ -26,6 +26,12 @@ namespace Player.FSM
         public PlayerIKHandler IKManager { get; private set; }
         public Stat Stat { get; private set; }
 
+        [Header("점프 최대 높이")]
+        [SerializeField] private float maxJumpHeight = 1f;
+
+        public float JumpImpulseVelocity { get; private set; }
+        public float PlayerGravityForce { get; private set; }
+
         public Vector3 PlayerVelocity { get; set; } = Vector3.zero;
         public Vector3 PlayerXZVelocity { get; set; } = Vector3.zero;
         public Vector3 SnapGroundForce { get; set; } = Vector3.zero;
@@ -38,6 +44,7 @@ namespace Player.FSM
 
         public float PrevYaw { get; private set; }
         public float DeltaYaw { get; private set; }
+        public float OnAirSpeed { get; private set; }
 
         void Awake()
         {
@@ -56,6 +63,8 @@ namespace Player.FSM
             PlayerForward = transform.forward;
             PlayerRight = transform.right;
             PlayerRotation = transform.rotation;
+
+            CalculateJumpVelocity();
         }
 
         public override void OnStartServer()
@@ -117,6 +126,11 @@ namespace Player.FSM
             CurrentState = States[PlayerState.Idle];
         }
 
+        private void CalculateJumpVelocity()
+        {
+            JumpImpulseVelocity = Mathf.Sqrt(2f * 9.81f * maxJumpHeight);
+        }
+
         private void UpdateCamYRotationDelta()
         {
             float currYaw = CamController.CamTarget.eulerAngles.y;
@@ -157,6 +171,13 @@ namespace Player.FSM
         {
             Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
             Cursor.visible = !locked;
+        }
+
+        public void CalculateOnAirSpeed()
+        {
+            Vector2 xzVelocity = new Vector2(PlayerCC.velocity.x, PlayerCC.velocity.z);
+            float currentSpeed = xzVelocity.magnitude;
+            OnAirSpeed = Mathf.Lerp(0f, 6.5f, currentSpeed / 6.5f);
         }
     }
 }

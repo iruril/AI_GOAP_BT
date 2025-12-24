@@ -11,7 +11,9 @@ namespace Player.FSM
         public override void EnterState()
         {
             base.EnterState();
-            ctx.Anim.CrossFade(AnimHash.Strafe, 0.1f);
+            ctx.Anim.applyRootMotion = true;
+            ctx.IsOnJumping = false;
+            ctx.Anim.CrossFadeInFixedTime(AnimHash.Land, 0.1f);
         }
 
         public override void ExitState()
@@ -30,6 +32,18 @@ namespace Player.FSM
 
         public override PlayerState GetNextState()
         {
+            if (ctx.StateTime > 0.2f)
+            {
+                if (ctx.IsGrounded && ctx.Input.Jump) return PlayerState.Jump;
+                if (ctx.Input.MoveInputMap == Vector2.zero)
+                {
+                    return PlayerState.Idle;
+                }
+                else
+                {
+                    return PlayerState.Move;
+                }
+            }
             return StateKey;
         }
 

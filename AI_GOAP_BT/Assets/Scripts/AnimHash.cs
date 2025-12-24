@@ -21,4 +21,7 @@ public static class AnimHash
     public static readonly int Turn_R = Animator.StringToHash("Turn_R");
     public static readonly int AimTurn_L = Animator.StringToHash("AimTurn_L");
     public static readonly int AimTurn_R = Animator.StringToHash("AimTurn_R");
+    public static readonly int Jump = Animator.StringToHash("Jump");
+    public static readonly int Fall = Animator.StringToHash("Fall");
+    public static readonly int Land = Animator.StringToHash("Land");
 }

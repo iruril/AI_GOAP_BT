@@ -62,15 +62,17 @@ namespace Player
         float aimWeightVel;
         private void UpdateIK()
         {
-            player.GunController.AimIKTarget.position =
-                Vector3.SmoothDamp(
-                    player.GunController.AimIKTarget.position,
-                    syncedAimTarget,
-                    ref aimPosVel,
-                    0.05f,
-                    Mathf.Infinity,
-                    Time.deltaTime
-                );
+            //player.GunController.AimIKTarget.position =
+            //    Vector3.SmoothDamp(
+            //        player.GunController.AimIKTarget.position,
+            //        syncedAimTarget,
+            //        ref aimPosVel,
+            //        0.05f,
+            //        Mathf.Infinity,
+            //        Time.deltaTime
+            //    ); 
+
+            player.GunController.AimIKTarget.position = syncedAimTarget;
 
             player.IKManager.AimIK.solver.IKPositionWeight =
                 Mathf.SmoothDamp(

@@ -11,7 +11,15 @@ namespace Player.FSM
         public override void EnterState()
         {
             base.EnterState();
-            ctx.Anim.CrossFade(AnimHash.Strafe, 0.1f);
+            ctx.Anim.applyRootMotion = false;
+
+            PlayerState prevState = ctx.GetPrevState();
+            if (prevState != PlayerState.Jump)
+            {
+                ctx.CalculateOnAirSpeed();
+            }
+
+            ctx.Anim.CrossFadeInFixedTime(AnimHash.Fall, 0.25f);
         }
 
         public override void ExitState()
@@ -25,11 +33,14 @@ namespace Player.FSM
 
         public override void PhysicsUpdateState()
         {
-            base.PhysicsUpdateState();
+            Vector3 xzVelocity = GetXZVelocity();
+            float yVelocity = GetYVelocity();
+            ctx.PlayerVelocity = new Vector3(xzVelocity.x, yVelocity, xzVelocity.z);
         }
 
         public override PlayerState GetNextState()
         {
+            if (ctx.IsGrounded) return PlayerState.Land;
             return StateKey;
         }
 
@@ -43,6 +54,21 @@ namespace Player.FSM
 
         public override void OnTriggerStay(Collider other)
         {
+        }
+
+        private Vector3 GetXZVelocity()
+        {
+            Vector3 velocity = ctx.PlayerForward * ctx.Input.VerticalInput + ctx.PlayerRight * ctx.Input.HorizontalInput;
+            Vector3 direction = velocity.normalized;
+
+            float moveSpeed = Mathf.Min(velocity.magnitude, 1.0f) * ctx.OnAirSpeed;
+
+            return direction * moveSpeed;
+        }
+
+        protected override void CalculatePlayerTransform()
+        {
+            ctx.PlayerCC.Move(ctx.PlayerVelocity * Time.deltaTime);
         }
     }
 }

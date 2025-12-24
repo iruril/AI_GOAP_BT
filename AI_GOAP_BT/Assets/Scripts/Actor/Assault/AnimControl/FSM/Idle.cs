@@ -107,7 +107,7 @@ namespace AnimControl.Assault
                 turnHash = leftTurn ? AnimHash.Turn_L : AnimHash.Turn_R;
             }
 
-            ctx.Anim.CrossFadeInFixedTime(turnHash, 0.25f);
+            ctx.Anim.CrossFade(turnHash, 0.25f);
 
             float time = 0;
             while (time <= animTime)
@@ -123,7 +123,7 @@ namespace AnimControl.Assault
             }
 
             ctx.MyRigid.MoveRotation(endRot);
-            ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.25f);
+            ctx.Anim.CrossFade(AnimHash.Strafe, 0.25f);
             turning = false;
         }
     }
