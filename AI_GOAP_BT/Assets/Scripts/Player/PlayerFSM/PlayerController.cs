@@ -17,6 +17,8 @@ namespace Player.FSM
     public class PlayerController : StateManager<PlayerState>
     {
         public float StateTime { get; set; }
+        public PlayerState State { get { return CurrentState.StateKey; } }
+
         public InputRecorder Input { get; private set; }
         public GroundChecker GroundChecker { get; private set; }
         public CharacterController PlayerCC { get; private set; }

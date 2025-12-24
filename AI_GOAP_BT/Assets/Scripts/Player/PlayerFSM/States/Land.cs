@@ -32,7 +32,7 @@ namespace Player.FSM
 
         public override PlayerState GetNextState()
         {
-            if (ctx.StateTime > 0.2f)
+            if (ctx.StateTime > 0.3f)
             {
                 if (ctx.IsGrounded && ctx.Input.Jump) return PlayerState.Jump;
                 if (ctx.Input.MoveInputMap == Vector2.zero)
