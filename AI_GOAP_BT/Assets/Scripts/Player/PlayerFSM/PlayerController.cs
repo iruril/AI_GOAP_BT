@@ -26,6 +26,7 @@ namespace Player.FSM
         public GunHandler GunController { get; private set; }
         public Animator Anim { get; private set; }
         public PlayerIKHandler IKManager { get; private set; }
+        public CorpseGenerator CorpseSpawner { get; private set; }
         public Stat Stat { get; private set; }
 
         [Header("점프 최대 높이")]
@@ -57,6 +58,7 @@ namespace Player.FSM
             IKManager = GetComponent<PlayerIKHandler>();
             Stat = GetComponent<Stat>();
             GroundChecker = GetComponent<GroundChecker>();
+            CorpseSpawner = GetComponent<CorpseGenerator>();
 
             PlayerCC.enabled = false;
             CamController.enabled = false;
@@ -72,6 +74,17 @@ namespace Player.FSM
         public override void OnStartServer()
         {
             return;
+        }
+
+        public override void OnStartClient()
+        {
+            Stat.OnDead += CorpseSpawner.SpawnCorpse;
+            Stat.OnRevive += CorpseSpawner.DespawnCorpse;
+        }
+        public override void OnStopClient()
+        {
+            Stat.OnDead -= CorpseSpawner.SpawnCorpse;
+            Stat.OnRevive -= CorpseSpawner.DespawnCorpse;
         }
 
         public override void OnStartLocalPlayer()

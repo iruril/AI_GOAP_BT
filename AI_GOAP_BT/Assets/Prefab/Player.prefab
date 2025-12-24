@@ -1775,7 +1775,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncDirection: 0
   syncMode: 0
-  syncInterval: 0.01
+  syncInterval: 0.02
   Nickname: Player
   maxHP: 100
   rotateSpeedToTarget: 300
