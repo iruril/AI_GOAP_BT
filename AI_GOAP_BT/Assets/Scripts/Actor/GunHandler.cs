@@ -14,6 +14,7 @@ public class GunHandler : NetworkBehaviour
     [SerializeField] Transform muzzle;
 
     [Header("Aim IK Target ¼¼ÆÃ")]
+    [SerializeField] Transform aimIKStandard;
     [SerializeField] Transform aimIKTarget;
     public Transform AimIKTarget { get { return aimIKTarget; } }
 
@@ -122,6 +123,7 @@ public class GunHandler : NetworkBehaviour
     {
         gunPos.localPosition = gunData.GunPosition;
         muzzle.localPosition = gunData.MuzzlePosition;
+        aimIKStandard.localPosition = gunData.AimStandardPosition;
 
         leftHandIKTarget.localPosition = gunData.LeftHandIKPosition;
         leftHandIKTarget.localEulerAngles = gunData.LeftHandIKRotation;

@@ -357,6 +357,7 @@ Transform:
   m_Children:
   - {fileID: 4836991792604949143}
   - {fileID: 2724882029711215099}
+  - {fileID: 7848820335465023840}
   m_Father: {fileID: 1244985772061916008}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1295651662998477667
@@ -1653,7 +1654,7 @@ MonoBehaviour:
   fixTransforms: 1
   solver:
     executedInEditor: 0
-    IKPosition: {x: -5.476887, y: -1.1222689, z: -3.0771363}
+    IKPosition: {x: -7.1306906, y: 1.2969141, z: -0.009156704}
     IKPositionWeight: 0
     root: {fileID: 4530299076479977941}
     target: {fileID: 7175498607167974741}
@@ -1689,10 +1690,10 @@ MonoBehaviour:
       length: 0
       sqrMag: 0
       axis: {x: 0, y: 0, z: 0}
-    transform: {fileID: 2724882029711215099}
+    transform: {fileID: 7848820335465023840}
     axis: {x: 0, y: 0, z: 1}
     poleAxis: {x: 1, y: 0, z: 0}
-    polePosition: {x: -7.1306906, y: 1.2969149, z: -0.009156227}
+    polePosition: {x: -9.626623, y: 3.2058365, z: -2.8598313}
     poleWeight: 0
     poleTarget: {fileID: 1070870983125213175}
     clampWeight: 0.5
@@ -1714,7 +1715,6 @@ MonoBehaviour:
   syncInterval: 0
   ServerOnly: 0
   maxJumpHeight: 0.75
-  maxJumpTime: 1
 --- !u!114 &7099295165716268656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1799,6 +1799,7 @@ MonoBehaviour:
   gunPos: {fileID: 1089842371789189729}
   leftHandIKTarget: {fileID: 4836991792604949143}
   muzzle: {fileID: 2724882029711215099}
+  aimIKStandard: {fileID: 7848820335465023840}
   aimIKTarget: {fileID: 7175498607167974741}
   CurrentRounds: 0
   OnReload: 0
@@ -3482,6 +3483,37 @@ Transform:
   - {fileID: 1089842371789189729}
   m_Father: {fileID: 730340182481307857}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5281433504195037396
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7848820335465023840}
+  m_Layer: 0
+  m_Name: AimIKStandard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7848820335465023840
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5281433504195037396}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1089842371789189729}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &5395060434154996356
 GameObject:
   m_ObjectHideFlags: 0
