@@ -160,7 +160,7 @@ namespace Player.FSM
             if (Input.MoveInputMap == Vector2.zero)
                 targetAccel = 0f;
             else
-                targetAccel = Input.Run ? 4f : 2f;
+                targetAccel = Input.Run && !GunController.OnReload ? 4f : 2f;
 
             float currentAccel = Anim.GetFloat(AnimHash.Accelation);
             Anim.SetFloat(AnimHash.Accelation, Mathf.SmoothDamp(currentAccel, targetAccel, ref accelRef, 0.25f));

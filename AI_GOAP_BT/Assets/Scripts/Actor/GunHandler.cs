@@ -4,9 +4,13 @@ using MEC;
 using System.Linq;
 using RootMotion.FinalIK;
 using Mirror;
+using System;
+using System.Collections;
 
 public class GunHandler : NetworkBehaviour
 {
+    public event Action<int> OnRoundChanged;
+
     [Header("Gun 트랜스폼 세팅")]
     [SerializeField] Transform gunPos;
     [SerializeField] Transform leftHandIKTarget;
@@ -36,7 +40,7 @@ public class GunHandler : NetworkBehaviour
     private Vector3 clientMuzzleDir;
 
     private float currentSpread = 0;
-    [SyncVar] public int CurrentRounds = 0;
+    [SyncVar(hook = nameof(OnRoundUpdate))] public int CurrentRounds = 0;
     [SyncVar] public bool OnReload;
     CoroutineHandle reloadHandle;
 
@@ -50,6 +54,16 @@ public class GunHandler : NetworkBehaviour
         LoadGun("AK-15");
     }
 
+    public override void OnStartLocalPlayer()
+    {
+        OnRoundChanged += WeaponHUD.Instance.OnRoundChanged;
+    }
+
+    public override void OnStopLocalPlayer()
+    {
+        OnRoundChanged -= WeaponHUD.Instance.OnRoundChanged;
+    }
+
     void Update()
     {
         if (!isServer) return;
@@ -61,6 +75,7 @@ public class GunHandler : NetworkBehaviour
     {
         syncedGunName = gunName;
         LoadGunVisual(gunName);
+        StartCoroutine(UpdateWeaponHUD());
 
         if (!roundHistory.ContainsKey(gunName))
             roundHistory.Add(gunName, currentGun.GunInfo.MagazineCapacity);
@@ -71,6 +86,7 @@ public class GunHandler : NetworkBehaviour
     private void OnGunNameChanged(string oldName, string newName)
     {
         LoadGunVisual(newName);
+        StartCoroutine(UpdateWeaponHUD());
     }
 
     private void LoadGunVisual(string gunName)
@@ -103,10 +119,21 @@ public class GunHandler : NetworkBehaviour
         currentGunModel.transform.localPosition = Vector3.zero;
         currentGunModel.transform.localRotation = Quaternion.identity;
 
-        ApplyGunTransforms(currentGun); 
+        ApplyGunTransforms(currentGun);
         currentGunModel.SetActive(true);
     }
 
+
+    private IEnumerator UpdateWeaponHUD()
+    {
+        if (!isLocalPlayer) yield break;
+
+        yield return new WaitUntil(() => CurrentRounds != 0);
+        WeaponHUD.Instance.OnGunChanged(null, currentGun.GunName, currentGun.GunInfo.MagazineCapacity + 1);
+        WeaponHUD.Instance.OnRoundChanged(CurrentRounds);
+    }
+
+    [Server]
     void SaveGun()
     {
         roundHistory[currentGun.GunName] = CurrentRounds;
@@ -129,6 +156,10 @@ public class GunHandler : NetworkBehaviour
         leftHandIKTarget.localEulerAngles = gunData.LeftHandIKRotation;
     }
 
+    private void OnRoundUpdate(int oldRounds, int newRounds)
+    {
+        OnRoundChanged?.Invoke(newRounds);
+    }
 
     private float currentSpreadRef = 0;
     private void SpreadHandle()
