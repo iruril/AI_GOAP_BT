@@ -65,6 +65,11 @@ public class Stat : NetworkBehaviour, IDamageable
         OnTeamChanged(MyTeam, MyTeam);
     }
 
+    public override void OnStartLocalPlayer()
+    {
+        HealthGuageHUD.Instance.SetNickname(Nickname);
+    }
+
     public override void OnStopServer()
     {
         Timing.KillCoroutines(hpRegenHandle);
@@ -173,7 +178,10 @@ public class Stat : NetworkBehaviour, IDamageable
 
     private void OnHPChanged(float oldHp, float newHp)
     {
-        // 필요하면 HP바 UI 갱신 등 클라이언트 처리
+        if (isLocalPlayer)
+        {
+            HealthGuageHUD.Instance.SetHealth(newHp, MaxHP);
+        }
     }
 
     private void OnDeathStateChanged(bool oldState, bool newState)
