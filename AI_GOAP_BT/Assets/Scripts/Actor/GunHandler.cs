@@ -84,7 +84,14 @@ public class GunHandler : NetworkBehaviour
     private void OnGunNameChanged(string oldName, string newName)
     {
         LoadGunVisual(newName);
-        Timing.RunCoroutine(UpdateWeaponHUD());
+
+        if (isLocalPlayer)
+        {
+            WeaponHUD.Instance.OnGunChanged(
+                currentGun.GunName,
+                currentGun.GunInfo.MagazineCapacity + 1
+            );
+        }
     }
 
     private void LoadGunVisual(string gunName)
@@ -121,21 +128,6 @@ public class GunHandler : NetworkBehaviour
         currentGunModel.SetActive(true);
     }
 
-
-    private IEnumerator<float> UpdateWeaponHUD()
-    {
-        if (!isLocalPlayer) yield break;
-
-        while (currentGun == null)
-        {
-            yield return Timing.WaitForOneFrame;
-        }
-
-        WeaponHUD.Instance.OnGunChanged(currentGun.GunName, currentGun.GunInfo.MagazineCapacity + 1);
-        WeaponHUD.Instance.OnRoundChanged(CurrentRounds);
-        OnGunChanged?.Invoke();
-    }
-
     [Server]
     void SaveGun()
     {
@@ -162,6 +154,11 @@ public class GunHandler : NetworkBehaviour
     private void OnRoundUpdate(int oldRounds, int newRounds)
     {
         OnRoundChanged?.Invoke(newRounds);
+
+        if (isLocalPlayer)
+        {
+            WeaponHUD.Instance.OnRoundChanged(newRounds);
+        }
     }
 
     private float currentSpreadRef = 0;
