@@ -5,6 +5,7 @@ public class CharacterMeshUpdater : MonoBehaviour
     [SerializeField] private SkinnedMeshRenderer characterMeshRenderer;
     [SerializeField] private Transform characterParent;
     [SerializeField] private CorpseGenerator corpseGenerator;
+    private GameObject corpse;
 
     public void UpdateCharacterMesh(string characterMeshID)
     {
@@ -15,11 +16,20 @@ public class CharacterMeshUpdater : MonoBehaviour
             return;
         }
 
+        var anim = GetComponent<Animator>();
+        bool wasEnabled = anim.enabled;
+
+        anim.enabled = false;
+
         characterMeshRenderer.sharedMesh = data.CharacterMesh;
         characterMeshRenderer.materials = data.CharacterMaterials;
 
-        GameObject corpseObj = Instantiate(data.CorpseObject, characterParent);
-        corpseObj.SetActive(false);
-        corpseGenerator.SetCorpseObject(corpseObj);
+        anim.enabled = wasEnabled;
+
+        if (corpse != null) Destroy(corpse);
+        corpse = Instantiate(data.CorpseObject, characterParent);
+        corpse.SetActive(false);
+        corpseGenerator.SetCorpseObject(corpse);
+
     }
 }

@@ -294,7 +294,6 @@ MonoBehaviour:
   corpseGenerator: {fileID: 2491643124357154010}
   hitReactIK: {fileID: 3668782218158599331}
   owner: {fileID: 4530299076479977941}
-  ownerLayer: 8
 --- !u!1 &1153195838609082620
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,7 +527,6 @@ MonoBehaviour:
   corpseGenerator: {fileID: 2491643124357154010}
   hitReactIK: {fileID: 3668782218158599331}
   owner: {fileID: 4530299076479977941}
-  ownerLayer: 8
 --- !u!1 &2560506722875146399
 GameObject:
   m_ObjectHideFlags: 0
@@ -600,7 +598,6 @@ MonoBehaviour:
   corpseGenerator: {fileID: 2491643124357154010}
   hitReactIK: {fileID: 3668782218158599331}
   owner: {fileID: 4530299076479977941}
-  ownerLayer: 8
 --- !u!1 &2579167296834218754
 GameObject:
   m_ObjectHideFlags: 0
@@ -671,7 +668,6 @@ MonoBehaviour:
   corpseGenerator: {fileID: 2491643124357154010}
   hitReactIK: {fileID: 3668782218158599331}
   owner: {fileID: 4530299076479977941}
-  ownerLayer: 8
 --- !u!1 &2691334391344405412
 GameObject:
   m_ObjectHideFlags: 0
@@ -745,7 +741,6 @@ MonoBehaviour:
   corpseGenerator: {fileID: 2491643124357154010}
   hitReactIK: {fileID: 3668782218158599331}
   owner: {fileID: 4530299076479977941}
-  ownerLayer: 8
 --- !u!1 &3124242945630721833
 GameObject:
   m_ObjectHideFlags: 0
@@ -851,7 +846,6 @@ MonoBehaviour:
   corpseGenerator: {fileID: 2491643124357154010}
   hitReactIK: {fileID: 3668782218158599331}
   owner: {fileID: 4530299076479977941}
-  ownerLayer: 8
 --- !u!1 &3147274907414499979
 GameObject:
   m_ObjectHideFlags: 0
@@ -1026,6 +1020,7 @@ GameObject:
   - component: {fileID: 4530299076479977941}
   - component: {fileID: 4460953585574970759}
   - component: {fileID: 6247627810961805315}
+  - component: {fileID: 8591969597013763103}
   - component: {fileID: 3779816947766563442}
   - component: {fileID: 1195883400668731909}
   - component: {fileID: 8762477888000404853}
@@ -1123,6 +1118,29 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0.85, z: 0}
+--- !u!136 &8591969597013763103
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3633421393629289014}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.25
+  m_Height: 1.7
+  m_Direction: 1
   m_Center: {x: 0, y: 0.85, z: 0}
 --- !u!114 &3779816947766563442
 MonoBehaviour:
@@ -1775,7 +1793,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncDirection: 0
   syncMode: 0
-  syncInterval: 0.02
+  syncInterval: 0.01
+  MyTeam: 2
   Nickname: Player
   maxHP: 100
   rotateSpeedToTarget: 300
@@ -3067,7 +3086,6 @@ MonoBehaviour:
   corpseGenerator: {fileID: 2491643124357154010}
   hitReactIK: {fileID: 3668782218158599331}
   owner: {fileID: 4530299076479977941}
-  ownerLayer: 8
 --- !u!1 &4403330032521727368
 GameObject:
   m_ObjectHideFlags: 0
@@ -3205,7 +3223,6 @@ MonoBehaviour:
   corpseGenerator: {fileID: 2491643124357154010}
   hitReactIK: {fileID: 3668782218158599331}
   owner: {fileID: 4530299076479977941}
-  ownerLayer: 8
 --- !u!1 &4508283999623745487
 GameObject:
   m_ObjectHideFlags: 0
@@ -3729,7 +3746,6 @@ MonoBehaviour:
   corpseGenerator: {fileID: 2491643124357154010}
   hitReactIK: {fileID: 3668782218158599331}
   owner: {fileID: 4530299076479977941}
-  ownerLayer: 8
 --- !u!1 &5613081792189486239
 GameObject:
   m_ObjectHideFlags: 0
@@ -3995,7 +4011,6 @@ MonoBehaviour:
   corpseGenerator: {fileID: 2491643124357154010}
   hitReactIK: {fileID: 3668782218158599331}
   owner: {fileID: 4530299076479977941}
-  ownerLayer: 8
 --- !u!1 &6700635863105348650
 GameObject:
   m_ObjectHideFlags: 0
@@ -4448,7 +4463,6 @@ MonoBehaviour:
   corpseGenerator: {fileID: 2491643124357154010}
   hitReactIK: {fileID: 3668782218158599331}
   owner: {fileID: 4530299076479977941}
-  ownerLayer: 8
 --- !u!1 &8662894612611204059
 GameObject:
   m_ObjectHideFlags: 0

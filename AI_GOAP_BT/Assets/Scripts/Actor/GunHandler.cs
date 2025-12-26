@@ -72,14 +72,13 @@ public class GunHandler : NetworkBehaviour
     [Server]
     public void LoadGun(string gunName)
     {
-        syncedGunName = gunName;
         LoadGunVisual(gunName);
-        Timing.RunCoroutine(UpdateWeaponHUD());
 
         if (!roundHistory.ContainsKey(gunName))
             roundHistory.Add(gunName, currentGun.GunInfo.MagazineCapacity);
 
         CurrentRounds = roundHistory[gunName];
+        syncedGunName = gunName;
     }
 
     private void OnGunNameChanged(string oldName, string newName)

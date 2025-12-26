@@ -7,11 +7,10 @@ public class HitBox : MonoBehaviour
     [SerializeField] private CorpseGenerator corpseGenerator;
     [SerializeField] private HitReaction hitReactIK;
     [SerializeField] private Transform owner;
-    [SerializeField] private int ownerLayer;
 
     public void ApplyDamage(float dmg, Vector3 shotOrigin, Vector3 hitPoint, LayerMask friendLayer, bool isServer)
     {
-        if ((friendLayer & (1 << ownerLayer)) != 0) return;
+        if ((friendLayer & (1 << owner.gameObject.layer)) != 0) return;
 
         if (owner.TryGetComponent<IDamageable>(out var damageable))
         {
@@ -45,7 +44,6 @@ public class HitBox : MonoBehaviour
         this.owner = owner;
         this.corpseGenerator = corpseGenerator;
         this.hitReactIK = hitReactIK;
-        this.ownerLayer = ownerLayer;
     }
 #endif
 }

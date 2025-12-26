@@ -46,18 +46,17 @@ namespace GOAP.Assualt
         public override void OnStartServer()
         {
             Sensor.MyStat.OnDead += InitGOAP;
-            if (WorldManager.Instance.IsBlueTeam(this.gameObject.layer))
-            {
-                GunController.LoadGun("MPX");
-            }
-            else
-            {
-                GunController.LoadGun("AK-12");
-            }
         }
 
         public override void OnStartClient()
         {
+            if (!isServer)
+            {
+                Navigator.AI.enabled = false;
+                Navigator.enabled = false;
+                EQS.enabled = false;
+                BT.enabled = false;
+            }
             Sensor.MyStat.OnDead += CorpseSpawner.SpawnCorpse;
             Sensor.MyStat.OnRevive += CorpseSpawner.DespawnCorpse;
         }

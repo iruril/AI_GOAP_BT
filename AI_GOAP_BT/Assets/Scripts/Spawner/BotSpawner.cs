@@ -1,6 +1,13 @@
 using Mirror;
 using UnityEngine;
 
+public enum Team
+{
+    Blue,
+    Red, 
+    None
+}
+
 public class BotSpawner : NetworkBehaviour
 {
     [Header("Bot Model")]
@@ -33,12 +40,12 @@ public class BotSpawner : NetworkBehaviour
 
             Transform t = spawnPoints[i];
             GameObject bot = Instantiate(botPrefab, t.position, t.rotation);
-            bot.gameObject.layer = isTeamBlue ? LayerMask.NameToLayer("TeamBlue") : LayerMask.NameToLayer("TeamRed");
 
             if (bot.TryGetComponent<Stat>(out var stat))
             {
                 bot.name = nickname;
                 stat.Nickname = nickname; // 서버에서 세팅 → 자동 Sync
+                stat.MyTeam = isTeamBlue ? Team.Blue : Team.Red;
             }
 
             NetworkServer.Spawn(bot);

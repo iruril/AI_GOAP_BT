@@ -10,6 +10,9 @@ public class Stat : NetworkBehaviour, IDamageable
     public event Action OnRevive;
     public event Action<Vector3> OnUnderAttack;
 
+    [SyncVar(hook = nameof(OnTeamChanged))]
+    public Team MyTeam = Team.None;
+
     [SyncVar]
     public string Nickname;
 
@@ -45,17 +48,26 @@ public class Stat : NetworkBehaviour, IDamageable
     {
         InitHP();
         hpRegenHandle = Timing.RunCoroutine(HPRegenHandle());
+
+        SetTeam(MyTeam);
+        if (MyTeam == Team.Blue)
+        {
+            GetComponent<GunHandler>().LoadGun("MPX");
+        }
+        else
+        {
+            GetComponent<GunHandler>().LoadGun("AK-12");
+        }
+    }
+
+    public override void OnStartClient()
+    {
+        OnTeamChanged(MyTeam, MyTeam);
     }
 
     public override void OnStopServer()
     {
         Timing.KillCoroutines(hpRegenHandle);
-    }
-
-    public override void OnStartClient()
-    {
-        string meshID = WorldManager.Instance.IsBlueTeam(this.gameObject.layer) ? "Blue" : "Red";
-        this.GetComponent<CharacterMeshUpdater>()?.UpdateCharacterMesh(meshID);
     }
 
     private void InitHP()
@@ -129,6 +141,34 @@ public class Stat : NetworkBehaviour, IDamageable
     {
         yield return Timing.WaitForSeconds(GameManager.GetInstance().RespawnTime);
         Revive();
+    }
+
+    [Server]
+    public void SetTeam(Team newTeam)
+    {
+        MyTeam = newTeam;
+    }
+
+    private void OnTeamChanged(Team oldValue, Team newTeam)
+    {
+        gameObject.layer = newTeam == Team.Blue
+            ? LayerMask.NameToLayer("TeamBlue")
+            : LayerMask.NameToLayer("TeamRed");
+
+        gameObject.tag = newTeam == Team.Blue
+            ? "TeamBlue"
+            : "TeamRed";
+
+        var meshUpdater = GetComponent<CharacterMeshUpdater>();
+        if (meshUpdater != null)
+        {
+            string meshID = newTeam == Team.Blue ? "Blue" : "Red";
+            meshUpdater.UpdateCharacterMesh(meshID);
+        }
+        else
+        {
+            Debug.LogWarning($"CharacterMeshUpdater not ready on {gameObject.name}");
+        }
     }
 
     private void OnHPChanged(float oldHp, float newHp)

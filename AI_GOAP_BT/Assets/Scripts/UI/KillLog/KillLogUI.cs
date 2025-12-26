@@ -31,6 +31,14 @@ public class KillLogUI : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        foreach(var item in timers)
+        {
+            Timing.KillCoroutines(item.Value);
+        }
+    }
+
     public void AddLog(string killer, string victim, bool isKillerBlue, bool isVictimBlue)
     {
         KillLogContent content = GetAvailableContent();
