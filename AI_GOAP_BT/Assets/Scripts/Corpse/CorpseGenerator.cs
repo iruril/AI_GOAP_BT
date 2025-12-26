@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Mirror;
+using System;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -37,12 +39,6 @@ public class CorpseGenerator : NetworkBehaviour
     public string LatestHittedPart { get; set; }
     public Vector3 ShotOrigin { get; set; }
 
-    private void Awake()
-    {
-        if (corpse.gameObject.activeSelf) 
-            corpse.gameObject.SetActive(false);
-    }
-
 #if UNITY_EDITOR
     public void GetBones()
     {
@@ -72,5 +68,10 @@ public class CorpseGenerator : NetworkBehaviour
         corpse.transform.localPosition = Vector3.zero;
         corpse.transform.localRotation = Quaternion.identity;
         corpse.gameObject.SetActive(false);
+    }
+
+    public void SetCorpseObject(GameObject corpseObj)
+    {
+        corpse = corpseObj.GetComponent<Corpse>();
     }
 }

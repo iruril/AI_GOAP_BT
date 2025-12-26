@@ -1,5 +1,6 @@
 using MEC;
 using Mirror;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Sensor
@@ -37,9 +38,6 @@ namespace Sensor
         [SerializeField] private float visibleOffesetHight = 1.4f;
         private Collider[] sightBuffer = new Collider[8]; 
         private RaycastHit[] rayHits = new RaycastHit[1];
-
-        [Header("Combat Info")]
-        [SerializeField] private LayerMask enemyLayer;
 
         protected CoroutineHandle underAttackHandle;
 
@@ -154,7 +152,9 @@ namespace Sensor
                 transform.position,
                 sightRange,
                 sightBuffer,
-                enemyLayer
+                WorldManager.Instance.IsBlueTeam(gameObject.layer) ? 
+                WorldManager.Instance.GetRedTeamLayers() :
+                WorldManager.Instance.GetBlueTeamLayers()
             );
 
             if (hitCount == 0)

@@ -39,21 +39,23 @@ public class Stat : NetworkBehaviour, IDamageable
     {
         spawnPosition = transform.position;
         spawnRotation = transform.rotation;
-
-        if (isServer)
-            InitHP();
     }
 
-    private void Start()
+    public override void OnStartServer()
     {
-        if (!isServer) return;
+        InitHP();
         hpRegenHandle = Timing.RunCoroutine(HPRegenHandle());
     }
 
-    private void OnDestroy()
+    public override void OnStopServer()
     {
-        if (!isServer) return;
         Timing.KillCoroutines(hpRegenHandle);
+    }
+
+    public override void OnStartClient()
+    {
+        string meshID = WorldManager.Instance.IsBlueTeam(this.gameObject.layer) ? "Blue" : "Red";
+        this.GetComponent<CharacterMeshUpdater>()?.UpdateCharacterMesh(meshID);
     }
 
     private void InitHP()

@@ -4,8 +4,7 @@ using UnityEngine;
 public class BotSpawner : NetworkBehaviour
 {
     [Header("Bot Model")]
-    [SerializeField] GameObject teamBlueBot;
-    [SerializeField] GameObject teamRedBot;
+    [SerializeField] GameObject bot;
 
     [Header("Bot SpawnPoint")]
     [SerializeField] Transform[] teamBlueSpawnPoints = new Transform[12];
@@ -17,8 +16,8 @@ public class BotSpawner : NetworkBehaviour
 
     public override void OnStartServer()
     {
-        SpawnBots(teamBlueBot, teamBlueSpawnPoints, true);
-        SpawnBots(teamRedBot, teamRedSpawnPoints, false);
+        SpawnBots(bot, teamBlueSpawnPoints, true);
+        SpawnBots(bot, teamRedSpawnPoints, false);
     }
 
     [Server]
@@ -33,8 +32,9 @@ public class BotSpawner : NetworkBehaviour
             : $"{BOT}{REBEL}{serialNum}";
 
             Transform t = spawnPoints[i];
-            GameObject bot = Instantiate(botPrefab, t.position, t.rotation); 
-            
+            GameObject bot = Instantiate(botPrefab, t.position, t.rotation);
+            bot.gameObject.layer = isTeamBlue ? LayerMask.NameToLayer("TeamBlue") : LayerMask.NameToLayer("TeamRed");
+
             if (bot.TryGetComponent<Stat>(out var stat))
             {
                 bot.name = nickname;

@@ -92,6 +92,16 @@ public class WorldManager : MonoBehaviour
         return levelLayers | bleedLayers;
     }
 
+    public LayerMask GetRedTeamLayers()
+    {
+        return redTeamLayers;
+    }
+
+    public LayerMask GetBlueTeamLayers()
+    {
+        return blueTeamLayers;
+    }
+
     public bool IsBlueTeam(LayerMask layerMask)
     {
         return (layerMask & blueTeamLayers) != 0;
