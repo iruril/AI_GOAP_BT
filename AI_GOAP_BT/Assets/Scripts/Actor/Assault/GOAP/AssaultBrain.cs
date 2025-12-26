@@ -46,6 +46,14 @@ namespace GOAP.Assualt
         public override void OnStartServer()
         {
             Sensor.MyStat.OnDead += InitGOAP;
+            if (WorldManager.Instance.IsBlueTeam(this.gameObject.layer))
+            {
+                GunController.LoadGun("MPX");
+            }
+            else
+            {
+                GunController.LoadGun("AK-12");
+            }
         }
 
         public override void OnStartClient()

@@ -112,7 +112,7 @@ public class Stat : NetworkBehaviour, IDamageable
             KillerNickname,
             Nickname,
             IsKillerBlue,
-            WorldManager.Instance.IsBlueTeam(1 << gameObject.layer)
+            WorldManager.Instance.IsBlueTeam(this.gameObject.layer)
         );
         CurrentCapture?.RemoveIntruder(this);
     }

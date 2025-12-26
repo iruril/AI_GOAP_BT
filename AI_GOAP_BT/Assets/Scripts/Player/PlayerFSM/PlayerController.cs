@@ -73,6 +73,8 @@ namespace Player.FSM
 
         public override void OnStartServer()
         {
+            GunController.LoadGun("MPX");
+            //LoadGun("AK-12");
             return;
         }
 

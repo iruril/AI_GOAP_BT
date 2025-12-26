@@ -102,6 +102,16 @@ public class WorldManager : MonoBehaviour
         return (layerMask & redTeamLayers) != 0;
     }
 
+    public bool IsBlueTeam(int layer)
+    {
+        return (blueTeamLayers.value & (1 << layer)) != 0;
+    }
+
+    public bool IsRedTeam(int layer)
+    {
+        return (redTeamLayers.value & (1 << layer)) != 0;
+    }
+
     public CapturePoint.CapturePoint[] GetCaptures()
     {
         return captures;

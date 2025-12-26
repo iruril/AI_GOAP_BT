@@ -11,9 +11,7 @@ namespace GOAP.Assualt
 
         [Header("공격 주기")]
         [SerializeField] private float attackCooldown = 2.5f;
-
-        [Header("점사 탄환 수")]
-        [SerializeField] private int burstCount = 3;
+        private int burstCount = 3;
 
         private float cooldownTimer = 0f;
         private bool isBursting = false;
@@ -31,7 +29,20 @@ namespace GOAP.Assualt
         {
             myBrain.Sensor.MyStat.OnDead += OnDead;
             myBrain.Sensor.MyStat.OnDead += myBrain.GunController.OnDead;
+            myBrain.GunController.OnGunChanged += OnGunChanged;
             myBrain.MotionController.AimIK.solver.OnPostUpdate += myBrain.GunController.FireCallback;
+
+            Timing.RunCoroutine(WaitForGunInitialization());
+        }
+
+        private IEnumerator<float> WaitForGunInitialization()
+        {
+            while (myBrain.GunController.CurrentGun == null)
+            {
+                yield return Timing.WaitForOneFrame;
+            }
+
+            OnGunChanged();
         }
 
         public override void OnStartClient()
@@ -45,6 +56,7 @@ namespace GOAP.Assualt
         {
             myBrain.Sensor.MyStat.OnDead -= OnDead;
             myBrain.Sensor.MyStat.OnDead -= myBrain.GunController.OnDead;
+            myBrain.GunController.OnGunChanged -= OnGunChanged;
             myBrain.MotionController.AimIK.solver.OnPostUpdate -= myBrain.GunController.FireCallback;
         }
 
@@ -130,6 +142,12 @@ namespace GOAP.Assualt
             cooldownTimer = 0f;
             isBursting = false;
             Timing.KillCoroutines(burstHandle);
+        }
+
+        private void OnGunChanged()
+        {
+            burstCount = Mathf.CeilToInt(myBrain.Sensor.MyStat.MaxHP /
+                                (float)myBrain.GunController.CurrentGun.GunInfo.RoundDamage);
         }
     }
 }

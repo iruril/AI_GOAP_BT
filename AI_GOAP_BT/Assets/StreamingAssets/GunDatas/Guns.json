@@ -1,16 +1,16 @@
 {
   "GunList": [
     {
-      "GunID": "weapon_ar_ak15",
-      "GunName": "AK-15",
+      "GunID": "weapon_ar_ak12",
+      "GunName": "AK-12",
       "GunInfo": {
         "TimeToADS": 0.25,
-        "RoundDamage": 25,
+        "RoundDamage": 34,
         "Stability": 4,
         "Spread": 1.2,
         "MagazineCapacity": 30,
-        "RPM": 550,
-        "ProjectileSpeed": 220,
+        "RPM": 600,
+        "ProjectileSpeed": 250,
         "FireModes": [
           0,
           2
@@ -20,6 +20,28 @@
       "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
       "AimStandardPosition": [ -0.07, 0.017, 0.078 ],
       "LeftHandIKPosition": [ -0.249, 0.063, 0.025 ],
+      "LeftHandIKRotation": [ 0, 0, 0 ]
+    },
+    {
+      "GunID": "weapon_smg_mpx",
+      "GunName": "MPX",
+      "GunInfo": {
+        "TimeToADS": 0.18,
+        "RoundDamage": 25,
+        "Stability": 12,
+        "Spread": 0.5,
+        "MagazineCapacity": 35,
+        "RPM": 850,
+        "ProjectileSpeed": 150,
+        "FireModes": [
+          0,
+          2
+        ]
+      },
+      "GunPosition": [ 0, 0, 0 ],
+      "MuzzlePosition": [ -0.472, 0.017, 0.086 ],
+      "AimStandardPosition": [ -0.069, 0.017, 0.086 ],
+      "LeftHandIKPosition": [ -0.201, 0.063, 0.028 ],
       "LeftHandIKRotation": [ 0, 0, 0 ]
     }
   ]

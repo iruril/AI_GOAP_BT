@@ -10,6 +10,7 @@ using System.Collections;
 public class GunHandler : NetworkBehaviour
 {
     public event Action<int> OnRoundChanged;
+    public event Action OnGunChanged;
 
     [Header("Gun 트랜스폼 세팅")]
     [SerializeField] Transform gunPos;
@@ -22,8 +23,7 @@ public class GunHandler : NetworkBehaviour
     [SerializeField] Transform aimIKTarget;
     public Transform AimIKTarget { get { return aimIKTarget; } }
 
-    [SyncVar(hook = nameof(OnGunNameChanged))]
-    private string syncedGunName;
+    [SyncVar(hook = nameof(OnGunNameChanged))] public string syncedGunName;
     private Gun currentGun;
     public Gun CurrentGun { get { return currentGun; } }
     private GameObject currentGunModel;
@@ -51,7 +51,6 @@ public class GunHandler : NetworkBehaviour
 
     public override void OnStartServer()
     {
-        LoadGun("AK-15");
     }
 
     public override void OnStartLocalPlayer()
@@ -71,11 +70,11 @@ public class GunHandler : NetworkBehaviour
     }
 
     [Server]
-    private void LoadGun(string gunName)
+    public void LoadGun(string gunName)
     {
         syncedGunName = gunName;
         LoadGunVisual(gunName);
-        StartCoroutine(UpdateWeaponHUD());
+        Timing.RunCoroutine(UpdateWeaponHUD());
 
         if (!roundHistory.ContainsKey(gunName))
             roundHistory.Add(gunName, currentGun.GunInfo.MagazineCapacity);
@@ -86,7 +85,7 @@ public class GunHandler : NetworkBehaviour
     private void OnGunNameChanged(string oldName, string newName)
     {
         LoadGunVisual(newName);
-        StartCoroutine(UpdateWeaponHUD());
+        Timing.RunCoroutine(UpdateWeaponHUD());
     }
 
     private void LoadGunVisual(string gunName)
@@ -124,13 +123,18 @@ public class GunHandler : NetworkBehaviour
     }
 
 
-    private IEnumerator UpdateWeaponHUD()
+    private IEnumerator<float> UpdateWeaponHUD()
     {
         if (!isLocalPlayer) yield break;
 
-        yield return new WaitUntil(() => CurrentRounds != 0);
-        WeaponHUD.Instance.OnGunChanged(null, currentGun.GunName, currentGun.GunInfo.MagazineCapacity + 1);
+        while (currentGun == null)
+        {
+            yield return Timing.WaitForOneFrame;
+        }
+
+        WeaponHUD.Instance.OnGunChanged(currentGun.GunName, currentGun.GunInfo.MagazineCapacity + 1);
         WeaponHUD.Instance.OnRoundChanged(CurrentRounds);
+        OnGunChanged?.Invoke();
     }
 
     [Server]
