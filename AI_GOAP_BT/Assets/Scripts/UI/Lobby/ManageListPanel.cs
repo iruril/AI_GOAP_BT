@@ -1,0 +1,69 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ManageListPanel : MonoBehaviour
+{
+    [Header("Contents")]
+    [SerializeField] GameObject panelContentsPrefab;
+    public RectTransform ContentRect;
+    public Button CloseButton;
+
+    private Dictionary<uint, ManageListItem> itemsByNetId = new();
+    private List<uint> joinOrder = new();
+
+    private void Start()
+    {
+        CloseButton.onClick.AddListener(DisablePanel);
+        DisablePanel();
+    }
+
+    public void EnablePanel()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void DisablePanel()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void AddUser(string nickname, uint netId)
+    {
+        if (itemsByNetId.ContainsKey(netId)) return;
+
+        GameObject go = Instantiate(panelContentsPrefab, ContentRect);
+        ManageListItem item = go.GetComponent<ManageListItem>();
+
+        item.SetNickname(nickname);
+
+        itemsByNetId.Add(netId, item);
+        joinOrder.Add(netId);
+
+        RefreshOrder();
+    }
+
+    public void RemoveUser(uint netId)
+    {
+        if (!itemsByNetId.TryGetValue(netId, out var item))
+            return;
+
+        Destroy(item.gameObject);
+
+        itemsByNetId.Remove(netId);
+        joinOrder.Remove(netId);
+
+        RefreshOrder();
+    }
+
+    private void RefreshOrder()
+    {
+        for (int i = 0; i < joinOrder.Count; i++)
+        {
+            uint netId = joinOrder[i];
+            ManageListItem item = itemsByNetId[netId];
+
+            item.transform.SetSiblingIndex(i);
+        }
+    }
+}

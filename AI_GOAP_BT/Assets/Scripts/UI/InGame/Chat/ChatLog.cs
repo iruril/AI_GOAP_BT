@@ -1,4 +1,3 @@
-using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,14 +30,14 @@ public class ChatLog : MonoBehaviour
         if (!string.IsNullOrWhiteSpace(InputField.text))
         {
             LogManager.Instance.CmdSendChat(
-                player.GetComponent<NetworkIdentity>().netId.ToString(),
+                player.GetComponent<Stat>().Nickname,
                 InputField.text,
                 Color.white
             );
         }
 
         InputField.text = string.Empty;
-        player.GetComponent<Observer.Observer>().ForceExitChat();
+        player.GetComponent<Player.FSM.PlayerController>().ForceExitChat();
     }
 
     public void PrintMsg(string sender, string message, Color color)

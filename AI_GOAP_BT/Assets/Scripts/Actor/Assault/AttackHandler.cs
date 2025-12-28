@@ -29,7 +29,6 @@ namespace GOAP.Assualt
         {
             myBrain.Sensor.MyStat.OnDead += OnDead;
             myBrain.Sensor.MyStat.OnDead += myBrain.GunController.OnDead;
-            myBrain.GunController.OnGunChanged += OnGunChanged;
             myBrain.MotionController.AimIK.solver.OnPostUpdate += myBrain.GunController.FireCallback;
 
             Timing.RunCoroutine(WaitForGunInitialization());
@@ -56,7 +55,6 @@ namespace GOAP.Assualt
         {
             myBrain.Sensor.MyStat.OnDead -= OnDead;
             myBrain.Sensor.MyStat.OnDead -= myBrain.GunController.OnDead;
-            myBrain.GunController.OnGunChanged -= OnGunChanged;
             myBrain.MotionController.AimIK.solver.OnPostUpdate -= myBrain.GunController.FireCallback;
         }
 

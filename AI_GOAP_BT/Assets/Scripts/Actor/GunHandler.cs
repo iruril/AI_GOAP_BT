@@ -10,7 +10,6 @@ using System.Collections;
 public class GunHandler : NetworkBehaviour
 {
     public event Action<int> OnRoundChanged;
-    public event Action OnGunChanged;
 
     [Header("Gun 트랜스폼 세팅")]
     [SerializeField] Transform gunPos;

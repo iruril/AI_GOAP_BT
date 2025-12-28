@@ -49,6 +49,8 @@ namespace Player.FSM
         public float DeltaYaw { get; private set; }
         public float OnAirSpeed { get; private set; }
 
+        private bool isChatting = false;
+
         void Awake()
         {
             PlayerCC = GetComponent<CharacterController>();
@@ -118,6 +120,9 @@ namespace Player.FSM
             if (!CanProcess()) return;
 
             base.Update();
+
+            HandleChatToggle();
+
             UpdateStandardNormals();
             UpdateXZProjectionVelocity();
             UpdateAccelation();
@@ -159,7 +164,7 @@ namespace Player.FSM
         void UpdateAccelation()
         {
             float targetAccel;
-            if (Input.MoveInputMap == Vector2.zero)
+            if (Input.MoveInputMap == Vector2.zero || isChatting)
                 targetAccel = 0f;
             else
                 targetAccel = Input.Run && !GunController.OnReload ? 4f : 2f;
@@ -175,13 +180,15 @@ namespace Player.FSM
 
         private void UpdateStandardNormals()
         {
+            if (IsOnJumping || isChatting)
+            {
+                return;
+            }
+
             float yRotation = MainCamManager.Instance.GetCameraRotaionY();
 
-            if (!IsOnJumping)
-            {
-                PlayerForward = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.forward;
-                PlayerRight = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.right;
-            }
+            PlayerForward = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.forward;
+            PlayerRight = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.right;
         }
 
         private void LockCursor(bool locked)
@@ -195,6 +202,42 @@ namespace Player.FSM
             Vector2 xzVelocity = new Vector2(PlayerCC.velocity.x, PlayerCC.velocity.z);
             float currentSpeed = xzVelocity.magnitude;
             OnAirSpeed = Mathf.Lerp(0f, 6.5f, currentSpeed / 6.5f);
+        }
+        private void HandleChatToggle()
+        {
+            if (isChatting)
+                return;
+
+            if (!GameManager.GetInstance().InputMap.ConsumeChatKeyDown())
+                return;
+
+            isChatting = true;
+            EnterChatMode();
+        }
+
+        private void EnterChatMode()
+        {
+            LockCursor(false);
+
+            ChatLog.Instance.InputField.gameObject.SetActive(true);
+            ChatLog.Instance.InputField.ActivateInputField();
+            ChatLog.Instance.InputField.Select();
+        }
+
+        public void ForceExitChat()
+        {
+            if (!isChatting) return;
+
+            isChatting = false;
+            ExitChatMode();
+        }
+
+        private void ExitChatMode()
+        {
+            LockCursor(true);
+
+            ChatLog.Instance.InputField.DeactivateInputField();
+            ChatLog.Instance.InputField.gameObject.SetActive(false);
         }
     }
 }
