@@ -11,7 +11,7 @@ public class Stat : NetworkBehaviour, IDamageable
     public event Action<Vector3> OnUnderAttack;
 
     [SyncVar(hook = nameof(OnTeamChanged))]
-    public Team MyTeam = Team.None;
+    public Team MyTeam = Team.Blue;
 
     [SyncVar]
     public string Nickname;

@@ -12,13 +12,13 @@ public class PlayerListItem : MonoBehaviour
 
     public void SetNumber(int num)
     {
-        string number = num.ToString("D2");
+        string number = num.ToString("D2") + ".";
         Num.text = number;
     }
 
     public void SetReady(bool ready)
     {
         Status.color = ready ? Color.green : Color.yellow;
-        Status.text = ready ? "<Ready>" : "<Unready>";
+        Status.text = ready ? "<Ready>" : "<Not Ready>";
     }
 }

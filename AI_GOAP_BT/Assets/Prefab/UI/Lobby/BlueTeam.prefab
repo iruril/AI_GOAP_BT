@@ -384,6 +384,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   panelContentsPrefab: {fileID: 7916754530625117284, guid: 7f83c154837bf8b49b2fee08106eb630, type: 3}
   ContentRect: {fileID: 5004776979427166167}
+  JoinButton: {fileID: 4673599008204910199}
 --- !u!1 &1313017945222899845
 GameObject:
   m_ObjectHideFlags: 0
@@ -504,8 +505,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4496133739079084407}
   m_HandleRect: {fileID: 4077506241229352493}
   m_Direction: 3
-  m_Value: 0
-  m_Size: 0.5
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

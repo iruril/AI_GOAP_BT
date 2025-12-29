@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TeamListPanel : MonoBehaviour
 {
     [Header("Contents")]
     [SerializeField] GameObject panelContentsPrefab;
     public RectTransform ContentRect;
+    public Button JoinButton;
 
     private Dictionary<uint, PlayerListItem> itemsByNetId = new();
     private List<uint> joinOrder = new();
@@ -31,7 +33,7 @@ public class TeamListPanel : MonoBehaviour
         if (!itemsByNetId.TryGetValue(netId, out var item))
             return;
 
-        Destroy(item.gameObject);
+        if(item != null) Destroy(item.gameObject);
 
         itemsByNetId.Remove(netId);
         joinOrder.Remove(netId);
@@ -57,5 +59,15 @@ public class TeamListPanel : MonoBehaviour
             return;
 
         item.SetReady(ready);
+    }
+
+    public void ClearPanel()
+    {
+        foreach (var item in itemsByNetId.Values)
+        {
+            if (item != null) Destroy(item.gameObject);
+        }
+        itemsByNetId.Clear();
+        joinOrder.Clear();
     }
 }

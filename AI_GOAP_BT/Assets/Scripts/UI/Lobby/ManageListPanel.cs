@@ -1,3 +1,4 @@
+using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,9 +37,22 @@ public class ManageListPanel : MonoBehaviour
         ManageListItem item = go.GetComponent<ManageListItem>();
 
         item.SetNickname(nickname);
+        if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity identity))
+        {
+            item.SetIdentity(identity);
+            if (identity.GetComponent<RoomPlayer>().IsHost)
+            {
+                item.KickButton.interactable = false;
+                item.KickButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Host";
+            }
+            item.KickButton.onClick.AddListener(() =>
+            {
+                NetworkClient.localPlayer.GetComponent<RoomPlayer>().CmdKick(identity.netId);
+            });
+        }
 
-        itemsByNetId.Add(netId, item);
-        joinOrder.Add(netId);
+        itemsByNetId.Add(identity.netId, item);
+        joinOrder.Add(identity.netId);
 
         RefreshOrder();
     }
@@ -48,7 +62,7 @@ public class ManageListPanel : MonoBehaviour
         if (!itemsByNetId.TryGetValue(netId, out var item))
             return;
 
-        Destroy(item.gameObject);
+        if (item != null) Destroy(item.gameObject);
 
         itemsByNetId.Remove(netId);
         joinOrder.Remove(netId);
@@ -65,5 +79,15 @@ public class ManageListPanel : MonoBehaviour
 
             item.transform.SetSiblingIndex(i);
         }
+    }
+
+    public void ClearPanel()
+    {
+        foreach (var item in itemsByNetId.Values)
+        {
+            if (item != null) Destroy(item.gameObject);
+        }
+        itemsByNetId.Clear();
+        joinOrder.Clear();
     }
 }

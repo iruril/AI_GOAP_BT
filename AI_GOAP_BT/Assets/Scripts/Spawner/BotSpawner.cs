@@ -4,8 +4,7 @@ using UnityEngine;
 public enum Team
 {
     Blue,
-    Red, 
-    None
+    Red
 }
 
 public class BotSpawner : NetworkBehaviour
