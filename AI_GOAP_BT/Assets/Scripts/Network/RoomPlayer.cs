@@ -11,7 +11,7 @@ public class RoomPlayer : NetworkRoomPlayer
     [SyncVar]
     public bool IsHost = false;
 
-    [SyncVar]
+    [SyncVar(hook = nameof(OnNicknameChanged))]
     public string Nickname = "Nickname";
 
     public override void Start()
@@ -30,6 +30,7 @@ public class RoomPlayer : NetworkRoomPlayer
         {
             LobbyUI.Instance.ManageButton?.gameObject.SetActive(false);
         }
+        CmdSetNickname("PlayerName" + netId.ToString());
     }
 
     public override void OnClientEnterRoom()
@@ -40,6 +41,12 @@ public class RoomPlayer : NetworkRoomPlayer
     public override void OnClientExitRoom()
     {
         StartCoroutine(Refresh());
+    }
+
+    [Command]
+    public void CmdSetNickname(string nickname)
+    {
+        Nickname = nickname;
     }
 
     [Command]
@@ -59,18 +66,23 @@ public class RoomPlayer : NetworkRoomPlayer
         }
     }
 
+    public void OnNicknameChanged(string _, string newName)
+    {
+        LobbyUI.Instance.RefreshNickname(netId, newName);
+    }
+
     public void TeamChanged(Team oldTeam, Team newTeam)
     {
         if (oldTeam == Team.Blue)
         {
             LobbyUI.Instance.BlueTeamList?.RemoveUser(netId);
-            LobbyUI.Instance.RedTeamList?.AddUser(Nickname + netId.ToString(), netId);
+            LobbyUI.Instance.RedTeamList?.AddUser(Nickname, netId);
             LobbyUI.Instance.RedTeamList?.SetReady(netId, readyToBegin);
         }
         else
         {
             LobbyUI.Instance.RedTeamList?.RemoveUser(netId);
-            LobbyUI.Instance.BlueTeamList?.AddUser(Nickname + netId.ToString(), netId);
+            LobbyUI.Instance.BlueTeamList?.AddUser(Nickname, netId);
             LobbyUI.Instance.BlueTeamList?.SetReady(netId, readyToBegin);
         }
     }
@@ -117,18 +129,18 @@ public class RoomPlayer : NetworkRoomPlayer
 
             if (roomPlayer.MyTeam == Team.Blue)
             {
-                LobbyUI.Instance.BlueTeamList?.AddUser(roomPlayer.Nickname + netId.ToString(), netId);
+                LobbyUI.Instance.BlueTeamList?.AddUser(roomPlayer.Nickname, netId);
                 LobbyUI.Instance.BlueTeamList?.SetReady(netId, roomPlayer.readyToBegin);
             }
             else
             {
-                LobbyUI.Instance.RedTeamList?.AddUser(roomPlayer.Nickname + netId.ToString(), netId);
+                LobbyUI.Instance.RedTeamList?.AddUser(roomPlayer.Nickname, netId);
                 LobbyUI.Instance.RedTeamList?.SetReady(netId, roomPlayer.readyToBegin);
             }
 
             if (isServer)
             {
-                LobbyUI.Instance.ManageList?.AddUser(roomPlayer.Nickname + netId.ToString(), netId);
+                LobbyUI.Instance.ManageList?.AddUser(roomPlayer.Nickname, netId);
             }
         }
     }

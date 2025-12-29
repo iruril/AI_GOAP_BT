@@ -61,6 +61,13 @@ public class TeamListPanel : MonoBehaviour
         item.SetReady(ready);
     }
 
+    public void ModifyNickname(uint netId, string nickname)
+    {
+        if (!itemsByNetId.TryGetValue(netId, out var item))
+            return;
+        item.SetNickname(nickname);
+    }
+
     public void ClearPanel()
     {
         foreach (var item in itemsByNetId.Values)

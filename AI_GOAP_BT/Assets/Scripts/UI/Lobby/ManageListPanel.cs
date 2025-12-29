@@ -70,6 +70,13 @@ public class ManageListPanel : MonoBehaviour
         RefreshOrder();
     }
 
+    public void ModifyNickname(uint netId, string nickname)
+    {
+        if (!itemsByNetId.TryGetValue(netId, out var item))
+            return;
+        item.SetNickname(nickname);
+    }
+
     private void RefreshOrder()
     {
         for (int i = 0; i < joinOrder.Count; i++)

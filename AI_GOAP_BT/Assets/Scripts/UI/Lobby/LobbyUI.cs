@@ -69,4 +69,11 @@ public class LobbyUI : MonoBehaviour
         else
             ManageList.EnablePanel();
     }
+
+    public void RefreshNickname(uint netId, string newName)
+    {
+        BlueTeamList?.ModifyNickname(netId, newName);
+        RedTeamList?.ModifyNickname(netId, newName);
+        ManageList?.ModifyNickname(netId, newName);
+    }
 }
