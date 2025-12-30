@@ -1,4 +1,3 @@
-using RootMotion.FinalIK;
 using UnityEngine;
 
 namespace Player.FSM
@@ -36,7 +35,7 @@ namespace Player.FSM
 
         public override PlayerState GetNextState()
         {
-            if (ctx.Input.Jump) return PlayerState.Jump;
+            if (ctx.Input.Jump && !ctx.IsChatting) return PlayerState.Jump;
             if (!ctx.IsGrounded) return PlayerState.Fall;
             if (ctx.Input.MoveInputMap == Vector2.zero)
             {
@@ -80,7 +79,7 @@ namespace Player.FSM
             if (!MathUtility.IsSameDirection(ctx.transform.forward, ctx.PlayerXZVelocity.normalized, 45f)) 
                 return false;
 
-            if (ctx.DeltaYaw > 100f)
+            if (ctx.DeltaYaw > 720)
                 return true;
 
             Vector3 camYawDir = 

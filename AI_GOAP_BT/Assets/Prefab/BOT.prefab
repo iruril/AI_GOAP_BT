@@ -939,7 +939,7 @@ GameObject:
   - component: {fileID: 2992015250279412520}
   - component: {fileID: 3395197417333996334}
   m_Layer: 8
-  m_Name: Shooter_AI
+  m_Name: BOT
   m_TagString: TeamBlue
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3022,17 +3022,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncDirection: 0
   syncMode: 0
-  syncInterval: 0.01
+  syncInterval: 0
   target: {fileID: 5417977022252455614}
   syncPosition: 1
   syncRotation: 1
   syncScale: 0
-  onlySyncOnChange: 1
+  onlySyncOnChange: 0
   compressRotation: 1
   interpolatePosition: 1
   interpolateRotation: 1
   interpolateScale: 1
-  coordinateSpace: 0
+  coordinateSpace: 1
   timelineOffset: 1
   showGizmos: 0
   showOverlay: 0

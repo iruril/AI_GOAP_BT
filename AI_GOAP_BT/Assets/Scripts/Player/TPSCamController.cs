@@ -30,6 +30,7 @@ namespace Player
         public void Update()
         {
             if (!player.isLocalPlayer) return;
+            if (player.IsChatting) return;
 
             camTarget.position = transform.position + Vector3.up;
             CamTargetRotate(); 

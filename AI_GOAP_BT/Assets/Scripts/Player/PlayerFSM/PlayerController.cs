@@ -49,7 +49,7 @@ namespace Player.FSM
         public float DeltaYaw { get; private set; }
         public float OnAirSpeed { get; private set; }
 
-        private bool isChatting = false;
+        public bool IsChatting { get; private set; } = false;
 
         void Awake()
         {
@@ -156,7 +156,10 @@ namespace Player.FSM
         private void UpdateCamYRotationDelta()
         {
             float currYaw = CamController.CamTarget.eulerAngles.y;
-            DeltaYaw = Mathf.DeltaAngle(PrevYaw, currYaw);
+
+            float deltaAngle = Mathf.Abs(Mathf.DeltaAngle(PrevYaw, currYaw));
+            DeltaYaw = deltaAngle / Time.deltaTime;
+
             PrevYaw = currYaw;
         }
 
@@ -164,7 +167,7 @@ namespace Player.FSM
         void UpdateAccelation()
         {
             float targetAccel;
-            if (Input.MoveInputMap == Vector2.zero || isChatting)
+            if (Input.MoveInputMap == Vector2.zero || IsChatting)
                 targetAccel = 0f;
             else
                 targetAccel = Input.Run && !GunController.OnReload ? 4f : 2f;
@@ -180,7 +183,7 @@ namespace Player.FSM
 
         private void UpdateStandardNormals()
         {
-            if (IsOnJumping || isChatting)
+            if (IsOnJumping || IsChatting)
             {
                 return;
             }
@@ -203,15 +206,16 @@ namespace Player.FSM
             float currentSpeed = xzVelocity.magnitude;
             OnAirSpeed = Mathf.Lerp(0f, 6.5f, currentSpeed / 6.5f);
         }
+
         private void HandleChatToggle()
         {
-            if (isChatting)
+            if (IsChatting)
                 return;
 
             if (!GameManager.GetInstance().InputMap.ConsumeChatKeyDown())
                 return;
 
-            isChatting = true;
+            IsChatting = true;
             EnterChatMode();
         }
 
@@ -226,9 +230,9 @@ namespace Player.FSM
 
         public void ForceExitChat()
         {
-            if (!isChatting) return;
+            if (!IsChatting) return;
 
-            isChatting = false;
+            IsChatting = false;
             ExitChatMode();
         }
 

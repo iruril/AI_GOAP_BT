@@ -9,12 +9,10 @@ public enum Team
 
 public class BotSpawner : NetworkBehaviour
 {
-    [Header("Bot Model")]
-    [SerializeField] GameObject bot;
+    public static BotSpawner Instance;
 
-    [Header("Bot SpawnPoint")]
-    [SerializeField] Transform[] teamBlueSpawnPoints = new Transform[12];
-    [SerializeField] Transform[] teamRedSpawnPoints = new Transform[12];
+    [Header("Bot Prefab")]
+    [SerializeField] GameObject botPrefab;
 
     private const string BOT = "[BOT]";
     private const string EDEN = "EDEN_";
@@ -22,32 +20,46 @@ public class BotSpawner : NetworkBehaviour
 
     public override void OnStartServer()
     {
-        SpawnBots(bot, teamBlueSpawnPoints, true);
-        SpawnBots(bot, teamRedSpawnPoints, false);
+        Instance = this;
     }
 
     [Server]
-    public void SpawnBots(GameObject botPrefab, Transform[] spawnPoints, bool isTeamBlue)
+    public void SpawnBots()
     {
-        for (int i = 0; i < spawnPoints.Length; i++)
-        {
-            string serialNum = (i + 1).ToString("D2");
-            string nickname =
-            isTeamBlue
-            ? $"{BOT}{EDEN}{serialNum}"
-            : $"{BOT}{REBEL}{serialNum}";
+        SpawnBotsForTeam(Team.Blue);
+        SpawnBotsForTeam(Team.Red);
+    }
 
-            Transform t = spawnPoints[i];
-            GameObject bot = Instantiate(botPrefab, t.position, t.rotation);
+    [Server]
+    private void SpawnBotsForTeam(Team team)
+    {
+        var spawnPoints =
+            SpawnPointManager.Instance.GetRemainingSpawnPoints(team);
+
+        int index = 1;
+
+        foreach (var point in spawnPoints)
+        {
+            string serial = index.ToString("D2");
+            string nickname =
+                team == Team.Blue
+                ? $"{BOT}{EDEN}{serial}"
+                : $"{BOT}{REBEL}{serial}";
+
+            GameObject bot = Instantiate(
+                botPrefab,
+                point.position,
+                point.rotation
+            );
 
             if (bot.TryGetComponent<Stat>(out var stat))
             {
-                bot.name = nickname;
-                stat.Nickname = nickname; // 서버에서 세팅 → 자동 Sync
-                stat.MyTeam = isTeamBlue ? Team.Blue : Team.Red;
+                stat.Nickname = nickname;
+                stat.SetTeam(team);
             }
 
             NetworkServer.Spawn(bot);
+            index++;
         }
     }
 }

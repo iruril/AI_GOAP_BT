@@ -38,12 +38,6 @@ public class Stat : NetworkBehaviour, IDamageable
     private const float NO_DAMAGE_DURATION = 5f;
     private const float REGEN_RATE = 0.1f;
 
-    private void Awake()
-    {
-        spawnPosition = transform.position;
-        spawnRotation = transform.rotation;
-    }
-
     public override void OnStartServer()
     {
         InitHP();
@@ -63,6 +57,8 @@ public class Stat : NetworkBehaviour, IDamageable
     public override void OnStartClient()
     {
         OnTeamChanged(MyTeam, MyTeam);
+        spawnPosition = transform.position;
+        spawnRotation = transform.rotation;
     }
 
     public override void OnStartLocalPlayer()

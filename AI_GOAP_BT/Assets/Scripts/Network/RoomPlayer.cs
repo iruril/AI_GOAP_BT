@@ -30,7 +30,7 @@ public class RoomPlayer : NetworkRoomPlayer
         {
             LobbyUI.Instance.ManageButton?.gameObject.SetActive(false);
         }
-        CmdSetNickname("PlayerName" + netId.ToString());
+        CmdSetNickname(LocalPlayerSettings.Nickname);
     }
 
     public override void OnClientEnterRoom()

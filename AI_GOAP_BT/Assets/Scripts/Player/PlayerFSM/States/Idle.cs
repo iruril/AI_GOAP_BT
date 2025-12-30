@@ -40,7 +40,7 @@ namespace Player.FSM
 
         public override PlayerState GetNextState()
         {
-            if (ctx.Input.Jump) return PlayerState.Jump;
+            if (ctx.Input.Jump && !ctx.IsChatting) return PlayerState.Jump;
             if (!ctx.IsGrounded) return PlayerState.Fall;
             if (ctx.Input.MoveInputMap != Vector2.zero)
             {
