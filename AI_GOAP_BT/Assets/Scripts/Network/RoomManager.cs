@@ -1,6 +1,13 @@
 using Mirror;
 using UnityEngine;
 
+public static class GameplaySettings
+{
+    public static bool SpawnBots = true;
+    public static bool FriendlyFire = false;
+    public static float RespawnDelay = 10f;
+}
+
 public class RoomManager : NetworkRoomManager
 {
     private int spawnedGamePlayers = 0;
