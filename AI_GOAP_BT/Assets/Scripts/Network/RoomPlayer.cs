@@ -1,7 +1,10 @@
-using UnityEngine;
 using Mirror;
-using System.Collections.Generic;
 using System.Collections;
+
+public static class LocalPlayerSettings
+{
+    public static string Nickname;
+}
 
 public class RoomPlayer : NetworkRoomPlayer
 {

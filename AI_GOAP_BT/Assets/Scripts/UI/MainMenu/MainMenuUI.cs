@@ -1,13 +1,7 @@
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
 using Mirror;
-using System;
-
-public static class LocalPlayerSettings
-{
-    public static string Nickname;
-}
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class MainMenuUI : MonoBehaviour
 {
