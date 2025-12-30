@@ -65,6 +65,7 @@ namespace Player.FSM
             PlayerCC.enabled = false;
             CamController.enabled = false;
             GroundChecker.enabled = false;
+            Anim.applyRootMotion = false;
 
             PlayerForward = transform.forward;
             PlayerRight = transform.right;
@@ -85,6 +86,7 @@ namespace Player.FSM
             Stat.OnDead += CorpseSpawner.SpawnCorpse;
             Stat.OnRevive += CorpseSpawner.DespawnCorpse;
         }
+
         public override void OnStopClient()
         {
             Stat.OnDead -= CorpseSpawner.SpawnCorpse;
@@ -96,6 +98,7 @@ namespace Player.FSM
             PlayerCC.enabled = true;
             CamController.enabled = true;
             GroundChecker.enabled = true;
+            Anim.applyRootMotion = true;
 
             InitStates();
             base.OnStartLocalPlayer();
