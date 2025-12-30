@@ -76,12 +76,8 @@ namespace Player.FSM
 
         private Vector3 GetXZVelocity()
         {
-            Vector3 velocity = ctx.PlayerForward * ctx.Input.VerticalInput + ctx.PlayerRight * ctx.Input.HorizontalInput;
-            Vector3 direction = velocity.normalized;
-
-            float moveSpeed = Mathf.Min(velocity.magnitude, 1.0f) * ctx.OnAirSpeed;
-
-            return direction * moveSpeed;
+            Vector3 direction = jumpRot * Vector3.forward;
+            return direction * ctx.OnAirSpeed;
         }
 
         private void SetPlayerTargetRotation()

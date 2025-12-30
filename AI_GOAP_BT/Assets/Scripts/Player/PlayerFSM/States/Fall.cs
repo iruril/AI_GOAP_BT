@@ -58,12 +58,10 @@ namespace Player.FSM
 
         private Vector3 GetXZVelocity()
         {
-            Vector3 velocity = ctx.PlayerForward * ctx.Input.VerticalInput + ctx.PlayerRight * ctx.Input.HorizontalInput;
-            Vector3 direction = velocity.normalized;
-
-            float moveSpeed = Mathf.Min(velocity.magnitude, 1.0f) * ctx.OnAirSpeed;
-
-            return direction * moveSpeed;
+            Vector3 direction = ctx.PlayerCC.velocity;
+            direction.y = 0;
+            direction.Normalize();
+            return direction * ctx.OnAirSpeed;
         }
 
         protected override void CalculatePlayerTransform()
