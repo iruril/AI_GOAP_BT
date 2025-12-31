@@ -44,7 +44,7 @@ public class MainMenuUI : MonoBehaviour
 
         if (string.IsNullOrWhiteSpace(LocalPlayerSettings.Nickname))
         {
-            LocalPlayerSettings.Nickname = "Player" + UnityEngine.Random.Range(1000, 9999);
+            LocalPlayerSettings.Nickname = "Player" + UnityEngine.Random.Range(0, 999).ToString("D3");
         }
 
         if (isHostMode)
