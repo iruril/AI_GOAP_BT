@@ -1,8 +1,16 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Player.Input
 {
+    public enum UIState
+    {
+        None,
+        Chat,
+        Settings
+    }
+
     public class InputRecorder : MonoBehaviour
     {
         [SerializeField][Range(0, 100)] private float _rotateSpeedOnMouse = 10.0f;
@@ -35,13 +43,16 @@ namespace Player.Input
         public float YRotationEuler { get; private set; } = 0;
         public float XRotationEuler { get; private set; } = 0;
         public Vector2 MoveInputMap { get; private set; }
-        public bool ChatKeyDown { get; private set; }
+        public bool Chat { get; private set; }
         public bool Jump { get; set; } = false;
         public bool Aim { get; set; } = false;
         public bool Run { get; set; } = false;
         public bool Trigger { get; set; } = false;
         public bool Reload { get; set; } = false;
+        public bool ESC { get; set; } = false;
 
+        public UIState CurrentUIState { get; set; } = UIState.None;
+        public bool IsOnUIAction => CurrentUIState != UIState.None;
         public float HorizontalInput { get; private set; }
         public float VerticalInput { get; private set; }
         public float RawHorizontalInput { get; private set; }
@@ -54,6 +65,8 @@ namespace Player.Input
         private void Update()
         {
             InputMapCompensate();
+            HandleESC();
+            HandleChat();
         }
 
         public void OnCamInput(InputAction.CallbackContext context)
@@ -82,7 +95,7 @@ namespace Player.Input
 
         public void OnChatKey(InputAction.CallbackContext context)
         {
-            ChatKeyDown = context.performed;
+            Chat = context.performed;
         }
 
         public void OnJumpInput(InputAction.CallbackContext context)
@@ -109,10 +122,22 @@ namespace Player.Input
             Reload = context.performed;
         }
 
+        public void OnESCInput(InputAction.CallbackContext context)
+        {
+            ESC = context.performed;
+        }
+
         public bool ConsumeChatKeyDown()
         {
-            if (!ChatKeyDown) return false;
-            ChatKeyDown = false;
+            if (!Chat) return false;
+            Chat = false;
+            return true;
+        }
+
+        public bool ConsumeESC()
+        {
+            if (!ESC) return false;
+            ESC = false;
             return true;
         }
 
@@ -124,6 +149,90 @@ namespace Player.Input
             HorizontalInput = CurrentInputMap.x;
             RawHorizontalInput = MoveInputMap.x;
             RawVerticalInput = MoveInputMap.y;
+        }
+
+        private void HandleESC()
+        {
+            if (!ConsumeESC())
+                return;
+
+            switch (CurrentUIState)
+            {
+                case UIState.Chat:
+                    ExitChat();
+                    break;
+
+                case UIState.Settings:
+                    ExitSetting();
+                    break;
+
+                case UIState.None:
+                    EnterSetting();
+                    break;
+            }
+        }
+
+        private void HandleChat()
+        {
+            if (IsOnUIAction)
+                return;
+
+            if (!ConsumeChatKeyDown())
+                return;
+
+            EnterChat();
+        }
+
+
+        public void EnterChat()
+        {
+            if (ChatLog.Instance == null) return;
+
+            CurrentUIState = UIState.Chat;
+            LockCursor(false);
+
+            ChatLog.Instance?.InputField.gameObject.SetActive(true);
+            ChatLog.Instance?.InputField.ActivateInputField();
+            ChatLog.Instance?.InputField.Select();
+        }
+
+        public void ExitChat()
+        {
+            RestoreCursor();
+            ChatLog.Instance?.InputField.DeactivateInputField();
+            ChatLog.Instance?.InputField.gameObject.SetActive(false);
+            CurrentUIState = UIState.None;
+        }
+
+        public void EnterSetting()
+        {
+            if (SettingsPanel.Instance == null) return;
+
+            CurrentUIState = UIState.Settings;
+            LockCursor(false);
+
+            SettingsPanel.Instance.OpenSettings();
+        }
+
+        public void ExitSetting()
+        {
+            RestoreCursor();
+            SettingsPanel.Instance.CloseSettings();
+            CurrentUIState = UIState.None;
+        }
+
+        private void RestoreCursor()
+        {
+            if (GameManager.GetInstance().IsGameplayScene)
+                LockCursor(true);
+            else
+                LockCursor(false);
+        }
+
+        public void LockCursor(bool locked)
+        {
+            Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = !locked;
         }
     }
 }

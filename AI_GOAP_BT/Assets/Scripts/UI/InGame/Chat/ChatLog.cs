@@ -37,7 +37,7 @@ public class ChatLog : MonoBehaviour
         }
 
         InputField.text = string.Empty;
-        player.GetComponent<Player.FSM.PlayerController>().ForceExitChat();
+        GameManager.GetInstance().InputMap.ExitChat();
     }
 
     public void PrintMsg(string sender, string message, Color color)

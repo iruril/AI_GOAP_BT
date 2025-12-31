@@ -104,7 +104,7 @@ namespace Player
 
         private void TryReload()
         {
-            if (!player.Input.Reload) return;
+            if (!player.Input.Reload || GameManager.GetInstance().InputMap.IsOnUIAction) return;
 
             if (player.GunController.CurrentRounds >= player.GunController.CurrentGun.GunInfo.MagazineCapacity + 1)
                 return;

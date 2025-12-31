@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8036106643821244596}
   - component: {fileID: 6236022524072372247}
   - component: {fileID: -9083412935549270331}
+  - component: {fileID: 8284218578916324375}
   - component: {fileID: -136653225235370210}
   m_Layer: 0
   m_Name: GameManager
@@ -62,6 +63,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rotateSpeedOnMouse: 10
   _rotateSpeedOnGamepad: 25
+--- !u!114 &8284218578916324375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4424293960488850994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d789f3056be2d443b6d1f2d78516ef9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &-136653225235370210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259,6 +272,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 15da9011-d0e1-4db4-a942-066c354d73a0
     m_ActionName: 'Player/Reload[/Keyboard/r]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -9083412935549270331}
+        m_TargetAssemblyTypeName: Player.Input.InputRecorder, Assembly-CSharp
+        m_MethodName: OnESCInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: f5047271-6b05-4c96-916f-ae50614a36af
+    m_ActionName: 'Player/ESC[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

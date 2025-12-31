@@ -2,6 +2,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using Player.Input;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject MyPlayer { get; set; }
     public InputRecorder InputMap { get; private set; }
+    public PlayerSettingManager Settings { get; private set; }
 
     private byte[] _connectionToken;
 
@@ -19,6 +21,8 @@ public class GameManager : MonoBehaviour
     private const string _gunDataPath = "GunDatas/Guns.json";
 
     public float RespawnTime = 15f;
+
+    public bool IsGameplayScene { get; private set; }
 
     private void Awake()
     {
@@ -38,9 +42,14 @@ public class GameManager : MonoBehaviour
         }
 
         InputMap = GetComponent<InputRecorder>();
+        Settings = GetComponent<PlayerSettingManager>();
         BetterStreamingAssets.Initialize();
         WeaponDataLoad();
+
+        OnSceneChanged(SceneManager.GetActiveScene().name);
+        SceneManager.activeSceneChanged += (oldScene, newScene) => OnSceneChanged(newScene.name);
     }
+
     public static GameManager GetInstance()
     {
         return instance;
@@ -54,6 +63,11 @@ public class GameManager : MonoBehaviour
     public byte[] GetConnectionToken()
     {
         return _connectionToken;
+    }
+
+    public void OnSceneChanged(string sceneName)
+    {
+        IsGameplayScene = sceneName.Contains("Gameplay");
     }
 
     private void WeaponDataLoad()

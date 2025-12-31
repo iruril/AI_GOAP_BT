@@ -80593,7 +80593,7 @@ MonoBehaviour:
   minPlayers: 1
   roomPlayerPrefab: {fileID: 3651902886908112209, guid: 7b9d3cf3042d22142905e8856655227b, type: 3}
   RoomScene: Assets/Scenes/Lobby.unity
-  GameplayScene: Assets/Scenes/AI_Scene.unity
+  GameplayScene: Assets/Scenes/Gameplay.unity
   _allPlayersReady: 0
   clientIndex: 0
 --- !u!4 &2999900464059641809
@@ -80637,6 +80637,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 161168098461440314, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3363090492634055652, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -80720,6 +80724,18 @@ PrefabInstance:
     - target: {fileID: 3490397387754397287, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
       propertyPath: m_Name
       value: MainMenuUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 6699840738195769051, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7684906301045762161, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7751964324056373614, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

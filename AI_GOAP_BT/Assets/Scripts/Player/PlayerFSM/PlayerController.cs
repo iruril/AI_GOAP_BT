@@ -49,8 +49,6 @@ namespace Player.FSM
         public float DeltaYaw { get; private set; }
         public float OnAirSpeed { get; private set; }
 
-        public bool IsChatting { get; private set; } = false;
-
         void Awake()
         {
             PlayerCC = GetComponent<CharacterController>();
@@ -108,14 +106,14 @@ namespace Player.FSM
             CamController.InitCam();
             PrevYaw = CamController.CamTarget.eulerAngles.y;
 
-            LockCursor(true);
+            GameManager.GetInstance().InputMap.LockCursor(true);
         }
 
         public override void OnStopLocalPlayer()
         {
             GameManager.GetInstance().MyPlayer = null;
 
-            LockCursor(false);
+            GameManager.GetInstance().InputMap.LockCursor(false);
         }
 
         protected override void Update()
@@ -123,8 +121,6 @@ namespace Player.FSM
             if (!CanProcess()) return;
 
             base.Update();
-
-            HandleChatToggle();
 
             UpdateStandardNormals();
             UpdateXZProjectionVelocity();
@@ -170,7 +166,7 @@ namespace Player.FSM
         void UpdateAccelation()
         {
             float targetAccel;
-            if (Input.MoveInputMap == Vector2.zero || IsChatting)
+            if (Input.MoveInputMap == Vector2.zero || GameManager.GetInstance().InputMap.IsOnUIAction)
                 targetAccel = 0f;
             else
                 targetAccel = Input.Run && !GunController.OnReload ? 4f : 2f;
@@ -186,7 +182,7 @@ namespace Player.FSM
 
         private void UpdateStandardNormals()
         {
-            if (IsOnJumping || IsChatting)
+            if (IsOnJumping || GameManager.GetInstance().InputMap.IsOnUIAction)
             {
                 return;
             }
@@ -197,54 +193,12 @@ namespace Player.FSM
             PlayerRight = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.right;
         }
 
-        private void LockCursor(bool locked)
-        {
-            Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
-            Cursor.visible = !locked;
-        }
 
         public void CalculateOnAirSpeed()
         {
             Vector2 xzVelocity = new Vector2(PlayerCC.velocity.x, PlayerCC.velocity.z);
             float currentSpeed = xzVelocity.magnitude;
             OnAirSpeed = Mathf.Lerp(0f, 6.5f, currentSpeed / 6.5f);
-        }
-
-        private void HandleChatToggle()
-        {
-            if (IsChatting)
-                return;
-
-            if (!GameManager.GetInstance().InputMap.ConsumeChatKeyDown())
-                return;
-
-            IsChatting = true;
-            EnterChatMode();
-        }
-
-        private void EnterChatMode()
-        {
-            LockCursor(false);
-
-            ChatLog.Instance.InputField.gameObject.SetActive(true);
-            ChatLog.Instance.InputField.ActivateInputField();
-            ChatLog.Instance.InputField.Select();
-        }
-
-        public void ForceExitChat()
-        {
-            if (!IsChatting) return;
-
-            IsChatting = false;
-            ExitChatMode();
-        }
-
-        private void ExitChatMode()
-        {
-            LockCursor(true);
-
-            ChatLog.Instance.InputField.DeactivateInputField();
-            ChatLog.Instance.InputField.gameObject.SetActive(false);
         }
     }
 }
