@@ -17,7 +17,7 @@ namespace Player.FSM
         {
             base.EnterState();
             ctx.Anim.applyRootMotion = true;
-            ctx.Anim.CrossFade(AnimHash.Strafe, 0.25f);
+            ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.25f);
             turning = false;
         }
 
@@ -105,7 +105,7 @@ namespace Player.FSM
             float time = 0;
             while (time <= animTime)
             {
-                if (ctx.Stat.IsDead) yield break;
+                if (ctx.MyStat.IsDead) yield break;
 
                 float t = time / animTime;
                 ctx.transform.rotation = Quaternion.Slerp(startRot, endRot, t);

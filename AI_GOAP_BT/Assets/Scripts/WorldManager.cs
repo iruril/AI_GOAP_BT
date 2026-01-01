@@ -38,23 +38,15 @@ public class WorldManager : MonoBehaviour
             Destroy(this.gameObject);
             return;
         }
-    }
-
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        SceneManager.activeSceneChanged += (oldScene, newScene) => OnSceneLoaded(newScene.name);
     }
     
     /// <summary>
     /// 씬 로드 완료 시 CapturePoint 자동 재수집
     /// </summary>
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    private void OnSceneLoaded(string sceneName)
     {
+        if (!sceneName.Contains("Gameplay")) return;
         RefreshCapturePoints();
     }
 

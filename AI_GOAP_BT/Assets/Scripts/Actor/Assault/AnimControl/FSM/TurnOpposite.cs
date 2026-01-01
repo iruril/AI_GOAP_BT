@@ -32,11 +32,11 @@ namespace AnimControl.Assault
 
             if (MathUtility.IsRightDirection(ctx.transform.forward, tgt, 0f))
             {
-                ctx.Anim.CrossFade(AnimHash.Opposite_R, 0.1f);
+                ctx.Anim.CrossFadeInFixedTime(AnimHash.Opposite_R, 0.1f);
             }
             else
             {
-                ctx.Anim.CrossFade(AnimHash.Opposite_L, 0.1f);
+                ctx.Anim.CrossFadeInFixedTime(AnimHash.Opposite_L, 0.1f);
             }
 
             switch (snapSpeed)

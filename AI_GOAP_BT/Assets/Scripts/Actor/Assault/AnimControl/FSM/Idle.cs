@@ -20,7 +20,7 @@ namespace AnimControl.Assault
             ctx.SetTargetAccel(0f);
             ctx.MyBrain.Navigator.AI.enableRotation = false;
             ctx.RootRotation = false;
-            ctx.Anim.CrossFade(AnimHash.Strafe, 0.1f);
+            ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.1f);
             turning = false;
         }
 
@@ -107,7 +107,7 @@ namespace AnimControl.Assault
                 turnHash = leftTurn ? AnimHash.Turn_L : AnimHash.Turn_R;
             }
 
-            ctx.Anim.CrossFade(turnHash, 0.25f);
+            ctx.Anim.CrossFadeInFixedTime(turnHash, 0.25f);
 
             float time = 0;
             while (time <= animTime)
@@ -123,7 +123,7 @@ namespace AnimControl.Assault
             }
 
             ctx.MyRigid.MoveRotation(endRot);
-            ctx.Anim.CrossFade(AnimHash.Strafe, 0.25f);
+            ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.25f);
             turning = false;
         }
     }

@@ -66,7 +66,8 @@ namespace Player.FSM
 
         protected override void CalculatePlayerTransform()
         {
-            ctx.PlayerCC.Move(ctx.PlayerVelocity * Time.deltaTime);
+            if (ctx.PlayerCC.enabled)
+                ctx.PlayerCC.Move(ctx.PlayerVelocity * Time.deltaTime);
         }
     }
 }

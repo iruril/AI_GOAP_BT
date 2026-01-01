@@ -86,7 +86,7 @@ namespace Player
 
         private void ZoonHandle()
         {
-            if (player.Input.Aim)
+            if (player.IKManager.IsOnAim)
                 MainCamManager.Instance.ActivateAimModeCam();
             else
                 MainCamManager.Instance.ActivateDefaultModeCam();

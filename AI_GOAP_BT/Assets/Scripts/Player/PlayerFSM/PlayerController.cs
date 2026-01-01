@@ -27,7 +27,7 @@ namespace Player.FSM
         public Animator Anim { get; private set; }
         public PlayerIKHandler IKManager { get; private set; }
         public CorpseGenerator CorpseSpawner { get; private set; }
-        public Stat Stat { get; private set; }
+        public Stat MyStat { get; private set; }
 
         [Header("점프 최대 높이")]
         [SerializeField] private float maxJumpHeight = 1f;
@@ -56,7 +56,7 @@ namespace Player.FSM
             CamController = GetComponent<TPSCamController>();
             Anim = GetComponent<Animator>();
             IKManager = GetComponent<PlayerIKHandler>();
-            Stat = GetComponent<Stat>();
+            MyStat = GetComponent<Stat>();
             GroundChecker = GetComponent<GroundChecker>();
             CorpseSpawner = GetComponent<CorpseGenerator>();
 
@@ -81,14 +81,14 @@ namespace Player.FSM
 
         public override void OnStartClient()
         {
-            Stat.OnDead += CorpseSpawner.SpawnCorpse;
-            Stat.OnRevive += CorpseSpawner.DespawnCorpse;
+            MyStat.OnDead += CorpseSpawner.SpawnCorpse;
+            MyStat.OnRevive += CorpseSpawner.DespawnCorpse;
         }
 
         public override void OnStopClient()
         {
-            Stat.OnDead -= CorpseSpawner.SpawnCorpse;
-            Stat.OnRevive -= CorpseSpawner.DespawnCorpse;
+            MyStat.OnDead -= CorpseSpawner.SpawnCorpse;
+            MyStat.OnRevive -= CorpseSpawner.DespawnCorpse;
         }
 
         public override void OnStartLocalPlayer()

@@ -19,7 +19,7 @@ public class HealthGuageHUD : MonoBehaviour
         nickname.text = name;
     }
 
-    public void SetHealth(float currentHP, float maxHP)
+    public void UpdateHP(float currentHP, float maxHP)
     {
         hPguage.fillAmount = currentHP / maxHP;
     }

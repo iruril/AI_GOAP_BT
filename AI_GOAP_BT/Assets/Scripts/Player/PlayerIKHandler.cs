@@ -46,7 +46,10 @@ namespace Player
         {
             if (!isLocalPlayer) return;
 
-            IsOnAim = player.Input.Aim && player.IsGrounded && player.State != PlayerState.Land;
+            IsOnAim = player.Input.Aim 
+                && player.IsGrounded 
+                && player.State != PlayerState.Land
+                && !player.MyStat.IsDead;
         }
     }
 }

@@ -59,7 +59,7 @@ public class Corpse : MonoBehaviour
     }
 #endif
 
-    public void PasteBoneTransforms(List<Transform> skeletons, string latestHittedPart, Vector3 shotOrigin)
+    public void PasteBoneTransforms(List<Transform> skeletons, Vector3 shotOrigin)
     {
         root.gameObject.SetActive(false);
         for (int i = 0; i < bones.Count; i++)
@@ -78,7 +78,6 @@ public class Corpse : MonoBehaviour
         }
 
         Vector3 forceDir = (this.transform.position - shotOrigin).normalized;
-        PhysicsBones[latestHittedPart].AddForce(forceDir * 10f, ForceMode.VelocityChange);
     }
 
     void Update()

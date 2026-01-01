@@ -176,7 +176,7 @@ public class Stat : NetworkBehaviour, IDamageable
     {
         if (isLocalPlayer)
         {
-            HealthGuageHUD.Instance.SetHealth(newHp, MaxHP);
+            HealthGuageHUD.Instance.UpdateHP(newHp, MaxHP);
         }
     }
 
