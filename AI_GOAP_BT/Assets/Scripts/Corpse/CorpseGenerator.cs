@@ -35,6 +35,8 @@ public class CorpseGenerator : NetworkBehaviour
 
     [Header("Ω√√º Obj")]
     [SerializeField] private Corpse corpse;
+
+    [SyncVar] public string LatestHittedPart;
     public Vector3 ShotOrigin { get; set; }
 
 #if UNITY_EDITOR
@@ -57,7 +59,7 @@ public class CorpseGenerator : NetworkBehaviour
         corpse.transform.parent = null;
         corpse.transform.position = this.transform.position;
         corpse.transform.rotation = this.transform.rotation;
-        corpse.PasteBoneTransforms(bones, ShotOrigin);
+        corpse.PasteBoneTransforms(bones, LatestHittedPart, ShotOrigin);
     }
 
     public void DespawnCorpse()

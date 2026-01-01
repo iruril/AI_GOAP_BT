@@ -17,6 +17,7 @@ public class HitBox : MonoBehaviour
             if (isServer)
             {
                 damageable.ApplyDamage(dmg, shotOrigin, hitPoint);
+                corpseGenerator.LatestHittedPart = this.transform.name;
             }
             corpseGenerator.ShotOrigin = shotOrigin;
             Vector3 hitforce = (transform.position - shotOrigin).normalized;
