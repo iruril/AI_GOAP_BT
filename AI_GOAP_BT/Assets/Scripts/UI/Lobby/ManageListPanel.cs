@@ -40,14 +40,14 @@ public class ManageListPanel : MonoBehaviour
         if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity identity))
         {
             item.SetIdentity(identity);
-            if (identity.GetComponent<RoomPlayer>().IsHost)
+            if (identity.GetComponent<LobbyPlayer>().IsHost)
             {
                 item.KickButton.interactable = false;
                 item.KickButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Host";
             }
             item.KickButton.onClick.AddListener(() =>
             {
-                NetworkClient.localPlayer.GetComponent<RoomPlayer>().CmdKick(identity.netId);
+                NetworkClient.localPlayer.GetComponent<LobbyPlayer>().CmdKick(identity.netId);
             });
         }
 

@@ -6,7 +6,7 @@ public static class LocalPlayerSettings
     public static string Nickname;
 }
 
-public class RoomPlayer : NetworkRoomPlayer
+public class LobbyPlayer : NetworkRoomPlayer
 {
     [SyncVar(hook = nameof(TeamChanged))]
     public Team MyTeam = Team.Blue;
@@ -71,11 +71,15 @@ public class RoomPlayer : NetworkRoomPlayer
 
     public void OnNicknameChanged(string _, string newName)
     {
+        if (!IsLobbyUIAlive()) return;
+
         LobbyUI.Instance.RefreshNickname(netId, newName);
     }
 
     public void TeamChanged(Team oldTeam, Team newTeam)
     {
+        if (!IsLobbyUIAlive()) return;
+
         if (oldTeam == Team.Blue)
         {
             LobbyUI.Instance.BlueTeamList?.RemoveUser(netId);
@@ -90,8 +94,10 @@ public class RoomPlayer : NetworkRoomPlayer
         }
     }
 
-    public override void ReadyStateChanged(bool oldReadyState, bool newReadyState) 
+    public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
+        if (!IsLobbyUIAlive()) return;
+
         if (MyTeam == Team.Blue)
         {
             LobbyUI.Instance.BlueTeamList?.SetReady(this.netId, newReadyState);
@@ -126,7 +132,7 @@ public class RoomPlayer : NetworkRoomPlayer
         foreach (var user in NetworkClient.spawned)
         {
             uint netId = user.Key;
-            RoomPlayer roomPlayer = user.Value.GetComponent<RoomPlayer>(); 
+            LobbyPlayer roomPlayer = user.Value.GetComponent<LobbyPlayer>(); 
 
             if (roomPlayer == null) continue;
 
@@ -146,5 +152,10 @@ public class RoomPlayer : NetworkRoomPlayer
                 LobbyUI.Instance.ManageList?.AddUser(roomPlayer.Nickname, netId);
             }
         }
+    }
+
+    private bool IsLobbyUIAlive()
+    {
+        return LobbyUI.Instance != null && LobbyUI.Instance.gameObject != null;
     }
 }

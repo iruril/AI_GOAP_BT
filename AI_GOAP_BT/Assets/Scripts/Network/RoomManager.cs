@@ -38,7 +38,7 @@ public class RoomManager : NetworkRoomManager
             return;
         }
 
-        RoomPlayer rp = roomPlayer.GetComponent<RoomPlayer>();
+        LobbyPlayer rp = roomPlayer.GetComponent<LobbyPlayer>();
         Transform spawnPoint = SpawnPointManager.Instance.ReserveSpawnPoint(rp.MyTeam);
 
         GameObject gamePlayer = Instantiate(playerPrefab);

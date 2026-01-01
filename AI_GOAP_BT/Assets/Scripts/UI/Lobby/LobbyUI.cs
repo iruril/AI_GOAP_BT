@@ -27,7 +27,7 @@ public class LobbyUI : MonoBehaviour
         {
             if (NetworkClient.localPlayer != null)
             {
-                var localPlayer = NetworkClient.localPlayer.GetComponent<RoomPlayer>();
+                var localPlayer = NetworkClient.localPlayer.GetComponent<LobbyPlayer>();
                 localPlayer.CmdChangeReadyState(!localPlayer.readyToBegin);
             }
         });
@@ -48,7 +48,7 @@ public class LobbyUI : MonoBehaviour
         {
             if (NetworkClient.localPlayer != null)
             {
-                var localPlayer = NetworkClient.localPlayer.GetComponent<RoomPlayer>();
+                var localPlayer = NetworkClient.localPlayer.GetComponent<LobbyPlayer>();
                 localPlayer.CmdTeamChangeTeam(Team.Blue);
             }
         });
@@ -56,7 +56,7 @@ public class LobbyUI : MonoBehaviour
         {
             if (NetworkClient.localPlayer != null)
             {
-                var localPlayer = NetworkClient.localPlayer.GetComponent<RoomPlayer>();
+                var localPlayer = NetworkClient.localPlayer.GetComponent<LobbyPlayer>();
                 localPlayer.CmdTeamChangeTeam(Team.Red);
             }
         });
