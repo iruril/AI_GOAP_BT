@@ -23,16 +23,29 @@ public class ChatLog : MonoBehaviour
 
     public void SendChat()
     {
-        GameObject player = GameManager.GetInstance().MyPlayer;
-        if (player == null)
-            return;
-
         if (!string.IsNullOrWhiteSpace(InputField.text))
         {
+            Color nameColor;
+            var stat = GameManager.GetInstance().MyPlayer.GetComponent<Stat>();
+
+            if (stat == null)
+            {
+                Debug.LogError("Stat component not found on player!");
+                return;
+            }
+
+            if (stat.MyTeam == Team.Blue)
+                nameColor = WorldManager.Instance.BlueTeamColor;
+            else if (stat.MyTeam == Team.Red)
+                nameColor = WorldManager.Instance.RedTeamColor;
+            else
+                nameColor = Color.white;
+
             LogManager.Instance.CmdSendChat(
-                player.GetComponent<Stat>().Nickname,
+                stat.Nickname,
                 InputField.text,
-                Color.white
+                nameColor,
+                GameManager.GetInstance().MyNetId
             );
         }
 
@@ -40,10 +53,15 @@ public class ChatLog : MonoBehaviour
         GameManager.GetInstance().InputMap.ExitChat();
     }
 
-    public void PrintMsg(string sender, string message, Color color)
+    public void PrintMsg(string sender, string message, Color color, uint netId)
     {
         GameObject itemObj = Instantiate(ChatItemPrefab, ContentRect);
         ChatItem item = itemObj.GetComponent<ChatItem>();
-        item.SendMessage(sender, message, color);
+
+        Color chatColor = 
+            netId == GameManager.GetInstance().MyNetId ?
+            Color.green :
+            color;
+        item.SendMessage(sender, message, chatColor);
     }
 }

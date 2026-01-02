@@ -1,9 +1,23 @@
+using Mirror;
 using TMPro;
 using UnityEngine;
 
 public class PlayerListItem : MonoBehaviour
 {
     public TextMeshProUGUI Nickname, Num, Status;
+
+    public void Init(uint netId)
+    {
+        if (NetworkClient.localPlayer != null &&
+            NetworkClient.localPlayer.netId == netId)
+        {
+            Nickname.color = Color.cyan;
+        }
+        else
+        {
+            Nickname.color = Color.white;
+        }
+    }
 
     public void SetNickname(string nickname)
     {

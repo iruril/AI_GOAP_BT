@@ -19,6 +19,7 @@ public class TeamListPanel : MonoBehaviour
         GameObject go = Instantiate(panelContentsPrefab, ContentRect);
         PlayerListItem item = go.GetComponent<PlayerListItem>();
 
+        item.Init(netId);
         item.SetNickname(nickname);
         item.SetReady(false);
 

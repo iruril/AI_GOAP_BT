@@ -3,12 +3,28 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using Player.Input;
 using UnityEngine.SceneManagement;
+using Mirror;
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance = null;
 
-    public GameObject MyPlayer { get; set; }
+    private GameObject myPlayer;
+
+    public GameObject MyPlayer
+    {
+        get => myPlayer;
+        set
+        {
+            myPlayer = value;
+            if (value != null &&
+                value.TryGetComponent(out NetworkIdentity identity))
+            {
+                MyNetId = identity.netId;
+            }
+        }
+    }
+    public uint MyNetId { get; private set; }
     public InputRecorder InputMap { get; private set; }
     public PlayerSettingManager Settings { get; private set; }
 

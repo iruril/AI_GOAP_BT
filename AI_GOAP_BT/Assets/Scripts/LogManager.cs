@@ -23,14 +23,14 @@ public class LogManager : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdSendChat(string sender, string message, Color color)
+    public void CmdSendChat(string sender, string message, Color color, uint netId)
     {
-        RpcBroadcastChat(sender, message, color);
+        RpcBroadcastChat(sender, message, color, netId);
     }
 
     [ClientRpc]
-    void RpcBroadcastChat(string sender, string message, Color color)
+    void RpcBroadcastChat(string sender, string message, Color color, uint netId)
     {
-        ChatLog.Instance?.PrintMsg(sender, message, color);
+        ChatLog.Instance?.PrintMsg(sender, message, color, netId);
     }
 }

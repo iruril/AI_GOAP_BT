@@ -15,7 +15,6 @@ public class PreviewActor : MonoBehaviour
     
     [Header("Preview Rotation")]
     [SerializeField] float rotateSensitivity = 0.2f;
-    [SerializeField] float returnSpeed = 120f;
     [SerializeField] float returnDelay = 3f; 
     [SerializeField] float returnDamping = 6f;
 
