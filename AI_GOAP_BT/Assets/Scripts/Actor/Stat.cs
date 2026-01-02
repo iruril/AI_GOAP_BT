@@ -71,6 +71,12 @@ public class Stat : NetworkBehaviour, IDamageable
         OnTeamChanged(MyTeam, MyTeam);
         spawnPosition = transform.position;
         spawnRotation = transform.rotation;
+        ScoreboardHUD.Instance?.AddUser(Nickname, netId, MyTeam == Team.Blue);
+    }
+
+    public override void OnStopClient()
+    {
+        ScoreboardHUD.Instance?.RemoveUser(netId);
     }
 
     public override void OnStartLocalPlayer()
@@ -280,12 +286,13 @@ public class Stat : NetworkBehaviour, IDamageable
 
     private void OnKDAChanged(KDA oldValue, KDA newValue)
     {
-        // HUD 업데이트
-        //ScoreHUD.Instance.UpdateKDA(
-        //    netId,
-        //    newValue.Kills,
-        //    newValue.Assists,
-        //    newValue.Deaths
-        //);
+        if (!isClient) return;
+
+        ScoreboardHUD.Instance?.UpdateKDA(
+            netId,
+            newValue.Kills,
+            newValue.Assists,
+            newValue.Deaths
+        );
     }
 }

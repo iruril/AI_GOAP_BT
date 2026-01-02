@@ -288,6 +288,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: f5047271-6b05-4c96-916f-ae50614a36af
     m_ActionName: 'Player/ESC[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -9083412935549270331}
+        m_TargetAssemblyTypeName: Player.Input.InputRecorder, Assembly-CSharp
+        m_MethodName: OnTabInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 0b3d3de8-4670-4602-993a-77f554b89161
+    m_ActionName: 'Player/Tab[/Keyboard/tab]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

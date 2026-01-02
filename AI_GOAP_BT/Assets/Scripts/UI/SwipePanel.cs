@@ -17,6 +17,12 @@ public class SwipePanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         Instance = this;
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         dragging = true;

@@ -166,7 +166,7 @@ namespace Player.FSM
         void UpdateAccelation()
         {
             float targetAccel;
-            if (Input.MoveInputMap == Vector2.zero || GameManager.GetInstance().InputMap.IsOnUIAction)
+            if (Input.MoveInputMap == Vector2.zero || GameManager.GetInstance().InputMap.IsOnStaticUI)
                 targetAccel = 0f;
             else
                 targetAccel = Input.Run && !GunController.OnReload ? 4f : 2f;
@@ -182,7 +182,7 @@ namespace Player.FSM
 
         private void UpdateStandardNormals()
         {
-            if (IsOnJumping || GameManager.GetInstance().InputMap.IsOnUIAction)
+            if (IsOnJumping || GameManager.GetInstance().InputMap.IsOnStaticUI)
             {
                 return;
             }

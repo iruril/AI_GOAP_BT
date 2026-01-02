@@ -30,7 +30,7 @@ namespace Player
         public void Update()
         {
             if (!player.isLocalPlayer) return;
-            if (GameManager.GetInstance().InputMap.IsOnUIAction) return;
+            if (GameManager.GetInstance().InputMap.IsOnStaticUI) return;
 
             camTarget.position = transform.position + Vector3.up;
             CamTargetRotate(); 

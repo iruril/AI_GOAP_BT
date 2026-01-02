@@ -31,7 +31,7 @@ public class LobbyPlayer : NetworkRoomPlayer
     {
         if (!IsHost)
         {
-            LobbyUI.Instance.ManageButton?.gameObject.SetActive(false);
+            LobbyUI.Instance?.ManageButton?.gameObject.SetActive(false);
         }
         CmdSetNickname(LocalPlayerSettings.Nickname);
     }
@@ -73,7 +73,7 @@ public class LobbyPlayer : NetworkRoomPlayer
     {
         if (!IsLobbyUIAlive()) return;
 
-        LobbyUI.Instance.RefreshNickname(netId, newName);
+        LobbyUI.Instance?.RefreshNickname(netId, newName);
     }
 
     public void TeamChanged(Team oldTeam, Team newTeam)
@@ -82,15 +82,15 @@ public class LobbyPlayer : NetworkRoomPlayer
 
         if (oldTeam == Team.Blue)
         {
-            LobbyUI.Instance.BlueTeamList?.RemoveUser(netId);
-            LobbyUI.Instance.RedTeamList?.AddUser(Nickname, netId);
-            LobbyUI.Instance.RedTeamList?.SetReady(netId, readyToBegin);
+            LobbyUI.Instance?.BlueTeamList?.RemoveUser(netId);
+            LobbyUI.Instance?.RedTeamList?.AddUser(Nickname, netId);
+            LobbyUI.Instance?.RedTeamList?.SetReady(netId, readyToBegin);
         }
         else
         {
-            LobbyUI.Instance.RedTeamList?.RemoveUser(netId);
-            LobbyUI.Instance.BlueTeamList?.AddUser(Nickname, netId);
-            LobbyUI.Instance.BlueTeamList?.SetReady(netId, readyToBegin);
+            LobbyUI.Instance?.RedTeamList?.RemoveUser(netId);
+            LobbyUI.Instance?.BlueTeamList?.AddUser(Nickname, netId);
+            LobbyUI.Instance?.BlueTeamList?.SetReady(netId, readyToBegin);
         }
     }
 
@@ -100,11 +100,11 @@ public class LobbyPlayer : NetworkRoomPlayer
 
         if (MyTeam == Team.Blue)
         {
-            LobbyUI.Instance.BlueTeamList?.SetReady(this.netId, newReadyState);
+            LobbyUI.Instance?.BlueTeamList?.SetReady(this.netId, newReadyState);
         }
         else
         {
-            LobbyUI.Instance.RedTeamList?.SetReady(this.netId, newReadyState);
+            LobbyUI.Instance?.RedTeamList?.SetReady(this.netId, newReadyState);
         }
 
         if (isLocalPlayer)
@@ -121,12 +121,12 @@ public class LobbyPlayer : NetworkRoomPlayer
 
     private void RefreshPanels()
     {
-        LobbyUI.Instance.BlueTeamList?.ClearPanel();
-        LobbyUI.Instance.RedTeamList?.ClearPanel();
+        LobbyUI.Instance?.BlueTeamList?.ClearPanel();
+        LobbyUI.Instance?.RedTeamList?.ClearPanel();
 
         if (IsHost && isLocalPlayer)
         {
-            LobbyUI.Instance.ManageList?.ClearPanel();
+            LobbyUI.Instance?.ManageList?.ClearPanel();
         }
 
         foreach (var user in NetworkClient.spawned)
@@ -138,18 +138,18 @@ public class LobbyPlayer : NetworkRoomPlayer
 
             if (roomPlayer.MyTeam == Team.Blue)
             {
-                LobbyUI.Instance.BlueTeamList?.AddUser(roomPlayer.Nickname, netId);
-                LobbyUI.Instance.BlueTeamList?.SetReady(netId, roomPlayer.readyToBegin);
+                LobbyUI.Instance?.BlueTeamList?.AddUser(roomPlayer.Nickname, netId);
+                LobbyUI.Instance?.BlueTeamList?.SetReady(netId, roomPlayer.readyToBegin);
             }
             else
             {
-                LobbyUI.Instance.RedTeamList?.AddUser(roomPlayer.Nickname, netId);
-                LobbyUI.Instance.RedTeamList?.SetReady(netId, roomPlayer.readyToBegin);
+                LobbyUI.Instance?.RedTeamList?.AddUser(roomPlayer.Nickname, netId);
+                LobbyUI.Instance?.RedTeamList?.SetReady(netId, roomPlayer.readyToBegin);
             }
 
             if (isServer)
             {
-                LobbyUI.Instance.ManageList?.AddUser(roomPlayer.Nickname, netId);
+                LobbyUI.Instance?.ManageList?.AddUser(roomPlayer.Nickname, netId);
             }
         }
     }

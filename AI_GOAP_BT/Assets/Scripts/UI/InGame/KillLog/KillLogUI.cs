@@ -37,6 +37,9 @@ public class KillLogUI : MonoBehaviour
         {
             Timing.KillCoroutines(item.Value);
         }
+
+        if (Instance == this)
+            Instance = null;
     }
 
     public void AddLog(string killer, string victim, bool isKillerBlue, bool isVictimBlue)

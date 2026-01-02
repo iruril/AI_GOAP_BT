@@ -7,7 +7,8 @@ namespace Player.Input
     {
         None,
         Chat,
-        Settings
+        Settings,
+        Scoreboard
     }
 
     public class InputRecorder : MonoBehaviour
@@ -49,9 +50,10 @@ namespace Player.Input
         public bool Trigger { get; set; } = false;
         public bool Reload { get; set; } = false;
         public bool ESC { get; set; } = false;
+        public bool Tab { get; set; } = false;
 
         public UIState CurrentUIState { get; set; } = UIState.None;
-        public bool IsOnUIAction => CurrentUIState != UIState.None;
+        public bool IsOnStaticUI => CurrentUIState != UIState.None && CurrentUIState != UIState.Scoreboard;
         public float HorizontalInput { get; private set; }
         public float VerticalInput { get; private set; }
         public float RawHorizontalInput { get; private set; }
@@ -66,6 +68,7 @@ namespace Player.Input
             InputMapCompensate();
             HandleESC();
             HandleChat();
+            HandleScoreboard();
         }
 
         public void OnCamInput(InputAction.CallbackContext context)
@@ -126,6 +129,11 @@ namespace Player.Input
             ESC = context.performed;
         }
 
+        public void OnTabInput(InputAction.CallbackContext context)
+        {
+            Tab = context.performed;
+        }
+
         public bool ConsumeChatKeyDown()
         {
             if (!Chat) return false;
@@ -165,6 +173,10 @@ namespace Player.Input
                     ExitSetting();
                     break;
 
+                case UIState.Scoreboard:
+                    ExitScoreboard();
+                    break;
+
                 case UIState.None:
                     EnterSetting();
                     break;
@@ -173,7 +185,7 @@ namespace Player.Input
 
         private void HandleChat()
         {
-            if (IsOnUIAction)
+            if (IsOnStaticUI)
                 return;
 
             if (!ConsumeChatKeyDown())
@@ -197,6 +209,8 @@ namespace Player.Input
 
         public void ExitChat()
         {
+            if (ChatLog.Instance == null) return;
+
             RestoreCursor();
             ChatLog.Instance?.InputField.DeactivateInputField();
             ChatLog.Instance?.InputField.gameObject.SetActive(false);
@@ -215,9 +229,47 @@ namespace Player.Input
 
         public void ExitSetting()
         {
+            if (SettingsPanel.Instance == null) return;
+
             RestoreCursor();
             SettingsPanel.Instance.CloseSettings();
             CurrentUIState = UIState.None;
+        }
+
+        private void HandleScoreboard()
+        {
+            if (InGameUI.Instance == null) return;
+
+            if (CurrentUIState != UIState.None &&
+                CurrentUIState != UIState.Scoreboard)
+                return;
+
+            if (Tab)
+            {
+                if (CurrentUIState != UIState.Scoreboard)
+                    EnterScoreboard();
+            }
+            else
+            {
+                if (CurrentUIState == UIState.Scoreboard)
+                    ExitScoreboard();
+            }
+        }
+
+        private void EnterScoreboard()
+        {
+            if (InGameUI.Instance == null) return;
+
+            CurrentUIState = UIState.Scoreboard;
+            InGameUI.Instance.ShowConditionalHUDs();
+        }
+
+        private void ExitScoreboard()
+        {
+            if (InGameUI.Instance == null) return;
+
+            CurrentUIState = UIState.None; 
+            InGameUI.Instance.HideConditionalHUDs();
         }
 
         private void RestoreCursor()

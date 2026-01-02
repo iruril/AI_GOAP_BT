@@ -38,6 +38,9 @@ public class CaptureHUD : MonoBehaviour
             captures[i].OnColorChanged -= hudContents[i].SetColor;
             captures[i].OnGaugeChanged -= hudContents[i].SetFillAmout;
         }
+
+        if (Instance == this)
+            Instance = null;
     }
 
     private void Init()

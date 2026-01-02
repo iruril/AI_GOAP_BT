@@ -24,6 +24,12 @@ public class SettingsPanel : MonoBehaviour
         Instance = this;
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
+
     private void Start()
     {
         mouseSensitivitySlider.onValueChanged.AddListener(OnMouseSensitivityChanged);

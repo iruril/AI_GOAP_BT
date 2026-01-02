@@ -16,6 +16,12 @@ public class WeaponHUD : MonoBehaviour
         Instance = this;
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
+
     public void OnGunChanged(string gunName, int maxRound)
     {
         Texture2D tex = Resources.Load<Texture2D>("Images/" + gunName);
