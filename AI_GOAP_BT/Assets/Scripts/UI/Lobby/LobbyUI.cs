@@ -50,6 +50,7 @@ public class LobbyUI : MonoBehaviour
             {
                 var localPlayer = NetworkClient.localPlayer.GetComponent<LobbyPlayer>();
                 localPlayer.CmdTeamChangeTeam(Team.Blue);
+                PreviewActor.Instance?.UpdatePreview("Blue", "MPX");
             }
         });
         RedTeamList?.JoinButton.onClick.AddListener(() =>
@@ -58,6 +59,7 @@ public class LobbyUI : MonoBehaviour
             {
                 var localPlayer = NetworkClient.localPlayer.GetComponent<LobbyPlayer>();
                 localPlayer.CmdTeamChangeTeam(Team.Red);
+                PreviewActor.Instance?.UpdatePreview("Red", "AK-12");
             }
         });
     }

@@ -30,6 +30,5 @@ public class CharacterMeshUpdater : MonoBehaviour
         corpse = Instantiate(data.CorpseObject, characterParent);
         corpse.SetActive(false);
         corpseGenerator.SetCorpseObject(corpse);
-
     }
 }
