@@ -890,6 +890,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterMeshRenderer: {fileID: 7259353662963317879}
+  rotateSensitivity: 0.2
+  returnSpeed: 120
+  returnDelay: 2
+  returnDamping: 6
   gunPos: {fileID: 7999835099828617719}
   leftHandIKTarget: {fileID: 1490805250792996642}
 --- !u!1 &1068066172371258943

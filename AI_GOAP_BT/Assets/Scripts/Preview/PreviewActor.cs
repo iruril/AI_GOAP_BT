@@ -11,7 +11,13 @@ public class PreviewActor : MonoBehaviour
 
     private Animator anim;
     private FullBodyBipedIK ik;
-    [SerializeField] private SkinnedMeshRenderer characterMeshRenderer;
+    [SerializeField] private SkinnedMeshRenderer characterMeshRenderer; 
+    
+    [Header("Preview Rotation")]
+    [SerializeField] float rotateSensitivity = 0.2f;
+    [SerializeField] float returnSpeed = 120f;
+    [SerializeField] float returnDelay = 3f; 
+    [SerializeField] float returnDamping = 6f;
 
     [Header("Gun 트랜스폼 세팅")]
     [SerializeField] Transform gunPos;
@@ -23,24 +29,62 @@ public class PreviewActor : MonoBehaviour
     private Dictionary<string, (Gun gun, GameObject instance)> gunHistory = new();
     private string currentMeshID = "";
 
+    Quaternion originRotation;
+    float lastDragTime;
+    bool isDragging;
+
     private void Awake()
     {
         Instance = this;
         anim = GetComponent<Animator>();
-        ik = GetComponent<FullBodyBipedIK>();
+        ik = GetComponent<FullBodyBipedIK>(); 
+        originRotation = transform.rotation;
     }
 
     private void Start()
     {
         ik.solver.leftHandEffector.target = leftHandIKTarget;
-        OnUpdated += () => { anim.PlayInFixedTime("TakeGun", 0, 0); };
+        OnUpdated += () => 
+        {
+            transform.rotation = originRotation;
+            anim.PlayInFixedTime("TakeGun", 0, 0); 
+        };
+        SwipePanel.Instance.OnSwipe += OnPreviewDrag;
+        SwipePanel.Instance.OnSwipeEnd += OnPreviewDragEnd;
         UpdatePreview("Blue", "MPX");
+    }
+
+    private void OnDestroy()
+    {
+        SwipePanel.Instance.OnSwipe -= OnPreviewDrag;
+        SwipePanel.Instance.OnSwipeEnd -= OnPreviewDragEnd;
     }
 
     void Update()
     {
         float weight = anim.GetFloat("LHandIK");
         ik.solver.leftHandEffector.positionWeight = weight;
+    }
+
+    private void LateUpdate()
+    {
+        if (isDragging)
+            return;
+
+        if (Time.time - lastDragTime < returnDelay)
+            return;
+
+        float t = 1f - Mathf.Exp(-returnDamping * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            originRotation,
+            t
+        ); 
+        
+        if (Quaternion.Angle(transform.rotation, originRotation) < 0.1f)
+        {
+            transform.rotation = originRotation;
+        }
     }
 
     public void UpdatePreview(string characterMeshID = default, string gunName = default)
@@ -126,5 +170,21 @@ public class PreviewActor : MonoBehaviour
     public void WeaponOnHand()
     {
         currentGunModel.SetActive(true);
+    }
+
+    public void OnPreviewDrag(Vector2 delta)
+    {
+        float yRotate = delta.x * rotateSensitivity;
+
+        transform.Rotate(Vector3.up, -yRotate, Space.World);
+
+        isDragging = true;
+        lastDragTime = Time.time;
+    }
+
+    public void OnPreviewDragEnd()
+    {
+        isDragging = false;
+        lastDragTime = Time.time;
     }
 }
