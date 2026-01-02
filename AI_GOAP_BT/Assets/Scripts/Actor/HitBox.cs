@@ -25,14 +25,14 @@ public class HitBox : MonoBehaviour
         }
     }
 
-    public void SendShooterInfo(Transform killer, bool isBlueTeam)
+    public void SendShooterInfo(Transform attacker, bool isBlueTeam)
     {
-        if (killer.TryGetComponent<Stat>(out var killerStat))
+        if (attacker.TryGetComponent<Stat>(out var attackerStat))
         {
             if (owner.TryGetComponent<Stat>(out var victimStat))
             {
-                victimStat.KillerNickname = killerStat.Nickname;
-                victimStat.IsKillerBlue = isBlueTeam;
+                victimStat.SetKiller(attackerStat.netId);
+                victimStat.AddDmgContributer(attackerStat.netId);
             }
         }
     }

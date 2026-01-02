@@ -4,6 +4,14 @@ using System.Collections.Generic;
 using MEC;
 using Mirror;
 
+[Serializable]
+public struct KDA
+{
+    public int Kills;
+    public int Assists;
+    public int Deaths;
+}
+
 public class Stat : NetworkBehaviour, IDamageable
 {
     public event Action OnDead;
@@ -24,6 +32,9 @@ public class Stat : NetworkBehaviour, IDamageable
     [SyncVar(hook = nameof(OnHPChanged))] public float CurrentHP;
     [SyncVar(hook = nameof(OnDeathStateChanged))] public bool IsDead = false;
 
+    [SyncVar(hook = nameof(OnKDAChanged))]
+    public KDA CurrentKDA = new();
+
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
 
@@ -32,9 +43,10 @@ public class Stat : NetworkBehaviour, IDamageable
     private float lastDamageTime = -999f;
     private CoroutineHandle hpRegenHandle;
 
-    public string KillerNickname { get; set; }
-    public bool IsKillerBlue { get; set; }
+    private HashSet<uint> damageContributors = new();
+    public uint KillerNetId { get; private set; }
 
+    bool combatEnded = false;
     private const float NO_DAMAGE_DURATION = 5f;
     private const float REGEN_RATE = 0.1f;
 
@@ -77,11 +89,12 @@ public class Stat : NetworkBehaviour, IDamageable
     }
 
     #region Damageable Field
+    [Server]
     public virtual void ApplyDamage(float dmg, Vector3 shotOrigin, Vector3 hitPoint)
     {
-        if (!isServer) return;
         if (IsDead) return;
 
+        combatEnded = false;
         CurrentHP -= dmg;
         lastDamageTime = Time.time;
 
@@ -94,12 +107,23 @@ public class Stat : NetworkBehaviour, IDamageable
         }
     }
 
+    [Server]
     public void OnGraze(Vector3 shotOrigin)
     {
-        if (!isServer) return;
         OnUnderAttack?.Invoke(shotOrigin);
     }
 
+    [Server]
+    public void SetKiller(uint attackerNetId)
+    {
+        KillerNetId = attackerNetId;
+    }
+
+    [Server]
+    public void AddDmgContributer(uint attackerNetId)
+    {
+        damageContributors.Add(attackerNetId);
+    }
     #endregion
 
     private IEnumerator<float> HPRegenHandle()
@@ -113,6 +137,12 @@ public class Stat : NetworkBehaviour, IDamageable
             // 최근 피해 이후 5초가 지났으면 회복
             if (Time.time - lastDamageTime >= NO_DAMAGE_DURATION)
             {
+                if (!combatEnded)
+                {
+                    damageContributors.Clear();
+                    combatEnded = true;
+                }
+
                 float regenAmount = MaxHP * REGEN_RATE * 0.1f;
                 CurrentHP = Mathf.Min(CurrentHP + regenAmount, MaxHP);
             }
@@ -123,12 +153,37 @@ public class Stat : NetworkBehaviour, IDamageable
     {
         CurrentHP = 0f;
         IsDead = true;
-        LogManager.Instance.ReportKill(
-            KillerNickname,
-            Nickname,
-            IsKillerBlue,
-            WorldManager.Instance.IsBlueTeam(this.gameObject.layer)
-        );
+
+        AddDeath();
+
+        // Killer 처리
+        if (NetworkServer.spawned.TryGetValue(KillerNetId, out var killerIdentity))
+        {
+            var killerStat = killerIdentity.GetComponent<Stat>();
+            if(KillerNetId != netId) killerStat?.AddKill();
+
+            LogManager.Instance.ReportKill(
+                killerStat.Nickname,
+                Nickname,
+                killerStat.MyTeam == Team.Blue,
+                MyTeam == Team.Blue
+            );
+        }
+
+        // Assist 처리
+        foreach (uint contributorNetId in damageContributors)
+        {
+            if (contributorNetId == KillerNetId)
+                continue; // 킬러 제외
+
+            if (NetworkServer.spawned.TryGetValue(contributorNetId, out var identity))
+            {
+                var assister = identity.GetComponent<Stat>();
+                if (contributorNetId != netId) assister?.AddAssist();
+            }
+        }
+
+        damageContributors.Clear();
         CurrentCapture?.RemoveIntruder(this);
     }
 
@@ -136,6 +191,7 @@ public class Stat : NetworkBehaviour, IDamageable
     {
         IsDead = false;
         InitHP();
+        damageContributors.Clear();
     }
 
     private IEnumerator<float> Respawn()
@@ -149,6 +205,32 @@ public class Stat : NetworkBehaviour, IDamageable
     {
         MyTeam = newTeam;
     }
+
+    #region KDA
+    [Server]
+    public void AddKill()
+    {
+        var kda = CurrentKDA;
+        kda.Kills++;
+        CurrentKDA = kda;
+    }
+
+    [Server]
+    public void AddAssist()
+    {
+        var kda = CurrentKDA;
+        kda.Assists++;
+        CurrentKDA = kda;
+    }
+
+    [Server]
+    public void AddDeath()
+    {
+        var kda = CurrentKDA;
+        kda.Deaths++;
+        CurrentKDA = kda;
+    }
+    #endregion
 
     private void OnTeamChanged(Team oldValue, Team newTeam)
     {
@@ -194,5 +276,16 @@ public class Stat : NetworkBehaviour, IDamageable
             gameObject.SetActive(true);
             OnRevive?.Invoke();
         }
+    }
+
+    private void OnKDAChanged(KDA oldValue, KDA newValue)
+    {
+        // HUD 업데이트
+        //ScoreHUD.Instance.UpdateKDA(
+        //    netId,
+        //    newValue.Kills,
+        //    newValue.Assists,
+        //    newValue.Deaths
+        //);
     }
 }
