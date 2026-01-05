@@ -194,7 +194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f86eec9527c70242aeed8ccc911db42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  realTimeHUDs:
+  realTimeHUDGroup:
   - {fileID: 6668227827534688862}
   - {fileID: 7108875318872843025}
   - {fileID: 8756103496310572145}
@@ -388,7 +388,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3303275970010843072, guid: dfc7b226b7b6fab4ab0a2238fdb5ff90, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0000029802322
+      value: 0.000011920929
       objectReference: {fileID: 0}
     - target: {fileID: 3395036521309476021, guid: dfc7b226b7b6fab4ab0a2238fdb5ff90, type: 3}
       propertyPath: m_Name

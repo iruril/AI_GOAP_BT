@@ -5,7 +5,7 @@ public class InGameUI : MonoBehaviour
 {
     public static InGameUI Instance { get; private set; }
 
-    [SerializeField] private List<RectTransform> realTimeHUDs = new();
+    [SerializeField] private List<RectTransform> realTimeHUDGroup = new();
     [SerializeField] private RectTransform scoreBoardHUD;
 
     private void Awake()
@@ -21,7 +21,7 @@ public class InGameUI : MonoBehaviour
 
     public void ShowRealTimeHUDs()
     {
-        foreach (var hud in realTimeHUDs)
+        foreach (var hud in realTimeHUDGroup)
         {
             hud.gameObject.SetActive(true);
         }
@@ -29,7 +29,7 @@ public class InGameUI : MonoBehaviour
 
     public void HideRealTimeHUDs()
     {
-        foreach (var hud in realTimeHUDs)
+        foreach (var hud in realTimeHUDGroup)
         {
             hud.gameObject.SetActive(false);
         }

@@ -214,4 +214,37 @@ public class WorldManager : MonoBehaviour
 
         return point;
     }
+
+    /// <summary>
+    /// 모든 점령지의 점령 상태를 합산하여 반환
+    /// </summary>
+    /// <returns> 블루팀이 우세라면 양수값, 레드팀이 우세라면 음수값, 동등하다면 0이다. </returns>
+    public int GetTotalCaptureScore()
+    {
+        if (captures == null || captures.Length == 0)
+            return 0;
+
+        int total = 0;
+
+        foreach (var cap in captures)
+        {
+            switch (cap.SyncedState)
+            {
+                case CapturePoint.CaptureState.CapturedByBlue:
+                    total += 1;
+                    break;
+
+                case CapturePoint.CaptureState.CapturedByRed:
+                    total -= 1;
+                    break;
+
+                case CapturePoint.CaptureState.Neutral:
+                default:
+                    // 0이므로 아무것도 안 함
+                    break;
+            }
+        }
+
+        return total;
+    }
 }

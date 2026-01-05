@@ -18,9 +18,21 @@ public class BotSpawner : NetworkBehaviour
     private const string EDEN = "EDEN_";
     private const string REBEL = "REBEL_";
 
+    public bool BotSpawned { get; private set; } = false;
+
+    private void Awake()
+    {
+        BotSpawned = false;
+    }
+
     public override void OnStartServer()
     {
         Instance = this;
+    }
+
+    public override void OnStopServer()
+    {
+        Instance = null;
     }
 
     [Server]
@@ -61,5 +73,7 @@ public class BotSpawner : NetworkBehaviour
             NetworkServer.Spawn(bot);
             index++;
         }
+
+        BotSpawned = true;
     }
 }
