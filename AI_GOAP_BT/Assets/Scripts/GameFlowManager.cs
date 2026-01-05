@@ -75,6 +75,7 @@ public class GameFlowManager : NetworkBehaviour
     public void EndGame(Team winningTeam)
     {
         //게임 종료 처리
+        Debug.Log($"Game Over! {winningTeam} Team Wins!");
     }
 
     [Server]
