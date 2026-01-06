@@ -8,12 +8,16 @@ public class GameFlowManager : NetworkBehaviour
 
     public bool GameReady = false;
 
-    [SerializeField] private float totalTeamScore = 1000f;
+    [SerializeField][Range(10f, 9999f)] private float totalTeamScore = 1000f;
+    [SyncVar] public float TotalTeamScore;
+
     [SerializeField] private float captureWeightPerSec = 1.0f;
     [SerializeField] private float killWeight = 1.0f;
 
     [SyncVar(hook = nameof(BlueScoreChanged))] public float CurrentBlueScore;
     [SyncVar(hook = nameof(RedScoreChanged))] public float CurrentRedScore;
+
+    private bool endGameEventTriggered = false;
 
     public override void OnStartServer()
     {
@@ -21,6 +25,7 @@ public class GameFlowManager : NetworkBehaviour
         StartCoroutine(Initialize());
         CurrentBlueScore = totalTeamScore;
         CurrentRedScore = totalTeamScore;
+        TotalTeamScore = totalTeamScore;
     }
 
     public override void OnStopServer()
@@ -65,6 +70,8 @@ public class GameFlowManager : NetworkBehaviour
     [Server]
     private void CheckWinCondition()
     {
+        if (endGameEventTriggered) return;
+
         if (CurrentBlueScore <= 0)
             EndGame(Team.Red);
         else if (CurrentRedScore <= 0)
@@ -76,6 +83,7 @@ public class GameFlowManager : NetworkBehaviour
     {
         //게임 종료 처리
         Debug.Log($"Game Over! {winningTeam} Team Wins!");
+        endGameEventTriggered = true;
     }
 
     [Server]
@@ -100,11 +108,11 @@ public class GameFlowManager : NetworkBehaviour
 
     private void BlueScoreChanged(float oldVar, float newVar)
     {
-
+        GameSituationHUD.Instance?.UpdateBlueScore(newVar, TotalTeamScore);
     }
 
     private void RedScoreChanged(float oldVar, float newVar)
     {
-
+        GameSituationHUD.Instance?.UpdateRedScore(newVar, TotalTeamScore);
     }
 }

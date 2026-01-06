@@ -174,6 +174,11 @@ public class Stat : NetworkBehaviour, IDamageable
                 killerStat.MyTeam == Team.Blue,
                 MyTeam == Team.Blue
             );
+
+            GameFlowManager.Instance.ApplyKillScore(
+                killerStat.MyTeam,
+                MyTeam
+            );
         }
 
         // Assist Ã³¸®

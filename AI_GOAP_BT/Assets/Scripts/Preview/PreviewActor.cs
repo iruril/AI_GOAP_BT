@@ -55,8 +55,11 @@ public class PreviewActor : MonoBehaviour
 
     private void OnDestroy()
     {
-        SwipePanel.Instance.OnSwipe -= OnPreviewDrag;
-        SwipePanel.Instance.OnSwipeEnd -= OnPreviewDragEnd;
+        if (SwipePanel.Instance != null)
+        {
+            SwipePanel.Instance.OnSwipe -= OnPreviewDrag;
+            SwipePanel.Instance.OnSwipeEnd -= OnPreviewDragEnd;
+        }
     }
 
     void Update()
