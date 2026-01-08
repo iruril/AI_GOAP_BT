@@ -42,6 +42,7 @@ public class Stat : NetworkBehaviour, IDamageable
 
     private float lastDamageTime = -999f;
     private CoroutineHandle hpRegenHandle;
+    private CoroutineHandle respawnHandle;
 
     private HashSet<uint> damageContributors = new();
     public uint KillerNetId { get; private set; }
@@ -86,6 +87,7 @@ public class Stat : NetworkBehaviour, IDamageable
 
     public override void OnStopServer()
     {
+        Timing.KillCoroutines(respawnHandle);
         Timing.KillCoroutines(hpRegenHandle);
     }
 
@@ -109,7 +111,7 @@ public class Stat : NetworkBehaviour, IDamageable
         if (CurrentHP <= 0f)
         {
             Die();
-            Timing.RunCoroutine(Respawn());
+            respawnHandle = Timing.RunCoroutine(Respawn());
         }
     }
 

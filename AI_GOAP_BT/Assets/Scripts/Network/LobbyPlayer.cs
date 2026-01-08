@@ -33,6 +33,16 @@ public class LobbyPlayer : NetworkRoomPlayer
         {
             LobbyUI.Instance?.ManageButton?.gameObject.SetActive(false);
         }
+
+        if (MyTeam == Team.Blue)
+        {
+            PreviewActor.Instance?.UpdatePreview("Blue", "MPX");
+        }
+        else
+        {
+            PreviewActor.Instance?.UpdatePreview("Red", "AK-12");
+        }
+
         CmdSetNickname(LocalPlayerSettings.Nickname);
     }
 

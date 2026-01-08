@@ -56,6 +56,7 @@ namespace GOAP.Assualt
             myBrain.Sensor.MyStat.OnDead -= OnDead;
             myBrain.Sensor.MyStat.OnDead -= myBrain.GunController.OnDead;
             myBrain.MotionController.AimIK.solver.OnPostUpdate -= myBrain.GunController.FireCallback;
+            Timing.KillCoroutines(burstHandle);
         }
 
         private void Update()

@@ -35,7 +35,7 @@ public class GameFlowManager : NetworkBehaviour
 
     private IEnumerator Initialize()
     {
-        yield return new WaitUntil(()=> GameManager.GetInstance().MyPlayer != null);
+        yield return new WaitUntil(() => GameManager.GetInstance().MyPlayer != null);
         yield return new WaitUntil(() => BotSpawner.Instance.BotSpawned);
         //추후에 플래그 넣을 것들 여기에 추가할 것.
         //로딩 후 시작 대기 타이머 (네트워크 객체)
@@ -84,6 +84,50 @@ public class GameFlowManager : NetworkBehaviour
         //게임 종료 처리
         Debug.Log($"Game Over! {winningTeam} Team Wins!");
         endGameEventTriggered = true;
+
+        SyncTeamsBackToLobby();
+        RpcOnGameEnd(winningTeam);
+
+        StartCoroutine(ReturnToLobbyAfterDelay(5f));
+    }
+
+    [ClientRpc]
+    private void RpcOnGameEnd(Team winningTeam)
+    {
+        // 입력 차단, 결과 UI, 카메라 고정 등
+        //GameEndUI.Instance?.Show(winningTeam);
+    }
+
+    [Server]
+    private IEnumerator ReturnToLobbyAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        NetworkRoomManager room =
+            NetworkManager.singleton as NetworkRoomManager;
+
+        if (room != null)
+        {
+            room.ServerChangeScene(room.RoomScene);
+        }
+    }
+
+    [Server]
+    private void SyncTeamsBackToLobby()
+    {
+        foreach (var kvp in NetworkServer.spawned)
+        {
+            var stat = kvp.Value.GetComponent<Stat>();
+            if (stat == null) continue;
+
+            var conn = kvp.Value.connectionToClient;
+            if (conn == null || conn.identity == null) continue;
+
+            var lobbyPlayer = conn.identity.GetComponent<LobbyPlayer>();
+            if (lobbyPlayer == null) continue;
+
+            lobbyPlayer.MyTeam = stat.MyTeam;
+        }
     }
 
     [Server]

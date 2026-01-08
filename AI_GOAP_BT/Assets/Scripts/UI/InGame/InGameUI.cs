@@ -7,6 +7,7 @@ public class InGameUI : MonoBehaviour
 
     [SerializeField] private List<RectTransform> realTimeHUDGroup = new();
     [SerializeField] private RectTransform scoreBoardHUD;
+    [SerializeField] private RectTransform gameoverHUD;
 
     private void Awake()
     {
@@ -35,15 +36,22 @@ public class InGameUI : MonoBehaviour
         }
     }
 
-    public void ShowConditionalHUDs()
+    public void ShowScoreboardHUD()
     {
         HideRealTimeHUDs();
         scoreBoardHUD.gameObject.SetActive(true);
     }
 
-    public void HideConditionalHUDs()
+    public void HideScoreboardHUD()
     {
         scoreBoardHUD.gameObject.SetActive(false); 
         ShowRealTimeHUDs();
+    }
+
+    public void ShowGameOverHUD()
+    {
+        scoreBoardHUD.gameObject.SetActive(false);
+        HideRealTimeHUDs();
+        gameoverHUD.gameObject.SetActive(true);
     }
 }

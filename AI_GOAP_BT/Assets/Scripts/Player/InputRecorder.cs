@@ -261,7 +261,7 @@ namespace Player.Input
             if (InGameUI.Instance == null) return;
 
             CurrentUIState = UIState.Scoreboard;
-            InGameUI.Instance.ShowConditionalHUDs();
+            InGameUI.Instance.ShowScoreboardHUD();
         }
 
         private void ExitScoreboard()
@@ -269,7 +269,7 @@ namespace Player.Input
             if (InGameUI.Instance == null) return;
 
             CurrentUIState = UIState.None; 
-            InGameUI.Instance.HideConditionalHUDs();
+            InGameUI.Instance.HideScoreboardHUD();
         }
 
         private void RestoreCursor()
