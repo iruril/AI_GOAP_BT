@@ -34,21 +34,17 @@ public class LobbyPlayer : NetworkRoomPlayer
             LobbyUI.Instance?.ManageButton?.gameObject.SetActive(false);
         }
 
-        if (MyTeam == Team.Blue)
-        {
-            PreviewActor.Instance?.UpdatePreview("Blue", "MPX");
-        }
-        else
-        {
-            PreviewActor.Instance?.UpdatePreview("Red", "AK-12");
-        }
-
         CmdSetNickname(LocalPlayerSettings.Nickname);
     }
 
     public override void OnClientEnterRoom()
     {
         StartCoroutine(Refresh());
+
+        if (isLocalPlayer)
+        {
+            TeamChanged(MyTeam, MyTeam);
+        }
     }
 
     public override void OnClientExitRoom()
@@ -88,7 +84,19 @@ public class LobbyPlayer : NetworkRoomPlayer
 
     public void TeamChanged(Team oldTeam, Team newTeam)
     {
-        if (!IsLobbyUIAlive()) return;
+        if (!IsLobbyUIAlive()) return; 
+        
+        if (isLocalPlayer)
+        {
+            if (newTeam == Team.Blue)
+            {
+                PreviewActor.Instance?.UpdatePreview("Blue", "MPX");
+            }
+            else
+            {
+                PreviewActor.Instance?.UpdatePreview("Red", "AK-12");
+            }
+        }
 
         if (oldTeam == Team.Blue)
         {

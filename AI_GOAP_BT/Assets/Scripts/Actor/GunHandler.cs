@@ -37,6 +37,7 @@ public class GunHandler : NetworkBehaviour
     // 플레이어용: 클라이언트가 계산한 muzzle 정보
     private Vector3 clientMuzzlePos;
     private Vector3 clientMuzzleDir;
+    CoroutineHandle layerIkHandle;
 
     private float currentSpread = 0;
     [SyncVar(hook = nameof(OnRoundUpdate))] public int CurrentRounds = 0;
@@ -60,6 +61,12 @@ public class GunHandler : NetworkBehaviour
     public override void OnStopLocalPlayer()
     {
         OnRoundChanged -= WeaponHUD.Instance.OnRoundChanged;
+    }
+
+    public override void OnStopClient()
+    {
+        Timing.KillCoroutines(layerIkHandle);
+        Timing.KillCoroutines(reloadHandle);
     }
 
     void Update()
@@ -323,7 +330,7 @@ public class GunHandler : NetworkBehaviour
             Animator anim = GetComponent<Animator>();
             IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
             anim.CrossFade(AnimHash.Reload, 0.1f);
-            Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.15f));
+            layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.15f));
         }
 
         RpcStartReload();
@@ -342,7 +349,7 @@ public class GunHandler : NetworkBehaviour
         {
             Animator anim = GetComponent<Animator>();
             IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
-            Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.15f));
+            layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.15f));
         }
 
         RpcCompleteReload();
@@ -357,7 +364,7 @@ public class GunHandler : NetworkBehaviour
         IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
 
         anim.CrossFade(AnimHash.Reload, 0.1f);
-        Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.15f));
+        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.15f));
     }
 
     [ClientRpc]
@@ -367,7 +374,7 @@ public class GunHandler : NetworkBehaviour
 
         Animator anim = GetComponent<Animator>();
         IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
-        Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.15f));
+        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.15f));
     }
 
     private IEnumerator<float> LerpIKAndLayer(Animator anim, IKEffector leftHand,
