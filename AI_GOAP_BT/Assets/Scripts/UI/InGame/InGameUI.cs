@@ -7,11 +7,18 @@ public class InGameUI : MonoBehaviour
 
     [SerializeField] private List<RectTransform> realTimeHUDGroup = new();
     [SerializeField] private RectTransform scoreBoardHUD;
-    [SerializeField] private RectTransform gameoverHUD;
+    [SerializeField] private RectTransform gameWinHUD;
+    [SerializeField] private RectTransform gameLoseHUD;
 
     private void Awake()
     {
         Instance = this;
+    }
+
+    private void Start()
+    {
+        gameWinHUD.gameObject.SetActive(false);
+        gameLoseHUD.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -48,10 +55,13 @@ public class InGameUI : MonoBehaviour
         ShowRealTimeHUDs();
     }
 
-    public void ShowGameOverHUD()
+    public void ShowGameOverHUD(Team winningTeam)
     {
         scoreBoardHUD.gameObject.SetActive(false);
         HideRealTimeHUDs();
-        gameoverHUD.gameObject.SetActive(true);
+        if (winningTeam == GameManager.GetInstance().MyPlayer.GetComponent<Stat>().MyTeam)
+            gameWinHUD.gameObject.SetActive(true);
+        else
+            gameLoseHUD.gameObject.SetActive(true);
     }
 }

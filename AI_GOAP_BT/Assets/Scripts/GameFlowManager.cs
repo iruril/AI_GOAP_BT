@@ -88,14 +88,14 @@ public class GameFlowManager : NetworkBehaviour
         SyncTeamsBackToLobby();
         RpcOnGameEnd(winningTeam);
 
-        StartCoroutine(ReturnToLobbyAfterDelay(5f));
+        StartCoroutine(ReturnToLobbyAfterDelay(10f));
     }
 
     [ClientRpc]
     private void RpcOnGameEnd(Team winningTeam)
     {
         // 입력 차단, 결과 UI, 카메라 고정 등
-        //GameEndUI.Instance?.Show(winningTeam);
+        InGameUI.Instance?.ShowGameOverHUD(winningTeam);
     }
 
     [Server]
