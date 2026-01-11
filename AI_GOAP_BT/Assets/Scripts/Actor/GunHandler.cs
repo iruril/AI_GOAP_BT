@@ -63,10 +63,15 @@ public class GunHandler : NetworkBehaviour
         OnRoundChanged -= WeaponHUD.Instance.OnRoundChanged;
     }
 
-    public override void OnStopClient()
+    public override void OnStopServer()
     {
         Timing.KillCoroutines(layerIkHandle);
         Timing.KillCoroutines(reloadHandle);
+    }
+
+    public override void OnStopClient()
+    {
+        Timing.KillCoroutines(layerIkHandle);
     }
 
     void Update()

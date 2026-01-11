@@ -12,16 +12,19 @@ public static class GameplaySettings
 public class RoomManager : NetworkRoomManager
 {
     private int spawnedGamePlayers = 0;
+    private bool botsSpawned = false;
 
     [Server]
     private void TrySpawnBots()
     {
+        if (botsSpawned) return;
         int expectedPlayers = NetworkServer.connections.Count;
 
         if (spawnedGamePlayers < expectedPlayers)
             return;
 
         BotSpawner.Instance.SpawnBots();
+        botsSpawned = true;
     }
 
     protected override void SceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer)
@@ -32,6 +35,7 @@ public class RoomManager : NetworkRoomManager
             pending.conn = conn;
             pending.roomPlayer = roomPlayer;
             pendingPlayers.Add(pending);
+            botsSpawned = false;
             return;
         }
 
