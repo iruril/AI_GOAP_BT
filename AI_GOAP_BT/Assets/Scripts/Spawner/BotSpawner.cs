@@ -17,14 +17,13 @@ public class BotSpawner : NetworkBehaviour
 
     private const string BOT = "[BOT]";
     private const string EDEN = "EDEN_";
-    private const string REBEL = "REBEL_";
+    private const string REBEL = "REBEL_"; 
+    
+    private readonly List<Stat> blueBots = new();
+    private readonly List<Stat> redBots = new();
 
-    public bool BotSpawned { get; private set; } = false;
-
-    private void Awake()
-    {
-        BotSpawned = false;
-    }
+    private int blueBotIndex = 1;
+    private int redBotIndex = 1;
 
     public override void OnStartServer()
     {
@@ -37,44 +36,90 @@ public class BotSpawner : NetworkBehaviour
     }
 
     [Server]
-    public void SpawnBots()
+    public void SpawnBots(Team team, int count)
     {
-        SpawnBotsForTeam(Team.Blue);
-        SpawnBotsForTeam(Team.Red);
+        for (int i = 0; i < count; i++)
+        {
+            SpawnSingleBot(team);
+        }
     }
 
     [Server]
-    private void SpawnBotsForTeam(Team team)
+    private void SpawnSingleBot(Team team)
     {
-        var spawnPoints =
-            SpawnPointManager.Instance.GetRemainingSpawnPoints(team);
+        Transform point =
+            SpawnPointManager.Instance.ReserveSpawnPoint(team);
 
-        int index = 1;
-
-        foreach (var point in spawnPoints)
+        if (point == null)
         {
-            string serial = index.ToString("D2");
-            string nickname =
-                team == Team.Blue
-                ? $"{BOT}{EDEN}{serial}"
-                : $"{BOT}{REBEL}{serial}";
-
-            GameObject bot = Instantiate(
-                botPrefab,
-                point.position,
-                point.rotation
-            );
-
-            if (bot.TryGetComponent<Stat>(out var stat))
-            {
-                stat.Nickname = nickname;
-                stat.SetTeam(team);
-            }
-
-            NetworkServer.Spawn(bot);
-            index++;
+            Debug.LogWarning("No spawn point for bot");
+            return;
         }
 
-        BotSpawned = true;
+        string nickname = GenerateBotName(team);
+
+        GameObject bot = Instantiate(
+            botPrefab,
+            point.position,
+            point.rotation
+        );
+
+        if (bot.TryGetComponent(out Stat stat))
+        {
+            stat.Nickname = nickname;
+            stat.SetTeam(team);
+        }
+
+        NetworkServer.Spawn(bot);
+
+        if (team == Team.Blue)
+            blueBots.Add(stat);
+        else
+            redBots.Add(stat);
+    }
+
+    private string GenerateBotName(Team team)
+    {
+        if (team == Team.Blue)
+            return $"{BOT}{EDEN}{blueBotIndex++:D2}";
+        else
+            return $"{BOT}{REBEL}{redBotIndex++:D2}";
+    }
+
+    [Server]
+    public void RemoveOneBot(Team team)
+    {
+        var list = team == Team.Blue ? blueBots : redBots;
+        if (list.Count == 0) return;
+
+        Stat bot = list[0];
+        list.RemoveAt(0);
+
+        NetworkServer.Destroy(bot.gameObject);
+
+        RoomManager rm = NetworkManager.singleton as RoomManager;
+        if (rm != null)
+        {
+            if (team == Team.Blue)
+                rm.population.BlueBots--;
+            else
+                rm.population.RedBots--;
+        }
+    }
+
+    [Server]
+    public void ClearAllBots()
+    {
+        foreach (var bot in blueBots)
+            NetworkServer.Destroy(bot.gameObject);
+
+        foreach (var bot in redBots)
+            NetworkServer.Destroy(bot.gameObject);
+
+        blueBots.Clear();
+        redBots.Clear();
+
+        blueBotIndex = 1;
+        redBotIndex = 1;
     }
 }

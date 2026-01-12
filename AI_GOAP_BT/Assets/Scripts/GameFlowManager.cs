@@ -35,8 +35,9 @@ public class GameFlowManager : NetworkBehaviour
 
     private IEnumerator Initialize()
     {
+        RoomManager rm = NetworkManager.singleton as RoomManager;
         yield return new WaitUntil(() => GameManager.GetInstance().MyPlayer != null);
-        yield return new WaitUntil(() => BotSpawner.Instance.BotSpawned);
+        yield return new WaitUntil(() => rm.BotSpawned);
         //추후에 플래그 넣을 것들 여기에 추가할 것.
         //로딩 후 시작 대기 타이머 (네트워크 객체)
 
@@ -103,9 +104,9 @@ public class GameFlowManager : NetworkBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        NetworkRoomManager room =
-            NetworkManager.singleton as NetworkRoomManager;
+        BotSpawner.Instance.ClearAllBots();
 
+        NetworkRoomManager room = NetworkManager.singleton as NetworkRoomManager;
         if (room != null)
         {
             room.ServerChangeScene(room.RoomScene);
@@ -138,10 +139,12 @@ public class GameFlowManager : NetworkBehaviour
         if (killer == Team.Blue)
         {
             CurrentRedScore -= killWeight;
+            CurrentRedScore = Mathf.Max(0f, CurrentRedScore);
         }
         else if (killer == Team.Red)
         {
             CurrentBlueScore -= killWeight;
+            CurrentBlueScore = Mathf.Max(0f, CurrentBlueScore);
         }
     }
 

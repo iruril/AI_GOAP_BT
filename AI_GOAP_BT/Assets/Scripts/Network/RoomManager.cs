@@ -9,22 +9,42 @@ public static class GameplaySettings
     public static float RespawnDelay = 10f;
 }
 
+public class MatchPopulation
+{
+    public int TargetPerTeam;
+    public int BluePlayers;
+    public int RedPlayers;
+    public int BlueBots;
+    public int RedBots;
+}
+
 public class RoomManager : NetworkRoomManager
 {
     private int spawnedGamePlayers = 0;
+    private int expectedGamePlayers = 0;
     private bool botsSpawned = false;
+    public bool BotSpawned => botsSpawned;
 
-    [Server]
-    private void TrySpawnBots()
+    public MatchPopulation population = new();
+
+    public override void OnRoomServerPlayersReady()
     {
-        if (botsSpawned) return;
-        int expectedPlayers = NetworkServer.connections.Count;
+        base.OnRoomServerPlayersReady();
 
-        if (spawnedGamePlayers < expectedPlayers)
+        int totalPlayers = 16;
+        population.TargetPerTeam = Mathf.CeilToInt(totalPlayers / 2f);
+
+        population.BluePlayers = 0;
+        population.RedPlayers = 0;
+        population.BlueBots = 0;
+        population.RedBots = 0;
+
+        if (!Utils.IsSceneActive(RoomScene))
             return;
 
-        BotSpawner.Instance.SpawnBots();
-        botsSpawned = true;
+        expectedGamePlayers = NetworkServer.connections.Count;
+        spawnedGamePlayers = 0;
+        botsSpawned = false;
     }
 
     protected override void SceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer)
@@ -51,7 +71,11 @@ public class RoomManager : NetworkRoomManager
         cc.enabled = true;
 
         Stat stat = gamePlayer.GetComponent<Stat>();
-        stat.SetTeam(rp.MyTeam);
+        stat.SetTeam(rp.MyTeam); 
+        if (stat.MyTeam == Team.Blue)
+            population.BluePlayers++;
+        else
+            population.RedPlayers++;
         stat.Nickname = rp.Nickname;
 
         if (!OnRoomServerSceneLoadedForPlayer(conn, roomPlayer, gamePlayer))
@@ -65,5 +89,75 @@ public class RoomManager : NetworkRoomManager
 
         spawnedGamePlayers++;
         TrySpawnBots();
+    }
+
+    public override void OnServerDisconnect(NetworkConnectionToClient conn)
+    {
+        if (conn.identity != null)
+        {
+            Stat stat = conn.identity.GetComponent<Stat>();
+            if (stat != null && !Utils.IsSceneActive(RoomScene))
+            {
+                HandlePlayerLeft(stat.MyTeam);
+            }
+        }
+
+        base.OnServerDisconnect(conn);
+    }
+
+    [Server]
+    private void HandlePlayerLeft(Team team)
+    {
+        if (team == Team.Blue)
+        {
+            population.BluePlayers--;
+            TrySpawnBotForTeam(Team.Blue);
+        }
+        else
+        {
+            population.RedPlayers--;
+            TrySpawnBotForTeam(Team.Red);
+        }
+    }
+
+    [Server]
+    private void TrySpawnBotForTeam(Team team)
+    {
+        if (team == Team.Blue)
+        {
+            int need = population.TargetPerTeam
+                     - population.BluePlayers
+                     - population.BlueBots;
+
+            if (need > 0)
+            {
+                BotSpawner.Instance.SpawnBots(Team.Blue, need);
+                population.BlueBots += need;
+            }
+        }
+        else
+        {
+            int need = population.TargetPerTeam
+                     - population.RedPlayers
+                     - population.RedBots;
+
+            if (need > 0)
+            {
+                BotSpawner.Instance.SpawnBots(Team.Red, need);
+                population.RedBots += need;
+            }
+        }
+    }
+
+    [Server]
+    private void TrySpawnBots()
+    {
+        if (botsSpawned) return;
+        if (spawnedGamePlayers < expectedGamePlayers) return;
+
+        TrySpawnBotForTeam(Team.Blue);
+        TrySpawnBotForTeam(Team.Red);
+
+        botsSpawned = true;
     }
 }
