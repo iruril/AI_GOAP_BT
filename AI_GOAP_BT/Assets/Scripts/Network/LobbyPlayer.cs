@@ -9,8 +9,8 @@ public static class LocalPlayerSettings
 public class LobbyPlayer : NetworkRoomPlayer
 {
     [SyncVar(hook = nameof(TeamChanged))]
-    public Team MyTeam = Team.Blue;
-
+    public Team MyTeam = Team.Blue; 
+    
     [SyncVar]
     public bool IsHost = false;
 
@@ -29,11 +29,6 @@ public class LobbyPlayer : NetworkRoomPlayer
 
     public override void OnStartLocalPlayer()
     {
-        if (!IsHost)
-        {
-            LobbyUI.Instance?.ManageButton?.gameObject.SetActive(false);
-        }
-
         CmdSetNickname(LocalPlayerSettings.Nickname);
     }
 
@@ -67,8 +62,6 @@ public class LobbyPlayer : NetworkRoomPlayer
     [Command]
     public void CmdKick(uint targetNetId)
     {
-        if (!IsHost) return;
-
         if (NetworkServer.spawned.TryGetValue(targetNetId, out var id))
         {
             id.connectionToClient.Disconnect();
@@ -142,7 +135,7 @@ public class LobbyPlayer : NetworkRoomPlayer
         LobbyUI.Instance?.BlueTeamList?.ClearPanel();
         LobbyUI.Instance?.RedTeamList?.ClearPanel();
 
-        if (IsHost && isLocalPlayer)
+        if (NetworkClient.active && NetworkServer.active && isLocalPlayer)
         {
             LobbyUI.Instance?.ManageList?.ClearPanel();
         }

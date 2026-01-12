@@ -1,4 +1,5 @@
 using Mirror;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,11 +24,14 @@ public class LobbyUI : MonoBehaviour
 
     private void Start()
     {
-        Init();
+        StartCoroutine(Init());
     }
 
-    private void Init()
+    private IEnumerator Init()
     {
+        yield return new WaitUntil(() => NetworkClient.active); 
+        bool isHost = NetworkClient.active && NetworkServer.active;
+
         ReadyButton.onClick.AddListener(() =>
         {
             if (NetworkClient.localPlayer != null)
@@ -38,16 +42,20 @@ public class LobbyUI : MonoBehaviour
         });
         ExitButton.onClick.AddListener(() =>
         {
-            if (NetworkClient.active && NetworkServer.active)
+            if (isHost)
             {
                 NetworkManager.singleton.StopHost();
             }
-            else if (NetworkClient.active)
+            else
             {
                 NetworkManager.singleton.StopClient();
             }
         });
-        ManageButton.onClick.AddListener(ToggleManagePanel);
+
+        if (isHost)
+            ManageButton.onClick.AddListener(ToggleManagePanel);
+        else
+            ManageButton.gameObject.SetActive(false);
 
         BlueTeamList?.JoinButton.onClick.AddListener(() =>
         {
