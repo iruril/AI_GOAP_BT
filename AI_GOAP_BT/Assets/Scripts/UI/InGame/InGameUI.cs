@@ -9,6 +9,8 @@ public class InGameUI : MonoBehaviour
     [SerializeField] private RectTransform scoreBoardHUD;
     [SerializeField] private RectTransform gameWinHUD;
     [SerializeField] private RectTransform gameLoseHUD;
+    public RectTransform GameWinHUD { get => gameWinHUD;}
+    public RectTransform GameLoseHUD { get => gameLoseHUD;}
 
     private void Awake()
     {
