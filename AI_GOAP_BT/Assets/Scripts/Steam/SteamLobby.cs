@@ -157,7 +157,6 @@ public class SteamLobby : MonoBehaviour
         SteamMatchmaking.SetLobbyData(lobbyId, "version", Application.version);
     }
 
-    //초대 수락 시 콜백
     private void OnJoinRequest(GameLobbyJoinRequested_t callback)
     {
         Debug.Log("Steam Lobby Invite Accepted");
@@ -171,7 +170,6 @@ public class SteamLobby : MonoBehaviour
         SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
     }
 
-    //로비 입장 시 콜백
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
         CurrentLobbyID = callback.m_ulSteamIDLobby;
@@ -204,7 +202,6 @@ public class SteamLobby : MonoBehaviour
 
     public void JoinRandomPublicLobby()
     {
-        // 혹시 이미 로비에 있으면 정리
         CleanupSession();
 
         SteamMatchmaking.AddRequestLobbyListResultCountFilter(20);
