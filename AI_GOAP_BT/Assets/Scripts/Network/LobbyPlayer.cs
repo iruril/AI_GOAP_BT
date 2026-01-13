@@ -1,5 +1,6 @@
 using Mirror;
 using System.Collections;
+using Steamworks;
 
 public static class LocalPlayerSettings
 {
@@ -17,6 +18,9 @@ public class LobbyPlayer : NetworkRoomPlayer
     [SyncVar(hook = nameof(OnNicknameChanged))]
     public string Nickname = "Nickname";
 
+    [SyncVar(hook = nameof(OnSteamIDChanged))]
+    public ulong SteamID;
+
     public override void Start()
     {
         base.Start();
@@ -27,19 +31,23 @@ public class LobbyPlayer : NetworkRoomPlayer
         IsHost = NetworkServer.connections.Count == 1;
     }
 
-    public override void OnStartLocalPlayer()
-    {
-        CmdSetNickname(LocalPlayerSettings.Nickname);
-    }
-
     public override void OnClientEnterRoom()
     {
-        StartCoroutine(Refresh());
-
         if (isLocalPlayer)
         {
+            if (SteamManager.Initialized)
+            {
+                CmdSetNickname(SteamFriends.GetPersonaName());
+                CmdSetSteamID(SteamUser.GetSteamID().m_SteamID);
+            }
+            else
+            {
+                CmdSetNickname(LocalPlayerSettings.Nickname);
+            }
             TeamChanged(MyTeam, MyTeam);
         }
+
+        StartCoroutine(Refresh());
     }
 
     public override void OnClientExitRoom()
@@ -51,6 +59,12 @@ public class LobbyPlayer : NetworkRoomPlayer
     public void CmdSetNickname(string nickname)
     {
         Nickname = nickname;
+    }
+
+    [Command]
+    public void CmdSetSteamID(ulong id)
+    {
+        SteamID = id;
     }
 
     [Command]
@@ -122,6 +136,11 @@ public class LobbyPlayer : NetworkRoomPlayer
         {
             LobbyUI.Instance.ReadyButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = newReadyState ? "Unready" : "Ready";
         }
+    }
+
+    public void OnSteamIDChanged(ulong oldReadyState, ulong newReadyState)
+    {
+
     }
 
     IEnumerator Refresh()

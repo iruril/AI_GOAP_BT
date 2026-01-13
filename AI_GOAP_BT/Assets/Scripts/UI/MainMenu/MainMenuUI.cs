@@ -47,13 +47,21 @@ public class MainMenuUI : MonoBehaviour
             LocalPlayerSettings.Nickname = "Player" + UnityEngine.Random.Range(0, 999).ToString("D3");
         }
 
+        if (SteamManager.Initialized)
+        {
+            if (SteamLobby.Instance == null)
+            {
+                Debug.LogError("SteamLobby not found!");
+                return;
+            }
+
+            SteamLobby.Instance.HostLobby();
+            return;
+        }
+
         if (isHostMode)
-        {
             NetworkManager.singleton.StartHost();
-        }
         else
-        {
             NetworkManager.singleton.StartClient();
-        }
     }
 }

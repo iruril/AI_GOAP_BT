@@ -1,6 +1,6 @@
 using Mirror;
-using UnityEngine;
 using Steamworks;
+using UnityEngine;
 
 public static class GameplaySettings
 {
@@ -45,6 +45,34 @@ public class RoomManager : NetworkRoomManager
         expectedGamePlayers = NetworkServer.connections.Count;
         spawnedGamePlayers = 0;
         botsSpawned = false;
+    }
+
+    public override void OnRoomServerSceneChanged(string sceneName)
+    {
+        base.OnRoomServerSceneChanged(sceneName);
+
+        if (SteamLobby.Instance == null)
+            return;
+
+        var lobbyId = new CSteamID(SteamLobby.Instance.CurrentLobbyID);
+
+        if (sceneName == RoomScene)
+        {
+            SteamMatchmaking.SetLobbyData(lobbyId, "state", "lobby");
+
+            spawnedGamePlayers = 0;
+            expectedGamePlayers = 0;
+            botsSpawned = false;
+
+            population.BluePlayers = 0;
+            population.RedPlayers = 0;
+            population.BlueBots = 0;
+            population.RedBots = 0;
+        }
+        else
+        {
+            SteamMatchmaking.SetLobbyData(lobbyId, "state", "ingame");
+        }
     }
 
     protected override void SceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer)
