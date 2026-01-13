@@ -42,14 +42,7 @@ public class LobbyUI : MonoBehaviour
         });
         ExitButton.onClick.AddListener(() =>
         {
-            if (isHost)
-            {
-                NetworkManager.singleton.StopHost();
-            }
-            else
-            {
-                NetworkManager.singleton.StopClient();
-            }
+            SteamLobby.Instance?.LeaveLobby();
         });
 
         if (isHost)

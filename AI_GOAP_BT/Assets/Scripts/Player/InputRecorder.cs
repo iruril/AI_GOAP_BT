@@ -198,8 +198,11 @@ namespace Player.Input
         public void EnterChat()
         {
             if (ChatLog.Instance == null) return;
-            if (InGameUI.Instance.GameWinHUD.gameObject.activeSelf ||
-               InGameUI.Instance.GameLoseHUD.gameObject.activeSelf) return;
+            if (InGameUI.Instance != null)
+            {
+                if (InGameUI.Instance.GameWinHUD.gameObject.activeSelf ||
+                   InGameUI.Instance.GameLoseHUD.gameObject.activeSelf) return;
+            }
 
             CurrentUIState = UIState.Chat;
             LockCursor(false);
@@ -222,8 +225,11 @@ namespace Player.Input
         public void EnterSetting()
         {
             if (SettingsPanel.Instance == null) return;
-            if (InGameUI.Instance.GameWinHUD.gameObject.activeSelf ||
-               InGameUI.Instance.GameLoseHUD.gameObject.activeSelf) return;
+            if (InGameUI.Instance != null)
+            {
+                if (InGameUI.Instance.GameWinHUD.gameObject.activeSelf ||
+                   InGameUI.Instance.GameLoseHUD.gameObject.activeSelf) return;
+            }
 
             CurrentUIState = UIState.Settings;
             LockCursor(false);

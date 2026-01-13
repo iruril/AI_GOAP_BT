@@ -2,11 +2,6 @@ using Mirror;
 using System.Collections;
 using Steamworks;
 
-public static class LocalPlayerSettings
-{
-    public static string Nickname;
-}
-
 public class LobbyPlayer : NetworkRoomPlayer
 {
     [SyncVar(hook = nameof(TeamChanged))]
@@ -42,7 +37,7 @@ public class LobbyPlayer : NetworkRoomPlayer
             }
             else
             {
-                CmdSetNickname(LocalPlayerSettings.Nickname);
+                CmdSetNickname("Player" + UnityEngine.Random.Range(0, 999).ToString("D3"));
             }
             TeamChanged(MyTeam, MyTeam);
         }
