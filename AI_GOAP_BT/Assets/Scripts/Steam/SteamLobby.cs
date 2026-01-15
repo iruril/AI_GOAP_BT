@@ -35,7 +35,16 @@ public class SteamLobby : MonoBehaviour
         SpawnBots = true,
         FriendlyFire = false,
         RespawnDelay = 5f
-    };
+    }; 
+    
+    private enum LobbyListPurpose
+    {
+        None,
+        Browse,
+        RandomJoin
+    }
+
+    private LobbyListPurpose currentPurpose = LobbyListPurpose.None;
 
     protected Callback<LobbyCreated_t> LobbyCreated;
     protected Callback<GameLobbyJoinRequested_t> JoinRequest;
@@ -170,14 +179,20 @@ public class SteamLobby : MonoBehaviour
             SteamFriends.GetPersonaName() + "'s Lobby"
         );
 
-        SteamMatchmaking.SetLobbyData(lobbyId, "visibility", "public");
+        string visibilityStr = currentOptions.lobbyVisibility switch
+        {
+            LobbyVisibility.Public => "public",
+            LobbyVisibility.FriendsOnly => "friends",
+            _ => "private"
+        };
+        SteamMatchmaking.SetLobbyData(lobbyId, "visibility", visibilityStr);
         SteamMatchmaking.SetLobbyData(lobbyId, "state", "lobby");
         SteamMatchmaking.SetLobbyData(lobbyId, "hasPassword", "false");
         SteamMatchmaking.SetLobbyData(lobbyId, "version", Application.version);
         SteamMatchmaking.SetLobbyData(lobbyId, "maxPlayers", currentOptions.MaxPlayers.ToString());
-        SteamMatchmaking.SetLobbyData(lobbyId, "spawnbots", currentOptions.SpawnBots ? "true" : "false");
-        SteamMatchmaking.SetLobbyData(lobbyId, "friendlyfire", currentOptions.FriendlyFire ? "true" : "false");
-        SteamMatchmaking.SetLobbyData(lobbyId, "respawndelay", currentOptions.RespawnDelay.ToString());
+        SteamMatchmaking.SetLobbyData(lobbyId, "spawnBots", currentOptions.SpawnBots ? "true" : "false");
+        SteamMatchmaking.SetLobbyData(lobbyId, "friendlyFire", currentOptions.FriendlyFire ? "true" : "false");
+        SteamMatchmaking.SetLobbyData(lobbyId, "respawnDelay", currentOptions.RespawnDelay.ToString());
     }
 
     private void OnJoinRequest(GameLobbyJoinRequested_t callback)
@@ -223,8 +238,25 @@ public class SteamLobby : MonoBehaviour
         isJoining = false;
     }
 
+    public void JoinLobby(ulong lobbyID)
+    {
+        if (isJoining)
+            return;
+
+        isJoining = true;
+
+        CleanupSession();
+        SteamMatchmaking.JoinLobby(new CSteamID(lobbyID));
+    }
+
     public void JoinRandomPublicLobby()
     {
+        if (isJoining)
+            return;
+
+        isJoining = true;
+        currentPurpose = LobbyListPurpose.RandomJoin;
+
         CleanupSession();
 
         SteamMatchmaking.AddRequestLobbyListResultCountFilter(20);
@@ -240,32 +272,90 @@ public class SteamLobby : MonoBehaviour
             ELobbyComparison.k_ELobbyComparisonEqual
         );
 
+        SteamMatchmaking.AddRequestLobbyListFilterSlotsAvailable(1);
+
         SteamMatchmaking.RequestLobbyList();
     }
 
     private void OnLobbyMatchList(LobbyMatchList_t cb)
     {
+        switch (currentPurpose)
+        {
+            case LobbyListPurpose.Browse:
+                HandleBrowseLobbyList(cb);
+                break;
+
+            case LobbyListPurpose.RandomJoin:
+                HandleRandomJoin(cb);
+                break;
+        }
+
+        currentPurpose = LobbyListPurpose.None;
+    }
+
+    public void RequestPublicLobbyList()
+    {
+        currentPurpose = LobbyListPurpose.Browse;
+
+        SteamMatchmaking.AddRequestLobbyListResultCountFilter(50);
+
+        SteamMatchmaking.AddRequestLobbyListStringFilter(
+            "visibility",
+            "public",
+            ELobbyComparison.k_ELobbyComparisonEqual
+        );
+
+        SteamMatchmaking.AddRequestLobbyListStringFilter(
+            "state",
+            "lobby",
+            ELobbyComparison.k_ELobbyComparisonEqual
+        );
+
+        SteamMatchmaking.AddRequestLobbyListFilterSlotsAvailable(1);
+
+        SteamMatchmaking.RequestLobbyList();
+    }
+
+    private void HandleRandomJoin(LobbyMatchList_t cb)
+    {
         if (cb.m_nLobbiesMatching == 0)
         {
-            Debug.Log("입장 가능한 공개 로비가 없습니다.");
+            Debug.Log("랜덤 입장 가능한 로비가 없습니다.");
+            isJoining = false;
             return;
         }
 
-        // 랜덤 선택
         int index = Random.Range(0, (int)cb.m_nLobbiesMatching);
-        var lobbyId = SteamMatchmaking.GetLobbyByIndex(index);
+        CSteamID lobbyId = SteamMatchmaking.GetLobbyByIndex(index);
 
-        Debug.Log($"랜덤 로비 입장: {lobbyId.m_SteamID}");
-
+        Debug.Log($"[RandomJoin] {lobbyId.m_SteamID}");
         SteamMatchmaking.JoinLobby(lobbyId);
+    }
+
+    private void HandleBrowseLobbyList(LobbyMatchList_t cb)
+    {
+        if (LobbyBrowser.Instance == null)
+            return;
+
+        LobbyBrowser.Instance.ClearLobbies();
+
+        for (int i = 0; i < cb.m_nLobbiesMatching; i++)
+        {
+            CSteamID lobbyId = SteamMatchmaking.GetLobbyByIndex(i);
+            LobbyBrowser.Instance.AddLobby(lobbyId.m_SteamID);
+        }
     }
 
     private void CleanupSession()
     {
         // 네트워크 정리
-        if (NetworkServer.active || NetworkClient.active)
+        if (NetworkServer.active)
         {
             NetworkManager.singleton.StopHost();
+        }
+        else if (NetworkClient.active)
+        {
+            NetworkManager.singleton.StopClient();
         }
 
         // 기존 로비 탈퇴

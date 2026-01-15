@@ -80642,6 +80642,26 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1639288312909523682, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1639288312909523682, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1639288312909523682, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1715409202394269022, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1715409202394269022, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3363090492634055652, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -80726,9 +80746,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainMenuUI
       objectReference: {fileID: 0}
+    - target: {fileID: 6598958706930549392, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_Size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6598958706930549392, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_Value
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6699840738195769051, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6718827548851829341, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 325
       objectReference: {fileID: 0}
     - target: {fileID: 7684906301045762161, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
       propertyPath: m_AnchorMax.y

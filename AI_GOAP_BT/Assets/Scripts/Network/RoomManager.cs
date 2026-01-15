@@ -38,10 +38,10 @@ public class RoomManager : NetworkRoomManager
         population.BlueBots = 0;
         population.RedBots = 0;
 
-        string spawnBotsOption = SteamMatchmaking.GetLobbyData(lobbyId, "spawnbots");
+        string spawnBotsOption = SteamMatchmaking.GetLobbyData(lobbyId, "spawnBots");
         spawnBots = spawnBotsOption == "true";
 
-        string respawnDelayOption = SteamMatchmaking.GetLobbyData(lobbyId, "respawndelay");
+        string respawnDelayOption = SteamMatchmaking.GetLobbyData(lobbyId, "respawnDelay");
         float.TryParse(respawnDelayOption, out respawnDely);
 
         if (!Utils.IsSceneActive(RoomScene))
