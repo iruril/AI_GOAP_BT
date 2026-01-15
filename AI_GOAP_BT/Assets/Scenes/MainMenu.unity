@@ -80662,6 +80662,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3125489785940696114, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_ChildAlignment
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3363090492634055652, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -80756,6 +80760,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6699840738195769051, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6718827548851829341, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6718827548851829341, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
