@@ -36,8 +36,6 @@ public class GameManager : MonoBehaviour
 
     private const string _gunDataPath = "GunDatas/Guns.json";
 
-    public float RespawnTime = 15f;
-
     public bool IsGameplayScene { get; private set; }
 
     private void Awake()

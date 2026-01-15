@@ -209,7 +209,8 @@ public class Stat : NetworkBehaviour, IDamageable
 
     private IEnumerator<float> Respawn()
     {
-        yield return Timing.WaitForSeconds(GameManager.GetInstance().RespawnTime);
+        var manager = NetworkManager.singleton as RoomManager;
+        yield return Timing.WaitForSeconds(manager.RespawnDelay);
         Revive();
     }
 

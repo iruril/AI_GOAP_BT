@@ -2,13 +2,6 @@ using Mirror;
 using Steamworks;
 using UnityEngine;
 
-public static class GameplaySettings
-{
-    public static bool SpawnBots = true;
-    public static bool FriendlyFire = false;
-    public static float RespawnDelay = 10f;
-}
-
 public class MatchPopulation
 {
     public int TargetPerTeam;
@@ -22,8 +15,13 @@ public class RoomManager : NetworkRoomManager
 {
     private int spawnedGamePlayers = 0;
     private int expectedGamePlayers = 0;
+
+    private bool spawnBots = false;
     private bool botsSpawned = false;
     public bool BotSpawned => botsSpawned;
+
+    private float respawnDely = 0f;
+    public float RespawnDelay => respawnDely;
 
     public MatchPopulation population = new();
 
@@ -31,13 +29,20 @@ public class RoomManager : NetworkRoomManager
     {
         base.OnRoomServerPlayersReady();
 
-        int totalPlayers = 16;
+        var lobbyId = new CSteamID(SteamLobby.Instance.CurrentLobbyID);
+        int totalPlayers = SteamMatchmaking.GetLobbyMemberLimit(lobbyId);
         population.TargetPerTeam = Mathf.CeilToInt(totalPlayers / 2f);
 
         population.BluePlayers = 0;
         population.RedPlayers = 0;
         population.BlueBots = 0;
         population.RedBots = 0;
+
+        string spawnBotsOption = SteamMatchmaking.GetLobbyData(lobbyId, "spawnbots");
+        spawnBots = spawnBotsOption == "true";
+
+        string respawnDelayOption = SteamMatchmaking.GetLobbyData(lobbyId, "respawndelay");
+        float.TryParse(respawnDelayOption, out respawnDely);
 
         if (!Utils.IsSceneActive(RoomScene))
             return;
@@ -116,6 +121,7 @@ public class RoomManager : NetworkRoomManager
         );
 
         spawnedGamePlayers++;
+
         TrySpawnBots();
     }
 
@@ -139,12 +145,12 @@ public class RoomManager : NetworkRoomManager
         if (team == Team.Blue)
         {
             population.BluePlayers--;
-            TrySpawnBotForTeam(Team.Blue);
+            if (spawnBots) TrySpawnBotForTeam(Team.Blue);
         }
         else
         {
             population.RedPlayers--;
-            TrySpawnBotForTeam(Team.Red);
+            if (spawnBots) TrySpawnBotForTeam(Team.Red);
         }
     }
 
@@ -180,6 +186,7 @@ public class RoomManager : NetworkRoomManager
     [Server]
     private void TrySpawnBots()
     {
+        if (!spawnBots) return;
         if (botsSpawned) return;
         if (spawnedGamePlayers < expectedGamePlayers) return;
 

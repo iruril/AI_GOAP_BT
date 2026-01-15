@@ -8,8 +8,6 @@ public class MainMenuUI : MonoBehaviour
     public Button QuickJoinButton;
     public Button SettingsButton;
 
-    private bool isHostMode = false;
-
     private void Start()
     {
         CreateLobbyButton.onClick.AddListener(CreateLobby);
@@ -31,14 +29,9 @@ public class MainMenuUI : MonoBehaviour
                 return;
             }
 
-            SteamLobby.Instance.HostLobby();
+            LobbySettingHandler.Instance?.gameObject.SetActive(true);
             return;
         }
-
-        if (isHostMode)
-            NetworkManager.singleton.StartHost();
-        else
-            NetworkManager.singleton.StartClient();
     }
 
     private void RandomJoin()

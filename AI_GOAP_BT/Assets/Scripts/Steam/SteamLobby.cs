@@ -7,22 +7,34 @@ public class SteamLobby : MonoBehaviour
 {
     public static SteamLobby Instance;
 
-    public struct LobbyCreateOptions
+    public enum LobbyVisibility
     {
-        public bool IsPublic;
-        public bool FriendsOnly;
-        public bool UsePassword;
-        public string Password;
-        public int MaxPlayers;
+        Public,
+        FriendsOnly,
+        Private
     }
 
+    public struct LobbyCreateOptions
+    {
+        public LobbyVisibility lobbyVisibility;
+        public bool UsePassword;
+        public string Password;
+        public int MaxPlayers; 
+        public bool SpawnBots;
+        public bool FriendlyFire;
+        public float RespawnDelay;
+    }
+
+    private LobbyCreateOptions currentOptions;
     private LobbyCreateOptions DefaultOptions => new LobbyCreateOptions
     {
-        IsPublic = true,
-        FriendsOnly = false,
+        lobbyVisibility = LobbyVisibility.Public,
         UsePassword = false,
         Password = string.Empty,
-        MaxPlayers = 16
+        MaxPlayers = 16,
+        SpawnBots = true,
+        FriendlyFire = false,
+        RespawnDelay = 5f
     };
 
     protected Callback<LobbyCreated_t> LobbyCreated;
@@ -88,14 +100,21 @@ public class SteamLobby : MonoBehaviour
 
         CleanupSession();
 
+        currentOptions = options;
         ELobbyType lobbyType;
 
-        if (options.IsPublic)
-            lobbyType = ELobbyType.k_ELobbyTypePublic;
-        else if (options.FriendsOnly)
-            lobbyType = ELobbyType.k_ELobbyTypeFriendsOnly;
-        else
-            lobbyType = ELobbyType.k_ELobbyTypePrivate;
+        switch (options.lobbyVisibility)
+        {
+            case LobbyVisibility.Public:
+                lobbyType = ELobbyType.k_ELobbyTypePublic;
+                break;
+            case LobbyVisibility.FriendsOnly:
+                lobbyType = ELobbyType.k_ELobbyTypeFriendsOnly;
+                break;
+            default:
+                lobbyType = ELobbyType.k_ELobbyTypePrivate;
+                break;
+        }
 
         SteamMatchmaking.CreateLobby(
             lobbyType,
@@ -155,6 +174,10 @@ public class SteamLobby : MonoBehaviour
         SteamMatchmaking.SetLobbyData(lobbyId, "state", "lobby");
         SteamMatchmaking.SetLobbyData(lobbyId, "hasPassword", "false");
         SteamMatchmaking.SetLobbyData(lobbyId, "version", Application.version);
+        SteamMatchmaking.SetLobbyData(lobbyId, "maxPlayers", currentOptions.MaxPlayers.ToString());
+        SteamMatchmaking.SetLobbyData(lobbyId, "spawnbots", currentOptions.SpawnBots ? "true" : "false");
+        SteamMatchmaking.SetLobbyData(lobbyId, "friendlyfire", currentOptions.FriendlyFire ? "true" : "false");
+        SteamMatchmaking.SetLobbyData(lobbyId, "respawndelay", currentOptions.RespawnDelay.ToString());
     }
 
     private void OnJoinRequest(GameLobbyJoinRequested_t callback)
@@ -224,8 +247,7 @@ public class SteamLobby : MonoBehaviour
     {
         if (cb.m_nLobbiesMatching == 0)
         {
-            Debug.Log("입장 가능한 공개 로비가 없습니다. 로비를 생성합니다.");
-            HostLobby();
+            Debug.Log("입장 가능한 공개 로비가 없습니다.");
             return;
         }
 
