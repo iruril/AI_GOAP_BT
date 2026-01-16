@@ -53,6 +53,6 @@ public class MainMenuUI : MonoBehaviour
         if (!SteamManager.Initialized)
             return;
 
-        SteamLobby.Instance.JoinRandomPublicLobby();
+        SteamLobby.Instance.JoinRandomLobby();
     }
 }

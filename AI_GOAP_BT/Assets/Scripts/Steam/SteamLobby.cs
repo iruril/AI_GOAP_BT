@@ -164,7 +164,7 @@ public class SteamLobby : MonoBehaviour
             Debug.LogWarning("RoomManager not ready");
             return;
         }
-        manager.StartHost();
+        StartCoroutine(StartHostNextFrame());
 
         SteamMatchmaking.SetLobbyData(
             lobbyId,
@@ -203,8 +203,8 @@ public class SteamLobby : MonoBehaviour
             return;
 
         isJoining = true;
+        CleanupSession(false);
 
-        CleanupSession();
         SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
     }
 
@@ -232,10 +232,8 @@ public class SteamLobby : MonoBehaviour
             return;
         }
 
-        manager.networkAddress = hostAddress;
-        manager.StartClient();
-
-        isJoining = false;
+        manager.networkAddress = hostAddress; 
+        StartCoroutine(StartClientNextFrame());
     }
 
     public void JoinLobby(ulong lobbyID)
@@ -244,36 +242,28 @@ public class SteamLobby : MonoBehaviour
             return;
 
         isJoining = true;
+        CleanupSession(false);
 
-        CleanupSession();
         SteamMatchmaking.JoinLobby(new CSteamID(lobbyID));
     }
 
-    public void JoinRandomPublicLobby()
+    public void JoinRandomLobby()
     {
         if (isJoining)
             return;
 
         isJoining = true;
+        CleanupSession(false);
+
         currentPurpose = LobbyListPurpose.RandomJoin;
-
-        CleanupSession();
-
-        SteamMatchmaking.AddRequestLobbyListResultCountFilter(20);
-        SteamMatchmaking.AddRequestLobbyListStringFilter(
-            "visibility",
-            "public",
-            ELobbyComparison.k_ELobbyComparisonEqual
-        );
 
         SteamMatchmaking.AddRequestLobbyListStringFilter(
             "state",
             "lobby",
             ELobbyComparison.k_ELobbyComparisonEqual
-        );
-
+        ); 
+        SteamMatchmaking.AddRequestLobbyListDistanceFilter(ELobbyDistanceFilter.k_ELobbyDistanceFilterWorldwide);
         SteamMatchmaking.AddRequestLobbyListFilterSlotsAvailable(1);
-
         SteamMatchmaking.RequestLobbyList();
     }
 
@@ -293,17 +283,11 @@ public class SteamLobby : MonoBehaviour
         currentPurpose = LobbyListPurpose.None;
     }
 
-    public void RequestPublicLobbyList()
+    public void RequestLobbyList()
     {
         currentPurpose = LobbyListPurpose.Browse;
 
         SteamMatchmaking.AddRequestLobbyListResultCountFilter(50);
-
-        SteamMatchmaking.AddRequestLobbyListStringFilter(
-            "visibility",
-            "public",
-            ELobbyComparison.k_ELobbyComparisonEqual
-        );
 
         SteamMatchmaking.AddRequestLobbyListStringFilter(
             "state",
@@ -322,6 +306,7 @@ public class SteamLobby : MonoBehaviour
         {
             Debug.Log("랜덤 입장 가능한 로비가 없습니다.");
             isJoining = false;
+            currentPurpose = LobbyListPurpose.None;
             return;
         }
 
@@ -346,8 +331,32 @@ public class SteamLobby : MonoBehaviour
         }
     }
 
-    private void CleanupSession()
+    private IEnumerator StartHostNextFrame()
     {
+        yield return null;
+        Manager.StartHost();
+        isJoining = false;
+    }
+
+    private IEnumerator StartClientNextFrame()
+    {
+        yield return null;
+        Manager.StartClient();
+        isJoining = false;
+    }
+
+    private void CleanupSession(bool resetJoinFlag = true)
+    {
+        if (resetJoinFlag)
+            isJoining = false;
+
+        // 기존 로비 탈퇴
+        if (CurrentLobbyID != 0)
+        {
+            SteamMatchmaking.LeaveLobby(new CSteamID(CurrentLobbyID));
+            CurrentLobbyID = 0;
+        }
+
         // 네트워크 정리
         if (NetworkServer.active)
         {
@@ -356,13 +365,6 @@ public class SteamLobby : MonoBehaviour
         else if (NetworkClient.active)
         {
             NetworkManager.singleton.StopClient();
-        }
-
-        // 기존 로비 탈퇴
-        if (CurrentLobbyID != 0)
-        {
-            SteamMatchmaking.LeaveLobby(new CSteamID(CurrentLobbyID));
-            CurrentLobbyID = 0;
         }
     }
 }

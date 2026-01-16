@@ -230,7 +230,9 @@ public class GunHandler : NetworkBehaviour
         Vector3 finalDir = basis * localDir;
 
         Quaternion bulletRotation = Quaternion.LookRotation(finalDir); 
-        int teamLayer = 1 << gameObject.layer;
+        int ignoreLayerMask = GameManager.GetInstance().RM.FriendlyFire
+            ? 0 
+            : 1 << gameObject.layer;
         float speed = currentGun.GunInfo.ProjectileSpeed;
         float damage = currentGun.GunInfo.RoundDamage;
 
@@ -238,7 +240,7 @@ public class GunHandler : NetworkBehaviour
             this,
             muzzlePos,
             bulletRotation,
-            teamLayer,
+            ignoreLayerMask,
             muzzlePos,      // shotOrigin
             speed,          // 총알 속도
             damage          // 데미지
@@ -247,7 +249,7 @@ public class GunHandler : NetworkBehaviour
         RpcSpawnBullet(
             muzzlePos,
             bulletRotation,
-            teamLayer,
+            ignoreLayerMask,
             muzzlePos,      // shotOrigin
             speed,          // 총알 속도
             damage          // 데미지

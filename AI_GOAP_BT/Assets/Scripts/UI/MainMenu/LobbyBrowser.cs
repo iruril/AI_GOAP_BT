@@ -66,7 +66,7 @@ public class LobbyBrowser : MonoBehaviour
         ClearLobbies();
 
         if (SteamLobby.Instance != null)
-            SteamLobby.Instance.RequestPublicLobbyList();
+            SteamLobby.Instance.RequestLobbyList();
     }
 
     public void OpenBrowser()

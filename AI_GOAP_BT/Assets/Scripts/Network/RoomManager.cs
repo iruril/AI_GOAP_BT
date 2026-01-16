@@ -23,6 +23,9 @@ public class RoomManager : NetworkRoomManager
     private float respawnDely = 0f;
     public float RespawnDelay => respawnDely;
 
+    private bool friendlyFire = false;
+    public bool FriendlyFire => friendlyFire;
+
     public MatchPopulation population = new();
 
     public override void OnRoomServerPlayersReady()
@@ -40,6 +43,9 @@ public class RoomManager : NetworkRoomManager
 
         string spawnBotsOption = SteamMatchmaking.GetLobbyData(lobbyId, "spawnBots");
         spawnBots = spawnBotsOption == "true";
+
+        string friendlyFireOption = SteamMatchmaking.GetLobbyData(lobbyId, "friendlyFire");
+        friendlyFire = friendlyFireOption == "true";
 
         string respawnDelayOption = SteamMatchmaking.GetLobbyData(lobbyId, "respawnDelay");
         float.TryParse(respawnDelayOption, out respawnDely);

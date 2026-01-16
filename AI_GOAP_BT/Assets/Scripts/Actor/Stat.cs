@@ -214,8 +214,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
     private IEnumerator<float> Respawn()
     {
-        var manager = NetworkManager.singleton as RoomManager;
-        yield return Timing.WaitForSeconds(manager.RespawnDelay);
+        yield return Timing.WaitForSeconds(GameManager.GetInstance().RM.RespawnDelay);
         Revive();
     }
 
