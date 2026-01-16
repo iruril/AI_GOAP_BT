@@ -27,7 +27,6 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     string IChatSender.Nickname => Nickname;
     Team IChatSender.MyTeam => MyTeam;
     uint IChatSender.NetId => netId;
-    bool IChatSender.IsLocal => isLocalPlayer;
 
     [SerializeField] private float maxHP = 100f;
     public float MaxHP => maxHP;
@@ -173,7 +172,9 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         if (NetworkServer.spawned.TryGetValue(KillerNetId, out var killerIdentity))
         {
             var killerStat = killerIdentity.GetComponent<Stat>();
-            if(KillerNetId != netId) killerStat?.AddKill();
+
+            if(KillerNetId != netId && IsEnemy(killerStat)) 
+                killerStat?.AddKill();
 
             LogManager.Instance.ReportKill(
                 killerStat.Nickname,
@@ -197,7 +198,8 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
             if (NetworkServer.spawned.TryGetValue(contributorNetId, out var identity))
             {
                 var assister = identity.GetComponent<Stat>();
-                if (contributorNetId != netId) assister?.AddAssist();
+                if (contributorNetId != netId && IsEnemy(assister)) 
+                    assister?.AddAssist();
             }
         }
 
@@ -247,6 +249,11 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         var kda = CurrentKDA;
         kda.Deaths++;
         CurrentKDA = kda;
+    }
+
+    private bool IsEnemy(Stat other)
+    {
+        return other != null && other.MyTeam != MyTeam;
     }
     #endregion
 

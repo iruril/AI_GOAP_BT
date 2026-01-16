@@ -20,8 +20,12 @@ namespace Player
 
         public override void OnStartLocalPlayer()
         {
-            player.MyStat.OnDead += player.GunController.OnDead;
             player.IKManager.AimIK.solver.OnPostUpdate += player.GunController.ClientFireCallback;
+        }
+
+        public override void OnStartServer()
+        {
+            player.MyStat.OnDead += player.GunController.OnDead;
         }
 
         public override void OnStartClient()
@@ -33,8 +37,12 @@ namespace Player
 
         public override void OnStopLocalPlayer()
         {
-            player.MyStat.OnDead -= player.GunController.OnDead;
             player.IKManager.AimIK.solver.OnPostUpdate -= player.GunController.ClientFireCallback;
+        }
+
+        public override void OnStopServer()
+        {
+            player.MyStat.OnDead -= player.GunController.OnDead;
         }
 
         private void Update()

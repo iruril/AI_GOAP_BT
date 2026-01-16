@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,6 +26,9 @@ public class LobbyBrowser : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (SteamLobby.Instance != null)
+            SteamLobby.Instance.OnJoiningStateChanged -= OnJoiningChanged;
+
         Instance = null;
     }
 
@@ -35,6 +37,9 @@ public class LobbyBrowser : MonoBehaviour
         gameObject.SetActive(false);
         RefreshButton.onClick.AddListener(Refresh);
         QuitButton.onClick.AddListener(CloseBrowser);
+
+        if (SteamLobby.Instance != null)
+            SteamLobby.Instance.OnJoiningStateChanged += OnJoiningChanged;
     }
 
     private void OnEnable()
@@ -77,5 +82,15 @@ public class LobbyBrowser : MonoBehaviour
     public void CloseBrowser()
     {
         gameObject.SetActive(false);
+    }
+
+    void OnJoiningChanged(bool isJoining)
+    {
+        foreach (Transform child in ContentRect)
+        {
+            LobbyBrowserItem item = child.GetComponent<LobbyBrowserItem>();
+            if (item != null)
+                item.SetInteractable(!isJoining);
+        }
     }
 }

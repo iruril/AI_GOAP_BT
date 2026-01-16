@@ -28,14 +28,14 @@ public class LogManager : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdSendChat(string sender, string message, Color color, uint netId, bool isLocal)
+    public void CmdSendChat(string sender, string message, Color color, uint netId)
     {
-        RpcBroadcastChat(sender, message, color, netId, isLocal);
+        RpcBroadcastChat(sender, message, color, netId);
     }
 
     [ClientRpc]
-    void RpcBroadcastChat(string sender, string message, Color color, uint netId, bool isLocal)
+    void RpcBroadcastChat(string sender, string message, Color color, uint netId)
     {
-        ChatLog.Instance?.PrintMsg(sender, message, color, netId, isLocal);
+        ChatLog.Instance?.PrintMsg(sender, message, color, netId);
     }
 }

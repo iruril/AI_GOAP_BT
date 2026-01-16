@@ -49,18 +49,21 @@ public class ChatLog : MonoBehaviour
             sender.Nickname,
             InputField.text,
             nameColor,
-            sender.NetId,
-            sender.IsLocal
+            sender.NetId
         );
 
         InputField.text = string.Empty;
         GameManager.GetInstance().InputMap.ExitChat();
     }
 
-    public void PrintMsg(string sender, string message, Color teamColor, uint netId, bool isLocal)
+    public void PrintMsg(string sender, string message, Color teamColor, uint netId)
     {
         GameObject itemObj = Instantiate(ChatItemPrefab, ContentRect);
         ChatItem item = itemObj.GetComponent<ChatItem>();
+
+        bool isLocal =
+        NetworkClient.localPlayer != null &&
+        NetworkClient.localPlayer.netId == netId;
 
         Color chatColor = isLocal ? Color.green : teamColor;
 

@@ -94,4 +94,9 @@ public class LobbyBrowserItem : MonoBehaviour
     {
         SteamLobby.Instance.JoinLobby(lobbyID);
     }
+
+    public void SetInteractable(bool value)
+    {
+        JoinLobbyButton.interactable = value;
+    }
 }

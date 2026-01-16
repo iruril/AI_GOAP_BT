@@ -19,7 +19,6 @@ public class LobbyPlayer : NetworkRoomPlayer, IChatSender
     string IChatSender.Nickname => Nickname;
     Team IChatSender.MyTeam => MyTeam;
     uint IChatSender.NetId => netId;
-    bool IChatSender.IsLocal => isLocalPlayer;
 
     public override void Start()
     {

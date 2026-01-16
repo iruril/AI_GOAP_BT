@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Mirror;
 using Steamworks;
@@ -56,7 +57,20 @@ public class SteamLobby : MonoBehaviour
     private RoomManager Manager => NetworkManager.singleton as RoomManager;
 
 
+    public event Action<bool> OnJoiningStateChanged;
+
     private bool isJoining = false;
+    public bool IsJoining 
+    { 
+        get => isJoining;
+        private set
+        {
+            if (isJoining == value) return;
+
+            isJoining = value;
+            OnJoiningStateChanged?.Invoke(value);
+        }
+    }
 
     private void Awake()
     {
@@ -104,7 +118,7 @@ public class SteamLobby : MonoBehaviour
 
     public void HostLobby(LobbyCreateOptions options)
     {
-        if (isJoining)
+        if (IsJoining)
             return;
 
         CleanupSession();
@@ -133,7 +147,7 @@ public class SteamLobby : MonoBehaviour
 
     public void LeaveLobby()
     {
-        isJoining = false;
+        IsJoining = false;
 
         if (CurrentLobbyID != 0)
         {
@@ -199,10 +213,10 @@ public class SteamLobby : MonoBehaviour
     {
         Debug.Log("Steam Lobby Invite Accepted");
 
-        if (isJoining)
+        if (IsJoining)
             return;
 
-        isJoining = true;
+        IsJoining = true;
         CleanupSession(false);
 
         SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
@@ -216,7 +230,7 @@ public class SteamLobby : MonoBehaviour
 
         if (NetworkServer.active)
         {
-            isJoining = false;
+            IsJoining = false;
             return;
         }
 
@@ -235,15 +249,15 @@ public class SteamLobby : MonoBehaviour
         manager.networkAddress = hostAddress; 
         manager.StartClient();
 
-        isJoining = false;
+        IsJoining = false;
     }
 
     public void JoinLobby(ulong lobbyID)
     {
-        if (isJoining)
+        if (IsJoining)
             return;
 
-        isJoining = true;
+        IsJoining = true;
         CleanupSession(false);
 
         SteamMatchmaking.JoinLobby(new CSteamID(lobbyID));
@@ -251,10 +265,10 @@ public class SteamLobby : MonoBehaviour
 
     public void JoinRandomLobby()
     {
-        if (isJoining)
+        if (IsJoining)
             return;
 
-        isJoining = true;
+        IsJoining = true;
         CleanupSession(false);
 
         currentPurpose = LobbyListPurpose.RandomJoin;
@@ -307,12 +321,12 @@ public class SteamLobby : MonoBehaviour
         if (cb.m_nLobbiesMatching == 0)
         {
             Debug.Log("랜덤 입장 가능한 로비가 없습니다.");
-            isJoining = false;
+            IsJoining = false;
             currentPurpose = LobbyListPurpose.None;
             return;
         }
 
-        int index = Random.Range(0, (int)cb.m_nLobbiesMatching);
+        int index = UnityEngine.Random.Range(0, (int)cb.m_nLobbiesMatching);
         CSteamID lobbyId = SteamMatchmaking.GetLobbyByIndex(index);
 
         Debug.Log($"[RandomJoin] {lobbyId.m_SteamID}");
@@ -336,7 +350,7 @@ public class SteamLobby : MonoBehaviour
     private void CleanupSession(bool resetJoinFlag = true)
     {
         if (resetJoinFlag)
-            isJoining = false;
+            IsJoining = false;
 
         // 기존 로비 탈퇴
         if (CurrentLobbyID != 0)
