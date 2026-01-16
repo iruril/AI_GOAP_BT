@@ -26,36 +26,20 @@ public class RoomManager : NetworkRoomManager
     private bool friendlyFire = false;
     public bool FriendlyFire => friendlyFire;
 
+    public bool AllPlayersReady => allPlayersReady;
+
     public MatchPopulation population = new();
 
     public override void OnRoomServerPlayersReady()
     {
-        base.OnRoomServerPlayersReady();
+        if (LobbyUI.Instance == null) return;
+        LobbyUI.Instance.StartButton.interactable = true;
+    }
 
-        var lobbyId = new CSteamID(SteamLobby.Instance.CurrentLobbyID);
-        int totalPlayers = SteamMatchmaking.GetLobbyMemberLimit(lobbyId);
-        population.TargetPerTeam = Mathf.CeilToInt(totalPlayers / 2f);
-
-        population.BluePlayers = 0;
-        population.RedPlayers = 0;
-        population.BlueBots = 0;
-        population.RedBots = 0;
-
-        string spawnBotsOption = SteamMatchmaking.GetLobbyData(lobbyId, "spawnBots");
-        spawnBots = spawnBotsOption == "true";
-
-        string friendlyFireOption = SteamMatchmaking.GetLobbyData(lobbyId, "friendlyFire");
-        friendlyFire = friendlyFireOption == "true";
-
-        string respawnDelayOption = SteamMatchmaking.GetLobbyData(lobbyId, "respawnDelay");
-        float.TryParse(respawnDelayOption, out respawnDely);
-
-        if (!Utils.IsSceneActive(RoomScene))
-            return;
-
-        expectedGamePlayers = NetworkServer.connections.Count;
-        spawnedGamePlayers = 0;
-        botsSpawned = false;
+    public override void OnRoomServerPlayersNotReady()
+    {
+        if (LobbyUI.Instance == null) return;
+        LobbyUI.Instance.StartButton.interactable = false;
     }
 
     public override void OnRoomServerSceneChanged(string sceneName)
@@ -146,6 +130,28 @@ public class RoomManager : NetworkRoomManager
     }
 
     [Server]
+    public void ApplyLobbySettings()
+    {
+        var lobbyId = new CSteamID(SteamLobby.Instance.CurrentLobbyID);
+
+        int totalPlayers = SteamMatchmaking.GetLobbyMemberLimit(lobbyId);
+        population.TargetPerTeam = Mathf.CeilToInt(totalPlayers / 2f);
+
+        spawnBots = SteamMatchmaking.GetLobbyData(lobbyId, "spawnBots") == "true";
+        friendlyFire = SteamMatchmaking.GetLobbyData(lobbyId, "friendlyFire") == "true";
+        float.TryParse(SteamMatchmaking.GetLobbyData(lobbyId, "respawnDelay"), out respawnDely);
+
+        population.BluePlayers = 0;
+        population.RedPlayers = 0;
+        population.BlueBots = 0;
+        population.RedBots = 0;
+
+        expectedGamePlayers = NetworkServer.connections.Count;
+        spawnedGamePlayers = 0;
+        botsSpawned = false;
+    }
+
+    [Server]
     private void HandlePlayerLeft(Team team)
     {
         if (team == Team.Blue)
@@ -200,5 +206,13 @@ public class RoomManager : NetworkRoomManager
         TrySpawnBotForTeam(Team.Red);
 
         botsSpawned = true;
+    }
+
+    [Server]
+    public void StartGame()
+    {
+        if (!allPlayersReady) return;
+        ApplyLobbySettings();
+        ServerChangeScene(GameplayScene);
     }
 }

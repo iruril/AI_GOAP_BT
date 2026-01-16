@@ -30,29 +30,29 @@ public class ChatLog : MonoBehaviour
 
     public void SendChat()
     {
-        if (string.IsNullOrWhiteSpace(InputField.text))
-            return;
-
-        IChatSender sender = GetLocalChatSender();
-        if (sender == null)
+        if (!string.IsNullOrWhiteSpace(InputField.text))
         {
-            Debug.LogWarning("Chat sender not found");
-            return;
+            IChatSender sender = GetLocalChatSender();
+            if (sender == null)
+            {
+                Debug.LogWarning("Chat sender not found");
+                return;
+            }
+
+            Color nameColor =
+                sender.MyTeam == Team.Blue
+                    ? WorldManager.Instance.BlueTeamColor
+                    : WorldManager.Instance.RedTeamColor;
+
+            LogManager.Instance.CmdSendChat(
+                sender.Nickname,
+                InputField.text,
+                nameColor,
+                sender.NetId
+            );
+
+            InputField.text = string.Empty;
         }
-
-        Color nameColor =
-            sender.MyTeam == Team.Blue
-                ? WorldManager.Instance.BlueTeamColor
-                : WorldManager.Instance.RedTeamColor;
-
-        LogManager.Instance.CmdSendChat(
-            sender.Nickname,
-            InputField.text,
-            nameColor,
-            sender.NetId
-        );
-
-        InputField.text = string.Empty;
         GameManager.GetInstance().InputMap.ExitChat();
     }
 

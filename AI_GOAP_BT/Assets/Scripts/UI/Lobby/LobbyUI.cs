@@ -9,7 +9,7 @@ public class LobbyUI : MonoBehaviour
 
     public TeamListPanel BlueTeamList, RedTeamList;
     public ManageListPanel ManageList;
-    public Button ReadyButton, ExitButton, ManageButton;
+    public Button ReadyButton, ExitButton, ManageButton, StartButton;
 
     private void Awake()
     {
@@ -46,9 +46,20 @@ public class LobbyUI : MonoBehaviour
         });
 
         if (isHost)
+        {
             ManageButton.onClick.AddListener(ToggleManagePanel);
+            StartButton.onClick.AddListener(() =>
+            {
+                var rm = NetworkManager.singleton as RoomManager;
+                rm?.StartGame();
+            });
+            StartButton.interactable = false;
+        }
         else
+        {
             ManageButton.gameObject.SetActive(false);
+            StartButton.gameObject.SetActive(false);
+        }
 
         BlueTeamList?.JoinButton.onClick.AddListener(() =>
         {
