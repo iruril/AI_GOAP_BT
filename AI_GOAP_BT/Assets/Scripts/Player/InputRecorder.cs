@@ -185,7 +185,7 @@ namespace Player.Input
 
         private void HandleChat()
         {
-            if (IsOnStaticUI)
+            if (IsOnStaticUI || CurrentUIState == UIState.Chat)
                 return;
 
             if (!ConsumeChatKeyDown())
@@ -215,6 +215,8 @@ namespace Player.Input
         public void ExitChat()
         {
             if (ChatLog.Instance == null) return;
+
+            Chat = false;
 
             RestoreCursor();
             ChatLog.Instance?.InputField.DeactivateInputField();

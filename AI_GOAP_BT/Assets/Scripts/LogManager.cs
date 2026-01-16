@@ -10,6 +10,11 @@ public class LogManager : NetworkBehaviour
         Instance = this;
     }
 
+    private void OnDestroy()
+    {
+        Instance = null;
+    }
+
     [Server]
     public void ReportKill(string killer, string victim, bool isKillerBlue, bool isVictimBlue)
     {

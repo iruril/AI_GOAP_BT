@@ -1,3 +1,4 @@
+using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,31 +30,27 @@ public class ChatLog : MonoBehaviour
 
     public void SendChat()
     {
-        if (!string.IsNullOrWhiteSpace(InputField.text))
+        if (string.IsNullOrWhiteSpace(InputField.text))
+            return;
+
+        IChatSender sender = GetLocalChatSender();
+        if (sender == null)
         {
-            Color nameColor;
-            var stat = GameManager.GetInstance().MyPlayer.GetComponent<Stat>();
-
-            if (stat == null)
-            {
-                Debug.LogError("Stat component not found on player!");
-                return;
-            }
-
-            if (stat.MyTeam == Team.Blue)
-                nameColor = WorldManager.Instance.BlueTeamColor;
-            else if (stat.MyTeam == Team.Red)
-                nameColor = WorldManager.Instance.RedTeamColor;
-            else
-                nameColor = Color.white;
-
-            LogManager.Instance.CmdSendChat(
-                stat.Nickname,
-                InputField.text,
-                nameColor,
-                GameManager.GetInstance().MyNetId
-            );
+            Debug.LogWarning("Chat sender not found");
+            return;
         }
+
+        Color nameColor =
+            sender.MyTeam == Team.Blue
+                ? WorldManager.Instance.BlueTeamColor
+                : WorldManager.Instance.RedTeamColor;
+
+        LogManager.Instance.CmdSendChat(
+            sender.Nickname,
+            InputField.text,
+            nameColor,
+            sender.NetId
+        );
 
         InputField.text = string.Empty;
         GameManager.GetInstance().InputMap.ExitChat();
@@ -69,5 +66,13 @@ public class ChatLog : MonoBehaviour
             Color.green :
             color;
         item.SendMessage(sender, message, chatColor);
+    }
+
+    private IChatSender GetLocalChatSender()
+    {
+        if (NetworkClient.localPlayer == null)
+            return null;
+
+        return NetworkClient.localPlayer.GetComponent<IChatSender>();
     }
 }

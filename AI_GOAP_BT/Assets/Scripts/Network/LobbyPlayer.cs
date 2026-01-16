@@ -2,7 +2,7 @@ using Mirror;
 using System.Collections;
 using Steamworks;
 
-public class LobbyPlayer : NetworkRoomPlayer
+public class LobbyPlayer : NetworkRoomPlayer, IChatSender
 {
     [SyncVar(hook = nameof(TeamChanged))]
     public Team MyTeam = Team.Blue; 
@@ -15,6 +15,10 @@ public class LobbyPlayer : NetworkRoomPlayer
 
     [SyncVar(hook = nameof(OnSteamIDChanged))]
     public ulong SteamID;
+
+    string IChatSender.Nickname => Nickname;
+    Team IChatSender.MyTeam => MyTeam;
+    uint IChatSender.NetId => netId;
 
     public override void Start()
     {

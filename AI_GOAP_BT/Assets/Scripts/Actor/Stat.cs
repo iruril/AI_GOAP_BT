@@ -12,7 +12,7 @@ public struct KDA
     public int Deaths;
 }
 
-public class Stat : NetworkBehaviour, IDamageable
+public class Stat : NetworkBehaviour, IDamageable, IChatSender
 {
     public event Action OnDead;
     public event Action OnRevive;
@@ -23,6 +23,10 @@ public class Stat : NetworkBehaviour, IDamageable
 
     [SyncVar]
     public string Nickname;
+
+    string IChatSender.Nickname => Nickname;
+    Team IChatSender.MyTeam => MyTeam;
+    uint IChatSender.NetId => netId;
 
     [SerializeField] private float maxHP = 100f;
     public float MaxHP => maxHP;

@@ -81,6 +81,7 @@ public class GameManager : MonoBehaviour
 
     public void OnSceneChanged(string sceneName)
     {
+        InputMap.ExitChat();
         IsGameplayScene = sceneName.Contains("Gameplay");
     }
 
