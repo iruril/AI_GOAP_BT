@@ -164,7 +164,7 @@ public class SteamLobby : MonoBehaviour
             Debug.LogWarning("RoomManager not ready");
             return;
         }
-        StartCoroutine(StartHostNextFrame());
+        Manager.StartHost();
 
         SteamMatchmaking.SetLobbyData(
             lobbyId,
@@ -233,7 +233,9 @@ public class SteamLobby : MonoBehaviour
         }
 
         manager.networkAddress = hostAddress; 
-        StartCoroutine(StartClientNextFrame());
+        manager.StartClient();
+
+        isJoining = false;
     }
 
     public void JoinLobby(ulong lobbyID)
@@ -329,20 +331,6 @@ public class SteamLobby : MonoBehaviour
             CSteamID lobbyId = SteamMatchmaking.GetLobbyByIndex(i);
             LobbyBrowser.Instance.AddLobby(lobbyId.m_SteamID);
         }
-    }
-
-    private IEnumerator StartHostNextFrame()
-    {
-        yield return null;
-        Manager.StartHost();
-        isJoining = false;
-    }
-
-    private IEnumerator StartClientNextFrame()
-    {
-        yield return null;
-        Manager.StartClient();
-        isJoining = false;
     }
 
     private void CleanupSession(bool resetJoinFlag = true)

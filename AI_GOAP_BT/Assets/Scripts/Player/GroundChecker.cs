@@ -1,4 +1,3 @@
-using Mirror;
 using UnityEngine;
 
 namespace Player.FSM
@@ -6,7 +5,6 @@ namespace Player.FSM
     public class GroundChecker : MonoBehaviour
     {
         private PlayerController player;
-        private CharacterController playerCC;
 
         [Header("Boxcast로 감지할 최대 거리")]
         [SerializeField] private float detectionMaxDist;
@@ -19,7 +17,6 @@ namespace Player.FSM
         public bool IsSnapGround;
 
         private float stepOffset = 0.2f;
-        private float stepMinDepth;
         private float stepMaxHeight;
 
         private Vector3 rayOrigin;
@@ -30,32 +27,47 @@ namespace Player.FSM
         private void Start()
         {
             player = GetComponent<PlayerController>();
-            playerCC = GetComponent<CharacterController>();
-            stepOffset = playerCC.stepOffset;
+            stepOffset = player.PlayerCC.stepOffset;
             stepMaxHeight = stepOffset + STEP_HEIGHT_ERROR;
-            stepMinDepth = stepOffset;
         }
 
         private void OnDrawGizmos()
         {
-            if (!drawGizmo) return; 
-            
-            Debug.DrawRay(transform.position, transform.forward * 2f, Color.red);
-            Debug.DrawRay(transform.position, transform.right * 2f, Color.blue);
+            if (!drawGizmo || player == null) return;
+
+            Vector3 groundCenter =
+                transform.position + Vector3.up * (player.PlayerCC.height * 0.5f - player.PlayerCC.radius);
 
             Gizmos.color = Color.green;
-            Gizmos.DrawWireCube(transform.position + transform.up * 0.5f - transform.up * detectionMaxDist, boxHalfExtent * 2);
+            Gizmos.DrawWireCube(
+                groundCenter - Vector3.up * detectionMaxDist,
+                boxHalfExtent * 2
+            );
 
-            if (player != null)
+            Vector3 horizontalVel = player.PlayerCC.velocity;
+            horizontalVel.y = 0f;
+
+            Vector3 moveDir = horizontalVel.sqrMagnitude > 0.001f
+                ? horizontalVel.normalized
+                : transform.forward;
+
+            Vector3 snapRayOrigin =
+                transform.position + moveDir * stepOffset + Vector3.up * stepMaxHeight;
+
+            Vector3 snapRayEnd =
+                snapRayOrigin + Vector3.down * stepMaxHeight * 2f;
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(snapRayOrigin, snapRayEnd);
+
+            if (Physics.Linecast(
+                snapRayOrigin,
+                snapRayEnd,
+                out RaycastHit hit,
+                WorldManager.Instance.GetLevelLayers()))
             {
-                rayOrigin = transform.position + (playerCC.velocity.normalized * stepMinDepth) + (Vector3.up * stepMaxHeight);
-                rayEndPos = rayOrigin + Vector3.down * stepMaxHeight * 2;
-
-                Gizmos.DrawLine(rayOrigin, rayEndPos);
-                if (Physics.Linecast(rayOrigin, rayEndPos, out RaycastHit hitInfo, WorldManager.Instance.GetLevelLayers()))
-                {
-                    Gizmos.DrawWireSphere(hitInfo.point, 0.1f);
-                }
+                Gizmos.color = Color.red;
+                Gizmos.DrawWireSphere(hit.point, 0.08f);
             }
         }
 
@@ -67,17 +79,33 @@ namespace Player.FSM
 
         private bool CheckGround()
         {
-            bool result = Physics.BoxCast(transform.position + transform.up * 0.5f, boxHalfExtent, -transform.up, transform.rotation, detectionMaxDist, WorldManager.Instance.GetLevelLayers());
+            Vector3 center = transform.position + Vector3.up * (player.PlayerCC.height * 0.5f - player.PlayerCC.radius);
+
+            bool result = Physics.BoxCast(
+                center,
+                boxHalfExtent,
+                -transform.up,
+                transform.rotation,
+                detectionMaxDist,
+                WorldManager.Instance.GetLevelLayers());
             if (!result)
             {
-                result = playerCC.isGrounded;
+                result = player.PlayerCC.isGrounded;
             }
             return result;
         }
 
         private bool CheckSnapGround()
         {
-            rayOrigin = transform.position + (playerCC.velocity.normalized * stepMinDepth) + (Vector3.up * stepMaxHeight);
+            Vector3 horizontalVel = player.PlayerCC.velocity;
+            horizontalVel.y = 0f;
+
+            Vector3 moveDir = horizontalVel.sqrMagnitude > 0.001f
+                ? horizontalVel.normalized
+                : transform.forward;
+
+            rayOrigin = transform.position + moveDir * stepOffset + Vector3.up * stepMaxHeight;
+
             rayEndPos = rayOrigin + Vector3.down * stepMaxHeight * 2;
             return Physics.Linecast(rayOrigin, rayEndPos, WorldManager.Instance.GetLevelLayers());
         }

@@ -1012,10 +1012,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.25
-  m_Height: 1.7
+  m_Radius: 0.15
+  m_Height: 1.6
   m_Direction: 1
-  m_Center: {x: 0, y: 0.85, z: 0}
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!54 &8632317303694075531
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1706,8 +1706,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 1073741824
-  radius: 0.25
-  height: 1.7
+  radius: 0.15
+  height: 1.6
   simulateMovement: 1
   maxSpeed: 5
   gravity: {x: NaN, y: NaN, z: NaN}
@@ -1843,6 +1843,10 @@ MonoBehaviour:
   rotateSpeedToTarget: 300
   CurrentHP: 0
   IsDead: 0
+  CurrentKDA:
+    Kills: 0
+    Assists: 0
+    Deaths: 0
 --- !u!114 &2621712713207012491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2050,6 +2054,7 @@ MonoBehaviour:
   - {fileID: 9107090864865688775}
   - {fileID: 1792424239067795329}
   corpse: {fileID: 0}
+  LatestHittedPart: 
 --- !u!114 &1286322669042044507
 MonoBehaviour:
   m_ObjectHideFlags: 0
