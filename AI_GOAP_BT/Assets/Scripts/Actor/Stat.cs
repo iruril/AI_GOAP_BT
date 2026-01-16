@@ -27,6 +27,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     string IChatSender.Nickname => Nickname;
     Team IChatSender.MyTeam => MyTeam;
     uint IChatSender.NetId => netId;
+    bool IChatSender.IsLocal => isLocalPlayer;
 
     [SerializeField] private float maxHP = 100f;
     public float MaxHP => maxHP;
