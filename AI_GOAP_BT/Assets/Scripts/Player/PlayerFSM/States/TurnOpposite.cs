@@ -61,6 +61,7 @@ namespace Player.FSM
 
         public override PlayerState GetNextState()
         {
+            if (!ctx.IsGrounded) return PlayerState.Fall;
             if (ctx.StateTime >= turnTime)
             {
                 return PlayerState.Move;

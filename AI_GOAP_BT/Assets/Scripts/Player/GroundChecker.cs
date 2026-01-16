@@ -35,39 +35,16 @@ namespace Player.FSM
         {
             if (!drawGizmo || player == null) return;
 
-            Vector3 groundCenter =
-                transform.position + Vector3.up * (player.PlayerCC.height * 0.5f - player.PlayerCC.radius);
-
             Gizmos.color = Color.green;
-            Gizmos.DrawWireCube(
-                groundCenter - Vector3.up * detectionMaxDist,
-                boxHalfExtent * 2
-            );
+            Gizmos.DrawWireCube(transform.position + transform.up * 0.5f - transform.up * detectionMaxDist, boxHalfExtent * 2);
 
-            Vector3 horizontalVel = player.PlayerCC.velocity;
-            horizontalVel.y = 0f;
+            rayOrigin = transform.position + (player.PlayerCC.velocity.normalized * stepOffset) + (Vector3.up * stepMaxHeight);
+            rayEndPos = rayOrigin + Vector3.down * stepMaxHeight * 2;
 
-            Vector3 moveDir = horizontalVel.sqrMagnitude > 0.001f
-                ? horizontalVel.normalized
-                : transform.forward;
-
-            Vector3 snapRayOrigin =
-                transform.position + moveDir * stepOffset + Vector3.up * stepMaxHeight;
-
-            Vector3 snapRayEnd =
-                snapRayOrigin + Vector3.down * stepMaxHeight * 2f;
-
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(snapRayOrigin, snapRayEnd);
-
-            if (Physics.Linecast(
-                snapRayOrigin,
-                snapRayEnd,
-                out RaycastHit hit,
-                WorldManager.Instance.GetLevelLayers()))
+            Gizmos.DrawLine(rayOrigin, rayEndPos);
+            if (Physics.Linecast(rayOrigin, rayEndPos, out RaycastHit hitInfo, WorldManager.Instance.GetLevelLayers()))
             {
-                Gizmos.color = Color.red;
-                Gizmos.DrawWireSphere(hit.point, 0.08f);
+                Gizmos.DrawWireSphere(hitInfo.point, 0.1f);
             }
         }
 
@@ -79,10 +56,8 @@ namespace Player.FSM
 
         private bool CheckGround()
         {
-            Vector3 center = transform.position + Vector3.up * (player.PlayerCC.height * 0.5f - player.PlayerCC.radius);
-
             bool result = Physics.BoxCast(
-                center,
+                transform.position + transform.up * 0.5f,
                 boxHalfExtent,
                 -transform.up,
                 transform.rotation,
@@ -97,15 +72,7 @@ namespace Player.FSM
 
         private bool CheckSnapGround()
         {
-            Vector3 horizontalVel = player.PlayerCC.velocity;
-            horizontalVel.y = 0f;
-
-            Vector3 moveDir = horizontalVel.sqrMagnitude > 0.001f
-                ? horizontalVel.normalized
-                : transform.forward;
-
-            rayOrigin = transform.position + moveDir * stepOffset + Vector3.up * stepMaxHeight;
-
+            rayOrigin = transform.position + (player.PlayerCC.velocity.normalized * stepOffset) + (Vector3.up * stepMaxHeight);
             rayEndPos = rayOrigin + Vector3.down * stepMaxHeight * 2;
             return Physics.Linecast(rayOrigin, rayEndPos, WorldManager.Instance.GetLevelLayers());
         }

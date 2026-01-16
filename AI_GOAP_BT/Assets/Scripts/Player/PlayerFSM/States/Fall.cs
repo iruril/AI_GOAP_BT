@@ -4,6 +4,8 @@ namespace Player.FSM
 {
     public class Fall : BasePlayerState
     {
+        Vector3 fallDirection;
+
         public Fall(PlayerController ctx, PlayerState key) : base(ctx, key)
         {
         }
@@ -18,6 +20,10 @@ namespace Player.FSM
             {
                 ctx.CalculateOnAirSpeed();
             }
+
+            fallDirection = ctx.PlayerCC.velocity;
+            fallDirection.y = 0;
+            fallDirection.Normalize();
 
             ctx.Anim.CrossFadeInFixedTime(AnimHash.Fall, 0.25f);
         }
@@ -40,7 +46,7 @@ namespace Player.FSM
 
         public override PlayerState GetNextState()
         {
-            if (ctx.IsGrounded) return PlayerState.Land;
+            if (ctx.IsGrounded && ctx.StateTime >= 0.1f) return PlayerState.Land;
             return StateKey;
         }
 
@@ -58,10 +64,7 @@ namespace Player.FSM
 
         private Vector3 GetXZVelocity()
         {
-            Vector3 direction = ctx.PlayerCC.velocity;
-            direction.y = 0;
-            direction.Normalize();
-            return direction * ctx.OnAirSpeed;
+            return fallDirection * ctx.OnAirSpeed;
         }
 
         protected override void CalculatePlayerTransform()
