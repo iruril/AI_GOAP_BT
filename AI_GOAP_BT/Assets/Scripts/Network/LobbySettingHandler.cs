@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System;
 
 public class LobbySettingHandler : MonoBehaviour
 {
@@ -57,10 +58,13 @@ public class LobbySettingHandler : MonoBehaviour
 
     public SteamLobby.LobbyCreateOptions GetLobbyOptions()
     {
+        bool usePassword = UsePassword.isOn && !string.IsNullOrWhiteSpace(Password.text);
+        string password = usePassword ? Password.text : string.Empty;
+
         return new SteamLobby.LobbyCreateOptions
         {
-            UsePassword = UsePassword.isOn,
-            Password = UsePassword.isOn ? Password.text : string.Empty,
+            UsePassword = usePassword,
+            Password = password,
             MaxPlayers = int.Parse(MaxPlayers.options[MaxPlayers.value].text),
             lobbyVisibility = (SteamLobby.LobbyVisibility)LobbyType.value,
             SpawnBots = SpawnBots.isOn,

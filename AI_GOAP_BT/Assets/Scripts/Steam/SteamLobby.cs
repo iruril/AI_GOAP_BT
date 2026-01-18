@@ -15,12 +15,13 @@ public class SteamLobby : MonoBehaviour
         Private
     }
 
+    [System.Serializable]
     public struct LobbyCreateOptions
     {
         public LobbyVisibility lobbyVisibility;
         public bool UsePassword;
         public string Password;
-        public int MaxPlayers; 
+        public int MaxPlayers;
         public bool SpawnBots;
         public bool FriendlyFire;
         public float RespawnDelay;
@@ -129,14 +130,6 @@ public class SteamLobby : MonoBehaviour
 
         Debug.Log("Steam Lobby Created");
 
-        var manager = Manager;
-        if (manager == null)
-        {
-            Debug.LogWarning("RoomManager not ready");
-            return;
-        }
-        Manager.StartHost();
-
         SteamMatchmaking.SetLobbyData(
             lobbyId,
             HostAddressKey,
@@ -164,6 +157,14 @@ public class SteamLobby : MonoBehaviour
         SteamMatchmaking.SetLobbyData(lobbyId, "spawnBots", currentOptions.SpawnBots ? "true" : "false");
         SteamMatchmaking.SetLobbyData(lobbyId, "friendlyFire", currentOptions.FriendlyFire ? "true" : "false");
         SteamMatchmaking.SetLobbyData(lobbyId, "respawnDelay", currentOptions.RespawnDelay.ToString());
+
+        var manager = Manager;
+        if (manager == null)
+        {
+            Debug.LogWarning("RoomManager not ready");
+            return;
+        }
+        Manager.StartHost();
     }
 
     private void OnJoinRequest(GameLobbyJoinRequested_t callback)
