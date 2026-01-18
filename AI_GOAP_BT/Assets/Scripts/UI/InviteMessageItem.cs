@@ -15,11 +15,11 @@ public class InviteMessageItem : MonoBehaviour
 
     protected Callback<AvatarImageLoaded_t> ImageLoaded;
 
-    private void Awake()
+    private void Start()
     {
         DeclineButton.onClick.AddListener(() =>
         {
-            InviteMessageHandler.Instance.DisableItem(this);
+            InviteMessageHandler.Instance?.DisableItem(this);
         });
     }
 

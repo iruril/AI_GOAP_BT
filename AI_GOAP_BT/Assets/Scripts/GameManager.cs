@@ -60,14 +60,13 @@ public class GameManager : MonoBehaviour
         Settings = GetComponent<PlayerSettingManager>();
         BetterStreamingAssets.Initialize();
         WeaponDataLoad();
-
-        OnSceneChanged(SceneManager.GetActiveScene().name);
-        SceneManager.activeSceneChanged += (oldScene, newScene) => OnSceneChanged(newScene.name);
     }
 
     private void Start()
     {
         RM = NetworkManager.singleton as RoomManager;
+        OnSceneChanged(SceneManager.GetActiveScene().name);
+        SceneManager.activeSceneChanged += (oldScene, newScene) => OnSceneChanged(newScene.name);
     }
 
     public static GameManager GetInstance()
