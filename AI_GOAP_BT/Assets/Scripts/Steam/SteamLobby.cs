@@ -51,12 +51,17 @@ public class SteamLobby : MonoBehaviour
     protected Callback<GameLobbyJoinRequested_t> JoinRequest;
     protected Callback<LobbyEnter_t> LobbyEntered; 
     protected Callback<LobbyMatchList_t> LobbyMatchList;
+    protected Callback<LobbyInvite_t> InviteRecieved;
 
     public ulong CurrentLobbyID;
     private const string HostAddressKey = "CustomHostAddress";
+
     private RoomManager Manager => NetworkManager.singleton as RoomManager;
 
+    private ulong pendingInviteLobbyID; // 초대된 로비 ID
+    private ulong pendingInviteUserID; // 초대자 ID
 
+    public event Action<ulong, ulong> OnInviteRecieced;
     public event Action<bool> OnJoiningStateChanged;
 
     private bool isJoining = false;
@@ -92,11 +97,13 @@ public class SteamLobby : MonoBehaviour
         JoinRequest?.Dispose();
         LobbyEntered?.Dispose();
         LobbyMatchList?.Dispose();
+        InviteRecieved?.Dispose();
 
         LobbyCreated = null;
         JoinRequest = null;
         LobbyEntered = null;
         LobbyMatchList = null;
+        InviteRecieved = null;
 
         CleanupSession();
     }
@@ -109,59 +116,10 @@ public class SteamLobby : MonoBehaviour
         JoinRequest = Callback<GameLobbyJoinRequested_t>.Create(OnJoinRequest);
         LobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
         LobbyMatchList = Callback<LobbyMatchList_t>.Create(OnLobbyMatchList);
+        InviteRecieved = Callback<LobbyInvite_t>.Create(OnLobbyInvite);
     }
 
-    public void HostLobby()
-    {
-        HostLobby(DefaultOptions);
-    }
-
-    public void HostLobby(LobbyCreateOptions options)
-    {
-        if (IsJoining)
-            return;
-
-        CleanupSession();
-
-        currentOptions = options;
-        ELobbyType lobbyType;
-
-        switch (options.lobbyVisibility)
-        {
-            case LobbyVisibility.Public:
-                lobbyType = ELobbyType.k_ELobbyTypePublic;
-                break;
-            case LobbyVisibility.FriendsOnly:
-                lobbyType = ELobbyType.k_ELobbyTypeFriendsOnly;
-                break;
-            default:
-                lobbyType = ELobbyType.k_ELobbyTypePrivate;
-                break;
-        }
-
-        SteamMatchmaking.CreateLobby(
-            lobbyType,
-            options.MaxPlayers
-        );
-    }
-
-    public void LeaveLobby()
-    {
-        IsJoining = false;
-
-        if (CurrentLobbyID != 0)
-        {
-            SteamMatchmaking.LeaveLobby(new CSteamID(CurrentLobbyID));
-            CurrentLobbyID = 0;
-        }
-
-        if (NetworkServer.active || NetworkClient.active)
-        {
-            NetworkManager.singleton.StopHost();
-        }
-    }
-
-    //로비가 생성되었을 때 콜백
+    #region Steam Callbacks
     private void OnLobbyCreated(LobbyCreated_t callback)
     {
         if (callback.m_eResult != EResult.k_EResultOK)
@@ -252,6 +210,83 @@ public class SteamLobby : MonoBehaviour
         IsJoining = false;
     }
 
+    private void OnLobbyMatchList(LobbyMatchList_t callback)
+    {
+        switch (currentPurpose)
+        {
+            case LobbyListPurpose.Browse:
+                HandleBrowseLobbyList(callback);
+                break;
+
+            case LobbyListPurpose.RandomJoin:
+                HandleRandomJoin(callback);
+                break;
+        }
+
+        currentPurpose = LobbyListPurpose.None;
+    }
+
+    private void OnLobbyInvite(LobbyInvite_t callback)
+    {
+        Debug.Log("Steam Lobby Invite Received");
+
+        pendingInviteLobbyID = callback.m_ulSteamIDLobby;
+        pendingInviteUserID = callback.m_ulSteamIDUser;
+
+        OnInviteRecieced?.Invoke(pendingInviteLobbyID, pendingInviteUserID);
+    }
+    #endregion
+
+    public void HostLobby()
+    {
+        HostLobby(DefaultOptions);
+    }
+
+    public void HostLobby(LobbyCreateOptions options)
+    {
+        if (IsJoining)
+            return;
+
+        CleanupSession();
+
+        currentOptions = options;
+        ELobbyType lobbyType;
+
+        switch (options.lobbyVisibility)
+        {
+            case LobbyVisibility.Public:
+                lobbyType = ELobbyType.k_ELobbyTypePublic;
+                break;
+            case LobbyVisibility.FriendsOnly:
+                lobbyType = ELobbyType.k_ELobbyTypeFriendsOnly;
+                break;
+            default:
+                lobbyType = ELobbyType.k_ELobbyTypePrivate;
+                break;
+        }
+
+        SteamMatchmaking.CreateLobby(
+            lobbyType,
+            options.MaxPlayers
+        );
+    }
+
+    public void LeaveLobby()
+    {
+        IsJoining = false;
+
+        if (CurrentLobbyID != 0)
+        {
+            SteamMatchmaking.LeaveLobby(new CSteamID(CurrentLobbyID));
+            CurrentLobbyID = 0;
+        }
+
+        if (NetworkServer.active || NetworkClient.active)
+        {
+            NetworkManager.singleton.StopHost();
+        }
+    }
+
     public void JoinLobby(ulong lobbyID)
     {
         if (IsJoining)
@@ -281,22 +316,6 @@ public class SteamLobby : MonoBehaviour
         SteamMatchmaking.AddRequestLobbyListDistanceFilter(ELobbyDistanceFilter.k_ELobbyDistanceFilterWorldwide);
         SteamMatchmaking.AddRequestLobbyListFilterSlotsAvailable(1);
         SteamMatchmaking.RequestLobbyList();
-    }
-
-    private void OnLobbyMatchList(LobbyMatchList_t cb)
-    {
-        switch (currentPurpose)
-        {
-            case LobbyListPurpose.Browse:
-                HandleBrowseLobbyList(cb);
-                break;
-
-            case LobbyListPurpose.RandomJoin:
-                HandleRandomJoin(cb);
-                break;
-        }
-
-        currentPurpose = LobbyListPurpose.None;
     }
 
     public void RequestLobbyList()
