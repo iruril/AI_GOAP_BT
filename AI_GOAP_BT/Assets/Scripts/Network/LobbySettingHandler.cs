@@ -58,18 +58,48 @@ public class LobbySettingHandler : MonoBehaviour
 
     public SteamLobby.LobbyCreateOptions GetLobbyOptions()
     {
+        var options = new SteamLobby.LobbyCreateOptions();
+
         bool usePassword = UsePassword.isOn && !string.IsNullOrWhiteSpace(Password.text);
         string password = usePassword ? Password.text : string.Empty;
 
-        return new SteamLobby.LobbyCreateOptions
+        options.UsePassword = usePassword;
+        options.Password = password;
+
+        if (!int.TryParse(MaxPlayers.options[MaxPlayers.value].text, out var maxPlayers))
+            maxPlayers = 16;
+
+        options.MaxPlayers = maxPlayers;
+        Debug.Log($"{options.MaxPlayers}");
+
+        switch (LobbyType.options[LobbyType.value].text)
         {
-            UsePassword = usePassword,
-            Password = password,
-            MaxPlayers = int.Parse(MaxPlayers.options[MaxPlayers.value].text),
-            lobbyVisibility = (SteamLobby.LobbyVisibility)LobbyType.value,
-            SpawnBots = SpawnBots.isOn,
-            FriendlyFire = FriendlyFire.isOn,
-            RespawnDelay = float.Parse(RespawnDelay.options[RespawnDelay.value].text)
-        };
+            case "Public":
+                options.lobbyVisibility = SteamLobby.LobbyVisibility.Public;
+                break;
+            case "Friends Only":
+                options.lobbyVisibility = SteamLobby.LobbyVisibility.FriendsOnly;
+                break;
+            case "Private":
+                options.lobbyVisibility = SteamLobby.LobbyVisibility.Private;
+                break;
+            default:
+                options.lobbyVisibility = SteamLobby.LobbyVisibility.Public;
+                break;
+        }
+        Debug.Log($"{options.lobbyVisibility}");
+
+        options.SpawnBots = SpawnBots.isOn;
+        Debug.Log($"{options.SpawnBots}");
+        options.FriendlyFire = FriendlyFire.isOn;
+        Debug.Log($"{options.FriendlyFire}");
+
+        if (!float.TryParse(RespawnDelay.options[RespawnDelay.value].text, out var delay))
+            delay = 5f;
+
+        options.RespawnDelay = delay;
+        Debug.Log($"{options.RespawnDelay}");
+
+        return options;
     }
 }

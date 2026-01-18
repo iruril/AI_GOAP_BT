@@ -24,7 +24,6 @@ public class InviteMessageHandler : MonoBehaviour
     {
         if (SteamLobby.Instance != null)
             SteamLobby.Instance.OnInviteRecieced += OnInviteRecived;
-
         Clear();
     }
 
@@ -32,6 +31,8 @@ public class InviteMessageHandler : MonoBehaviour
     {
         if (SteamLobby.Instance != null)
             SteamLobby.Instance.OnInviteRecieced -= OnInviteRecived;
+
+        Clear();
         Instance = null;
     }
 
@@ -109,6 +110,9 @@ public class InviteMessageHandler : MonoBehaviour
     private IEnumerator<float> AutoDisable(InviteMessageItem item)
     {
         yield return Timing.WaitForSeconds(popUpDuration);
+
+        if(item == null) yield break;
+
         item.gameObject.SetActive(false);
         activeInvites.Remove(item);
         activeInviteIDs.Remove(item.InviterId);

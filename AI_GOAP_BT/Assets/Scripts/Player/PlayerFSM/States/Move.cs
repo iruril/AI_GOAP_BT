@@ -76,18 +76,16 @@ namespace Player.FSM
         private bool IsOnTurnOppsiteCondition()
         {
             if (ctx.Input.Aim) return false;
-            if (!MathUtility.IsSameDirection(ctx.transform.forward, ctx.PlayerXZVelocity.normalized, 45f)) 
+            if (Vector2.Angle(ctx.Input.MoveInputMap, Vector2.up) > 45f)
+            {
                 return false;
+            }
 
-            if (ctx.DeltaYaw > 720)
-                return true;
+            float camYaw = ctx.CamController.YRotation;
+            float playerYaw = ctx.transform.eulerAngles.y;
 
-            Vector3 camYawDir = 
-                Quaternion.Euler(0, ctx.CamController.CamTarget.eulerAngles.y, 0)
-                * Vector3.forward;
-            float angle = Vector3.Angle(ctx.transform.forward, camYawDir);
-
-            return angle >= 120f;
+            float delta = Mathf.Abs(Mathf.DeltaAngle(playerYaw, camYaw));
+            return delta >= 135f;
         }
     }
 }

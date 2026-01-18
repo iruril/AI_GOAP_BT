@@ -10,8 +10,10 @@ namespace Player
         public Transform CamTarget { get { return camTarget; } }
 
         private float yRotation = 0;
-        private float xRotation = 0; 
-        
+        private float xRotation = 0;
+        public float YRotation { get => yRotation; private set => yRotation = value; }
+        public float XRotation { get => xRotation; private set => xRotation = value; }
+
         private RaycastHit[] centerHits = new RaycastHit[4];
 
         private void Awake()
@@ -25,6 +27,7 @@ namespace Player
 
             camTarget.transform.parent = null;
             camTarget.rotation = transform.rotation;
+            YRotation = camTarget.eulerAngles.y;
         }
 
         public void Update()
@@ -39,11 +42,11 @@ namespace Player
 
         private void CamTargetRotate()
         {
-            yRotation = CamTarget.transform.eulerAngles.y + player.Input.YRotationEuler;
-            xRotation = xRotation + player.Input.XRotationEuler;
-            xRotation = Mathf.Clamp(xRotation, -60, 60);
+            YRotation += player.Input.YRotationEuler;
+            XRotation += player.Input.XRotationEuler;
+            XRotation = Mathf.Clamp(XRotation, -60, 60);
 
-            CamTarget.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+            CamTarget.transform.rotation = Quaternion.Euler(XRotation, YRotation, 0);
         }
 
         public Vector3 GetCenterWorldPoint(float maxDistance = 300f)

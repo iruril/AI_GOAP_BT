@@ -55,8 +55,11 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     private const float NO_DAMAGE_DURATION = 5f;
     private const float REGEN_RATE = 0.1f;
 
+    RoomManager rm;
+
     public override void OnStartServer()
     {
+        rm = NetworkManager.singleton as RoomManager;
         InitHP();
         hpRegenHandle = Timing.RunCoroutine(HPRegenHandle());
 
@@ -216,7 +219,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
     private IEnumerator<float> Respawn()
     {
-        yield return Timing.WaitForSeconds(GameManager.GetInstance().RM.RespawnDelay);
+        yield return Timing.WaitForSeconds(rm.RespawnDelay);
         Revive();
     }
 

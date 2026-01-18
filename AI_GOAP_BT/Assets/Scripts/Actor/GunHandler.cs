@@ -44,6 +44,8 @@ public class GunHandler : NetworkBehaviour
     [SyncVar] public bool OnReload;
     CoroutineHandle reloadHandle;
 
+    RoomManager rm;
+
     void Awake()
     {
         bulletPool = GetComponent<BulletPool>();
@@ -51,6 +53,7 @@ public class GunHandler : NetworkBehaviour
 
     public override void OnStartServer()
     {
+        rm = NetworkManager.singleton as RoomManager;
     }
 
     public override void OnStartLocalPlayer()
@@ -230,7 +233,7 @@ public class GunHandler : NetworkBehaviour
         Vector3 finalDir = basis * localDir;
 
         Quaternion bulletRotation = Quaternion.LookRotation(finalDir); 
-        int ignoreLayerMask = GameManager.GetInstance().RM.FriendlyFire
+        int ignoreLayerMask = rm.FriendlyFire
             ? 0 
             : 1 << gameObject.layer;
         float speed = currentGun.GunInfo.ProjectileSpeed;

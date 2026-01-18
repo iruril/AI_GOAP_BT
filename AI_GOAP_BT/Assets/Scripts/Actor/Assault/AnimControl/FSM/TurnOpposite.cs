@@ -30,7 +30,7 @@ namespace AnimControl.Assault
             int snapSpeed = Mathf.Clamp(Mathf.RoundToInt(ctx.Accel), 1, 4);
             ctx.Anim.SetFloat(AnimHash.TransitionAccel, snapSpeed);
 
-            if (MathUtility.IsRightDirection(ctx.transform.forward, tgt, 0f))
+            if (MathUtility.IsRightDirectionXZ(ctx.transform.forward, tgt, 0f))
             {
                 ctx.Anim.CrossFadeInFixedTime(AnimHash.Opposite_R, 0.1f);
             }

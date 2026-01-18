@@ -27,7 +27,6 @@ public class GameManager : MonoBehaviour
     public uint MyNetId { get; private set; }
     public InputRecorder InputMap { get; private set; }
     public PlayerSettingManager Settings { get; private set; }
-    public RoomManager RM { get; private set; }
 
     private byte[] _connectionToken;
 
@@ -64,7 +63,6 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        RM = NetworkManager.singleton as RoomManager;
         OnSceneChanged(SceneManager.GetActiveScene().name);
         SceneManager.activeSceneChanged += (oldScene, newScene) => OnSceneChanged(newScene.name);
     }

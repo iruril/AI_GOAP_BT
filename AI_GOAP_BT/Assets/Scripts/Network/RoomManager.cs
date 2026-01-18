@@ -20,8 +20,8 @@ public class RoomManager : NetworkRoomManager
     private bool botsSpawned = false;
     public bool BotSpawned => botsSpawned;
 
-    private float respawnDely = 0f;
-    public float RespawnDelay => respawnDely;
+    private float respawnDelay = 0f;
+    public float RespawnDelay => respawnDelay;
 
     private bool friendlyFire = false;
     public bool FriendlyFire => friendlyFire;
@@ -30,8 +30,16 @@ public class RoomManager : NetworkRoomManager
 
     public MatchPopulation population = new();
 
+    public override void Start()
+    {
+        base.Start();
+        SteamLobby.Instance.OnLobbyOptionChanged += ApplyLobbySettings;
+    }
+
     public override void OnRoomServerPlayersReady()
     {
+        expectedGamePlayers = NetworkServer.connections.Count;
+
         if (LobbyUI.Instance == null) return;
         LobbyUI.Instance.StartButton.interactable = true;
     }
@@ -130,26 +138,6 @@ public class RoomManager : NetworkRoomManager
     }
 
     [Server]
-    public void ApplyLobbySettings()
-    {
-        int totalPlayers = SteamLobby.Instance.CurrentLobbyOption.MaxPlayers;
-        population.TargetPerTeam = Mathf.CeilToInt(totalPlayers / 2f);
-
-        spawnBots = SteamLobby.Instance.CurrentLobbyOption.SpawnBots;
-        friendlyFire = SteamLobby.Instance.CurrentLobbyOption.FriendlyFire;
-        respawnDely = SteamLobby.Instance.CurrentLobbyOption.RespawnDelay;
-
-        population.BluePlayers = 0;
-        population.RedPlayers = 0;
-        population.BlueBots = 0;
-        population.RedBots = 0;
-
-        expectedGamePlayers = NetworkServer.connections.Count;
-        spawnedGamePlayers = 0;
-        botsSpawned = false;
-    }
-
-    [Server]
     private void HandlePlayerLeft(Team team)
     {
         if (team == Team.Blue)
@@ -206,11 +194,28 @@ public class RoomManager : NetworkRoomManager
         botsSpawned = true;
     }
 
-    [Server]
     public void StartGame()
     {
         if (!allPlayersReady) return;
-        ApplyLobbySettings();
+
+        spawnedGamePlayers = 0;
+        botsSpawned = false;
+
         ServerChangeScene(GameplayScene);
+    }
+
+    private void ApplyLobbySettings(SteamLobby.LobbyCreateOptions options)
+    {
+        int totalPlayers = options.MaxPlayers;
+        population.TargetPerTeam = Mathf.CeilToInt(totalPlayers / 2f);
+
+        spawnBots = options.SpawnBots;
+        friendlyFire = options.FriendlyFire;
+        respawnDelay = options.RespawnDelay;
+
+        population.BluePlayers = 0;
+        population.RedPlayers = 0;
+        population.BlueBots = 0;
+        population.RedBots = 0;
     }
 }

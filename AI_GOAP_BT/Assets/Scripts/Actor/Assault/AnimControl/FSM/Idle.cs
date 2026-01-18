@@ -77,11 +77,11 @@ namespace AnimControl.Assault
             if (targetDir.sqrMagnitude < 0.001f)
                 return;
 
-            if (MathUtility.IsRightDirection(ctx.transform.forward, targetDir, 75))
+            if (MathUtility.IsRightDirectionXZ(ctx.transform.forward, targetDir, 75))
             {
                 turnHandle = Timing.RunCoroutine(DoTurn(false, targetDir), Segment.FixedUpdate);
             }
-            else if (MathUtility.IsLeftDirection(ctx.transform.forward, targetDir, 75))
+            else if (MathUtility.IsLeftDirectionXZ(ctx.transform.forward, targetDir, 75))
             {
                 turnHandle = Timing.RunCoroutine(DoTurn(true, targetDir), Segment.FixedUpdate);
             }

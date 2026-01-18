@@ -8,11 +8,15 @@ public class SteamLobby : MonoBehaviour
 {
     public static SteamLobby Instance;
 
+    public event Action<ulong, ulong> OnInviteRecieced;
+    public event Action<bool> OnJoiningStateChanged;
+    public event Action<LobbyCreateOptions> OnLobbyOptionChanged;
+
     public enum LobbyVisibility
     {
-        Public,
-        FriendsOnly,
-        Private
+        Public = 0,
+        FriendsOnly = 1,
+        Private = 2
     }
 
     [System.Serializable]
@@ -27,8 +31,18 @@ public class SteamLobby : MonoBehaviour
         public float RespawnDelay;
     }
 
-    private LobbyCreateOptions currentOptions;
-    public LobbyCreateOptions CurrentLobbyOption => currentOptions;
+    private LobbyCreateOptions currentLobbyOptions;
+    public LobbyCreateOptions CurrentLobbyOptions 
+    {
+        get => currentLobbyOptions;
+        private set
+        {
+            if (currentLobbyOptions.Equals(value)) return;
+
+            currentLobbyOptions = value;
+            OnLobbyOptionChanged?.Invoke(value);
+        }
+    }
 
     private LobbyCreateOptions DefaultOptions => new LobbyCreateOptions
     {
@@ -60,9 +74,6 @@ public class SteamLobby : MonoBehaviour
     private const string HostAddressKey = "CustomHostAddress";
 
     private RoomManager Manager => NetworkManager.singleton as RoomManager;
-
-    public event Action<ulong, ulong> OnInviteRecieced;
-    public event Action<bool> OnJoiningStateChanged;
 
     private bool isJoining = false;
     public bool IsJoining 
@@ -143,7 +154,7 @@ public class SteamLobby : MonoBehaviour
             SteamFriends.GetPersonaName() + "'s Lobby"
         );
 
-        string visibilityStr = currentOptions.lobbyVisibility switch
+        string visibilityStr = currentLobbyOptions.lobbyVisibility switch
         {
             LobbyVisibility.Public => "public",
             LobbyVisibility.FriendsOnly => "friends",
@@ -153,10 +164,10 @@ public class SteamLobby : MonoBehaviour
         SteamMatchmaking.SetLobbyData(lobbyId, "state", "lobby");
         SteamMatchmaking.SetLobbyData(lobbyId, "hasPassword", "false");
         SteamMatchmaking.SetLobbyData(lobbyId, "version", Application.version);
-        SteamMatchmaking.SetLobbyData(lobbyId, "maxPlayers", currentOptions.MaxPlayers.ToString());
-        SteamMatchmaking.SetLobbyData(lobbyId, "spawnBots", currentOptions.SpawnBots ? "true" : "false");
-        SteamMatchmaking.SetLobbyData(lobbyId, "friendlyFire", currentOptions.FriendlyFire ? "true" : "false");
-        SteamMatchmaking.SetLobbyData(lobbyId, "respawnDelay", currentOptions.RespawnDelay.ToString());
+        SteamMatchmaking.SetLobbyData(lobbyId, "maxPlayers", currentLobbyOptions.MaxPlayers.ToString());
+        SteamMatchmaking.SetLobbyData(lobbyId, "spawnBots", currentLobbyOptions.SpawnBots ? "true" : "false");
+        SteamMatchmaking.SetLobbyData(lobbyId, "friendlyFire", currentLobbyOptions.FriendlyFire ? "true" : "false");
+        SteamMatchmaking.SetLobbyData(lobbyId, "respawnDelay", currentLobbyOptions.RespawnDelay.ToString());
 
         var manager = Manager;
         if (manager == null)
@@ -244,7 +255,7 @@ public class SteamLobby : MonoBehaviour
 
         CleanupSession();
 
-        currentOptions = options;
+        CurrentLobbyOptions = options;
         ELobbyType lobbyType;
 
         switch (options.lobbyVisibility)

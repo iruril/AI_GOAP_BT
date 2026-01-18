@@ -24,7 +24,7 @@ namespace Player.FSM
             int snapSpeed = Mathf.Clamp(Mathf.RoundToInt(ctx.Anim.GetFloat(AnimHash.Accelation)), 1, 4);
             ctx.Anim.SetFloat(AnimHash.TransitionAccel, snapSpeed);
 
-            if (MathUtility.IsRightDirection(ctx.transform.forward, tgt, 0f))
+            if (MathUtility.IsRightDirectionXZ(ctx.transform.forward, tgt, 0f))
             {
                 ctx.Anim.CrossFadeInFixedTime(AnimHash.Opposite_R, 0.1f);
             }
@@ -36,10 +36,10 @@ namespace Player.FSM
             switch (snapSpeed)
             {
                 case 4:
-                    turnTime = 1.1f;
+                    turnTime = 0.95f;
                     break;
                 default:
-                    turnTime = 1.3f;
+                    turnTime = 1.1f;
                     break;
             }
         }

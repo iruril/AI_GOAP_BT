@@ -45,8 +45,6 @@ namespace Player.FSM
         public bool IsSnapGround => GroundChecker.IsSnapGround;
         public bool IsGrounded => GroundChecker.IsGrounded;
 
-        public float PrevYaw { get; private set; }
-        public float DeltaYaw { get; private set; }
         public float OnAirSpeed { get; private set; }
 
         void Awake()
@@ -104,7 +102,6 @@ namespace Player.FSM
             Input = GameManager.GetInstance().InputMap;
             GameManager.GetInstance().MyPlayer = this.gameObject;
             CamController.InitCam();
-            PrevYaw = CamController.CamTarget.eulerAngles.y;
 
             GameManager.GetInstance().InputMap.LockCursor(true);
         }
@@ -125,7 +122,6 @@ namespace Player.FSM
             UpdateStandardNormals();
             UpdateXZProjectionVelocity();
             UpdateAccelation();
-            UpdateCamYRotationDelta();
         }
 
         protected override void FixedUpdate()
@@ -150,16 +146,6 @@ namespace Player.FSM
         private void CalculateJumpVelocity()
         {
             JumpImpulseVelocity = Mathf.Sqrt(2f * 9.81f * maxJumpHeight);
-        }
-
-        private void UpdateCamYRotationDelta()
-        {
-            float currYaw = CamController.CamTarget.eulerAngles.y;
-
-            float deltaAngle = Mathf.Abs(Mathf.DeltaAngle(PrevYaw, currYaw));
-            DeltaYaw = deltaAngle / Time.deltaTime;
-
-            PrevYaw = currYaw;
         }
 
         float accelRef;

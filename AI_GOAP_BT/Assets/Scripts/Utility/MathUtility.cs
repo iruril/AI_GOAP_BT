@@ -92,7 +92,7 @@ public class MathUtility
         return focus + Mathf.Atan2(axis.x, axis.y) * Mathf.Rad2Deg;
     }
 
-    private const float EPS = 0.001f;
+    private const float EPS = 0.00001f;
 
     /// <summary>
     /// 두 회전값이 서로 반대방향을 바라보는지를 검사한다.
@@ -122,8 +122,11 @@ public class MathUtility
         return dot <= threshold;
     }
 
-    public static bool IsRightDirection(Vector3 forward, Vector3 direction, float error)
+    public static bool IsRightDirectionXZ(Vector3 forward, Vector3 direction, float error)
     {
+        forward.y = 0f;
+        direction.y = 0f;
+
         if (!Valid(forward, direction)) return false;
 
         Vector3 f = forward.normalized;
@@ -138,8 +141,11 @@ public class MathUtility
         return crossY > 0f;
     }
 
-    public static bool IsLeftDirection(Vector3 forward, Vector3 direction, float error)
+    public static bool IsLeftDirectionXZ(Vector3 forward, Vector3 direction, float error)
     {
+        forward.y = 0f;
+        direction.y = 0f;
+
         if (!Valid(forward, direction)) return false;
 
         Vector3 f = forward.normalized;
@@ -154,8 +160,11 @@ public class MathUtility
         return crossY < 0f;
     }
 
-    public static bool IsSameDirection(Vector3 forward, Vector3 direction, float error)
+    public static bool IsSameDirectionXZ(Vector3 forward, Vector3 direction, float error)
     {
+        forward.y = 0f;
+        direction.y = 0f;
+
         if (!Valid(forward, direction)) return false;
 
         Vector3 f = forward.normalized;
