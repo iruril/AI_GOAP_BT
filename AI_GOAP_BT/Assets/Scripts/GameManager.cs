@@ -89,6 +89,9 @@ public class GameManager : MonoBehaviour
     {
         InputMap.ExitChat();
         IsGameplayScene = sceneName.Contains("Gameplay");
+
+        if(!IsGameplayScene)
+            InputMap.LockCursor(false);
     }
 
     private void WeaponDataLoad()

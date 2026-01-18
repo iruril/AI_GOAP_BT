@@ -6,13 +6,6 @@ public class KillLogUI : MonoBehaviour
 {
     public static KillLogUI Instance;
 
-    [Header("Blue Color")]
-    [SerializeField]
-    private Color blue = Color.blue;
-    [Header("Red Color")]
-    [SerializeField]
-    private Color red = Color.red;
-
     [Header("Log Contents")]
     [SerializeField] KillLogContent[] logContents;
 
@@ -46,8 +39,8 @@ public class KillLogUI : MonoBehaviour
     {
         KillLogContent content = GetAvailableContent();
 
-        content.SetKillerContent(killer, isKillerBlue ? blue : red);
-        content.SetVictimContent(victim, isVictimBlue ? blue : red);
+        content.SetKillerContent(killer, isKillerBlue ? WorldManager.Instance.BlueTeamColor : WorldManager.Instance.RedTeamColor);
+        content.SetVictimContent(victim, isVictimBlue ? WorldManager.Instance.BlueTeamColor : WorldManager.Instance.RedTeamColor);
 
         content.gameObject.SetActive(true);
 

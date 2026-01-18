@@ -132,14 +132,12 @@ public class RoomManager : NetworkRoomManager
     [Server]
     public void ApplyLobbySettings()
     {
-        var lobbyId = new CSteamID(SteamLobby.Instance.CurrentLobbyID);
-
-        int totalPlayers = SteamMatchmaking.GetLobbyMemberLimit(lobbyId);
+        int totalPlayers = SteamLobby.Instance.CurrentLobbyOption.MaxPlayers;
         population.TargetPerTeam = Mathf.CeilToInt(totalPlayers / 2f);
 
-        spawnBots = SteamMatchmaking.GetLobbyData(lobbyId, "spawnBots") == "true";
-        friendlyFire = SteamMatchmaking.GetLobbyData(lobbyId, "friendlyFire") == "true";
-        float.TryParse(SteamMatchmaking.GetLobbyData(lobbyId, "respawnDelay"), out respawnDely);
+        spawnBots = SteamLobby.Instance.CurrentLobbyOption.SpawnBots;
+        friendlyFire = SteamLobby.Instance.CurrentLobbyOption.FriendlyFire;
+        respawnDely = SteamLobby.Instance.CurrentLobbyOption.RespawnDelay;
 
         population.BluePlayers = 0;
         population.RedPlayers = 0;

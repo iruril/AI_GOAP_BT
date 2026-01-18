@@ -1,143 +1,125 @@
 using UnityEngine;
-using Steamworks;
-using UnityEngine.UI;
-using TMPro;
-using System.Collections;
+using System.Collections.Generic;
+using MEC;
 
 public class InviteMessageHandler : MonoBehaviour
 {
     public static InviteMessageHandler Instance;
 
-    [SerializeField] private float popUpDuration = 10f;
+    [SerializeField] private float popUpDuration = 5f;
 
-    public Button AcceptButton;
-    public Button DeclineButton;
-    public TextMeshProUGUI InviterName;
-    public RawImage InviterAvatar;
+    [Header("Contents")]
+    [SerializeField] InviteMessageItem[] inviteMessages;
 
-    ulong currentInviterId;
-
-    protected Callback<AvatarImageLoaded_t> ImageLoaded;
+    private readonly HashSet<ulong> activeInviteIDs = new();
+    private readonly List<InviteMessageItem> activeInvites = new();
+    private readonly Dictionary<InviteMessageItem, CoroutineHandle> timers = new();
 
     private void Awake()
     {
-        Instance = this;
-
-        StartCoroutine(Init());
-    }
-
-    private void OnDestroy()
-    {
-        ImageLoaded?.Dispose();
-
-        ImageLoaded = null;
-
-        DeclineInvite();
-
-        Instance = null;
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(this);
+        }
     }
 
     private void Start()
     {
-        SteamLobby.Instance.OnInviteRecieced += OnInviteRecived;
-        DeclineButton.onClick.AddListener(DeclineInvite);
+        if (SteamLobby.Instance != null)
+            SteamLobby.Instance.OnInviteRecieced += OnInviteRecived;
 
-        gameObject.SetActive(false);
+        Clear();
     }
 
-    private IEnumerator Init()
+    private void OnDestroy()
     {
-        yield return new WaitUntil(() => SteamManager.Initialized);
-
-        ImageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
+        if (SteamLobby.Instance != null)
+            SteamLobby.Instance.OnInviteRecieced -= OnInviteRecived;
+        Instance = null;
     }
 
-    private void OnImageLoaded(AvatarImageLoaded_t callback)
+    public void Clear()
     {
-        if (currentInviterId != callback.m_steamID.m_SteamID) return;
-        InviterAvatar.texture = GetAvatarAsTexture2D(callback.m_iImage);
+        foreach (var item in inviteMessages)
+        {
+            item.gameObject.SetActive(false);
+        }
+        activeInvites.Clear();
+        activeInviteIDs.Clear();
+        foreach (var timer in timers.Values)
+        {
+            Timing.KillCoroutines(timer);
+        }
+        timers.Clear();
     }
 
     private void OnInviteRecived(ulong lobbyId, ulong userId)
     {
-        currentInviterId = userId;
+        if (GameManager.GetInstance().IsGameplayScene) return;
+        if (activeInviteIDs.Contains(userId)) return;
 
-        SetName(userId);
-        SetAvatar(userId);
+        InviteMessageItem item = GetAvailableItem();
+        item.OnInviteRecived(lobbyId, userId);
 
-        AcceptButton.onClick.AddListener(() => AcceptInvite(lobbyId));
+        item.gameObject.SetActive(true);
+        item.transform.SetAsLastSibling();
 
-        gameObject.SetActive(true);
-        StartCoroutine(AutoClose());
+        activeInvites.Add(item);
+        activeInviteIDs.Add(userId);
+        timers[item] = Timing.RunCoroutine(AutoDisable(item));
     }
 
-    private void AcceptInvite(ulong lobbyId)
+    private InviteMessageItem GetAvailableItem()
     {
-        SteamLobby.Instance.JoinLobby(lobbyId);
-
-        AcceptButton.onClick.RemoveAllListeners();
-
-        InviterAvatar.texture = null;
-        InviterName.text = "";
-
-        gameObject.SetActive(false);
-    }
-
-    private void DeclineInvite()
-    {
-        StopAllCoroutines();
-
-        AcceptButton.onClick.RemoveAllListeners();
-
-        InviterAvatar.texture = null;
-        InviterName.text = "";
-
-        gameObject.SetActive(false);
-    }
-
-    private void SetName(ulong id)
-    {
-        string userName = SteamFriends.GetFriendPersonaName(new CSteamID(id));
-        InviterName.text = userName;
-    }
-
-    private void SetAvatar(ulong id)
-    {
-        int avatarInt = SteamFriends.GetLargeFriendAvatar(new CSteamID(id));
-
-        if (avatarInt == -1) return;
-        Texture2D avatarTex = GetAvatarAsTexture2D(avatarInt);
-
-        if (avatarTex != null)
+        foreach (var item in inviteMessages)
         {
-            InviterAvatar.texture = avatarTex;
+            if (!item.gameObject.activeSelf)
+            {
+                return item;
+            }
+        }
+
+        InviteMessageItem oldestItem = activeInvites[0];
+        activeInvites.RemoveAt(0);
+        activeInviteIDs.Remove(oldestItem.InviterId);
+
+        if (timers.ContainsKey(oldestItem))
+        {
+            Timing.KillCoroutines(timers[oldestItem]);
+            timers.Remove(oldestItem);
+        }
+
+        oldestItem.gameObject.SetActive(false);
+
+        return oldestItem;
+    }
+
+    public void DisableItem(InviteMessageItem item)
+    {
+        if (item.gameObject.activeSelf)
+        {
+            item.gameObject.SetActive(false);
+            activeInvites.Remove(item);
+            activeInviteIDs.Remove(item.InviterId);
+            if (timers.ContainsKey(item))
+            {
+                Timing.KillCoroutines(timers[item]);
+                timers.Remove(item);
+            }
         }
     }
 
-    private Texture2D GetAvatarAsTexture2D(int avatarInt)
+    private IEnumerator<float> AutoDisable(InviteMessageItem item)
     {
-        uint width, height;
-
-        bool isVaild = SteamUtils.GetImageSize(avatarInt, out width, out height);
-
-        if (!isVaild || width == 0 || height == 0)
-            return null;
-
-        byte[] avatarRaw = new byte[width * height * 4];
-
-        isVaild = SteamUtils.GetImageRGBA(avatarInt, avatarRaw, (int)(width * height * 4));
-        if (!isVaild) return null;
-
-        Texture2D avatarTex = new Texture2D((int)width, (int)height, TextureFormat.RGBA32, false, true);
-        avatarTex.LoadRawTextureData(avatarRaw);
-        avatarTex.Apply();
-
-        return avatarTex;
-    }
-
-    private IEnumerator AutoClose()
-    {
-        yield return new WaitForSeconds(popUpDuration);
-        DeclineInvite();
+        yield return Timing.WaitForSeconds(popUpDuration);
+        item.gameObject.SetActive(false);
+        activeInvites.Remove(item);
+        activeInviteIDs.Remove(item.InviterId);
+        timers.Remove(item);
     }
 }

@@ -27,6 +27,8 @@ public class SteamLobby : MonoBehaviour
     }
 
     private LobbyCreateOptions currentOptions;
+    public LobbyCreateOptions CurrentLobbyOption => currentOptions;
+
     private LobbyCreateOptions DefaultOptions => new LobbyCreateOptions
     {
         lobbyVisibility = LobbyVisibility.Public,
@@ -57,9 +59,6 @@ public class SteamLobby : MonoBehaviour
     private const string HostAddressKey = "CustomHostAddress";
 
     private RoomManager Manager => NetworkManager.singleton as RoomManager;
-
-    private ulong pendingInviteLobbyID; // 초대된 로비 ID
-    private ulong pendingInviteUserID; // 초대자 ID
 
     public event Action<ulong, ulong> OnInviteRecieced;
     public event Action<bool> OnJoiningStateChanged;
@@ -228,12 +227,7 @@ public class SteamLobby : MonoBehaviour
 
     private void OnLobbyInvite(LobbyInvite_t callback)
     {
-        Debug.Log("Steam Lobby Invite Received");
-
-        pendingInviteLobbyID = callback.m_ulSteamIDLobby;
-        pendingInviteUserID = callback.m_ulSteamIDUser;
-
-        OnInviteRecieced?.Invoke(pendingInviteLobbyID, pendingInviteUserID);
+        OnInviteRecieced?.Invoke(callback.m_ulSteamIDLobby, callback.m_ulSteamIDUser);
     }
     #endregion
 
