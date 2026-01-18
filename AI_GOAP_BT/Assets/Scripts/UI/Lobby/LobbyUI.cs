@@ -9,7 +9,8 @@ public class LobbyUI : MonoBehaviour
 
     public TeamListPanel BlueTeamList, RedTeamList;
     public ManageListPanel ManageList;
-    public Button ReadyButton, ExitButton, ManageButton, StartButton;
+    public FriendListPanel FriendListPanel;
+    public Button ReadyButton, ExitButton, ManageButton, StartButton, InviteButton;
 
     private void Awake()
     {
@@ -48,6 +49,7 @@ public class LobbyUI : MonoBehaviour
         if (isHost)
         {
             ManageButton.onClick.AddListener(ToggleManagePanel);
+            InviteButton.onClick.AddListener(ToggleFriendListPanel);
             StartButton.onClick.AddListener(() =>
             {
                 var rm = NetworkManager.singleton as RoomManager;
@@ -58,8 +60,10 @@ public class LobbyUI : MonoBehaviour
         else
         {
             ManageButton.gameObject.SetActive(false);
+            InviteButton.gameObject.SetActive(false);
             StartButton.gameObject.SetActive(false);
         }
+
 
         BlueTeamList?.JoinButton.onClick.AddListener(() =>
         {
@@ -77,6 +81,14 @@ public class LobbyUI : MonoBehaviour
                 localPlayer.CmdTeamChangeTeam(Team.Red);
             }
         });
+    }
+
+    private void ToggleFriendListPanel()
+    {
+        if (FriendListPanel.gameObject.activeSelf)
+            FriendListPanel.DisablePanel();
+        else
+            FriendListPanel.EnablePanel();
     }
 
     private void ToggleManagePanel()
