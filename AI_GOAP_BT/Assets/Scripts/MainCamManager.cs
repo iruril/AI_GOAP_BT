@@ -15,6 +15,7 @@ public class MainCamManager : MonoBehaviour
 
     [SerializeField] CinemachineCamera defaultCam;
     [SerializeField] CinemachineCamera aimCam;
+    [SerializeField] CinemachineCamera deadCam;
 
     CinemachineThirdPersonFollow defaultCamFollow;
     CinemachineThirdPersonFollow aimCamFollow;
@@ -43,6 +44,12 @@ public class MainCamManager : MonoBehaviour
         Instance = null;
     }
 
+    public void SetDeadCamTarget(Corpse corpse)
+    {
+        deadCam.Target.TrackingTarget = corpse.Hip;
+        deadCam.Target.LookAtTarget = corpse.Hip;
+    }
+
     public void SetCamTarget(Transform target)
     {
         camTarget = target;
@@ -65,14 +72,12 @@ public class MainCamManager : MonoBehaviour
 
     public void ActivateAimModeCam()
     {
-        aimCam.Priority = 100;
-        defaultCam.Priority = 0;
+        aimCam.Prioritize();
     }
 
     public void ActivateDefaultModeCam()
     {
-        aimCam.Priority = 0;
-        defaultCam.Priority = 100;
+        defaultCam.Prioritize();
     }
 
     public void Lean(bool isLeft)
@@ -115,7 +120,7 @@ public class MainCamManager : MonoBehaviour
 
     private void OnDead()
     {
-
+        deadCam.Prioritize();
     }
 
     private void OnRevive()
@@ -133,6 +138,7 @@ public class MainCamManager : MonoBehaviour
     {
         TeleportCamera(defaultCam, teleportTo);
         TeleportCamera(aimCam, teleportTo);
+        TeleportCamera(deadCam, teleportTo);
     }
 
     private void TeleportCamera(CinemachineCamera virtualCamera, Vector3 teleportTo)

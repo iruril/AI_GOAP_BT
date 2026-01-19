@@ -307,8 +307,6 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
             transform.position = spawnPosition;
             transform.rotation = spawnRotation;
 
-            if (isLocalPlayer) MainCamManager.Instance.TeleportAllCamera(spawnPosition);
-
             gameObject.SetActive(true);
             OnRevive?.Invoke();
         }
