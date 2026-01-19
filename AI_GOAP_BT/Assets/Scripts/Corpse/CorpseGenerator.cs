@@ -82,6 +82,6 @@ public class CorpseGenerator : NetworkBehaviour
         corpse = corpseObj.GetComponent<Corpse>();
 
         if(isLocalPlayer)
-            MainCamManager.Instance.SetDeadCamTarget(corpse);
+            CameraManager.Instance.SetDeadCamTarget(corpse);
     }
 }

@@ -29,7 +29,7 @@ namespace Observer
         public override void OnStartLocalPlayer()
         {
             GameManager.GetInstance().MyPlayer = this.gameObject;
-            MainCamManager.Instance.SetCamTarget(this.transform);
+            CameraManager.Instance.SetCamTarget(this.transform);
 
             LockCursor(true);
         }
@@ -37,7 +37,7 @@ namespace Observer
         public override void OnStopLocalPlayer()
         {
             GameManager.GetInstance().MyPlayer = null;
-            MainCamManager.Instance.SetCamTarget(null);
+            CameraManager.Instance.SetCamTarget(null);
 
             LockCursor(false);
         }

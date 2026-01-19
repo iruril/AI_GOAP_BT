@@ -26,7 +26,7 @@ namespace Player
 
         public void InitCam()
         {
-            MainCamManager.Instance.SetCamTarget(CamTarget);
+            CameraManager.Instance.SetCamTarget(CamTarget);
 
             camTarget.parent = null;
             camTarget.rotation = transform.rotation;
@@ -60,7 +60,7 @@ namespace Player
 
         public Vector3 GetCenterWorldPoint(float maxDistance = 300f)
         {
-            Camera cam = MainCamManager.Instance.MainCam;
+            Camera cam = CameraManager.Instance.MainCam;
             if (cam == null)
                 return Vector3.zero;
 
@@ -99,17 +99,17 @@ namespace Player
         private void ZoonHandle()
         {
             if (player.IKManager.IsOnAim)
-                MainCamManager.Instance.ActivateAimModeCam();
+                CameraManager.Instance.ActivateAimModeCam();
             else
-                MainCamManager.Instance.ActivateDefaultModeCam();
+                CameraManager.Instance.ActivateDefaultModeCam();
         }
 
         private void LeanHandle()
         {
             if(player.Input.LeanLeft)
-                MainCamManager.Instance.Lean(true);
+                CameraManager.Instance.Lean(true);
             else
-                MainCamManager.Instance.Lean(false);
+                CameraManager.Instance.Lean(false);
         }
 
         private void OnRevive()

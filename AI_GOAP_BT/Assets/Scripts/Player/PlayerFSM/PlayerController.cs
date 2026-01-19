@@ -80,7 +80,10 @@ namespace Player.FSM
         public override void OnStartClient()
         {
             MyStat.OnDead += CorpseSpawner.SpawnCorpse;
-            MyStat.OnDead += () => IsOnJumping = false;
+            MyStat.OnDead += () =>
+            {
+                IsOnJumping = false;
+            };
             MyStat.OnRevive += CorpseSpawner.DespawnCorpse;
         }
 
@@ -104,7 +107,7 @@ namespace Player.FSM
             GameManager.GetInstance().MyPlayer = this.gameObject;
 
             CamController.InitCam();
-            MainCamManager.Instance.SetTargetStat(MyStat);
+            CameraManager.Instance.SetTargetStat(MyStat);
 
             GameManager.GetInstance().InputMap.LockCursor(true);
         }

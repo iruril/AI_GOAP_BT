@@ -53,6 +53,10 @@ namespace AnimControl.Assault
             base.OnStartServer();
             MyBrain.Sensor.MyStat.OnUnderAttack += SetAttackedDirection;
             MyBrain.Sensor.MyStat.OnDead += OnDead;
+            MyBrain.Sensor.MyStat.OnDead += () =>
+            {
+                aimWeight = 0f;
+            };
             MyBrain.Navigator.OnSetDestination += DecideAccelByDistance;
         }
 

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 
-public class MainCamManager : MonoBehaviour
+public class CameraManager : MonoBehaviour
 {
-    public static MainCamManager Instance = null;
+    public static CameraManager Instance = null;
 
     private Transform camTarget;
     private Stat targetStat;

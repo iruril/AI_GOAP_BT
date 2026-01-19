@@ -18,6 +18,12 @@ namespace Player
             player = GetComponent<PlayerController>();
         }
 
+        private void OnDisable()
+        {
+            syncedAimWeight = 0f;
+            player.IKManager.AimIK.solver.IKPositionWeight = 0f;
+        }
+
         public override void OnStartLocalPlayer()
         {
             player.IKManager.AimIK.solver.OnPostUpdate += player.GunController.ClientFireCallback;

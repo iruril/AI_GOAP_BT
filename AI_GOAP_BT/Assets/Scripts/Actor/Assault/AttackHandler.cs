@@ -25,6 +25,12 @@ namespace GOAP.Assualt
             myBrain = GetComponent<AssaultBrain>();
         }
 
+        private void OnDisable()
+        {
+            syncedAimWeight = 0f;
+            myBrain.MotionController.AimIK.solver.IKPositionWeight = 0f;
+        }
+
         public override void OnStartServer()
         {
             myBrain.Sensor.MyStat.OnDead += OnDead;

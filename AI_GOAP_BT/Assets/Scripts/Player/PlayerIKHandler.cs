@@ -24,6 +24,12 @@ namespace Player
             AimIK = GetComponent<AimIK>();
         }
 
+        private void OnDisable()
+        {
+            IsOnAim = false;
+            aimWeight = 0f;
+        }
+
         private void Update()
         {
             SyncAim();

@@ -13,6 +13,11 @@ public class CaptureHUDItem : MonoBehaviour
     public string CurrentText => text.text;
     CoroutineHandle colorRoutine;
 
+    private void OnDestroy()
+    {
+        Timing.KillCoroutines(colorRoutine);
+    }
+
     public void SetText(string s)
     {
         text.text = s;
