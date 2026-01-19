@@ -29,11 +29,11 @@ public class CorpseGeneratorEditor : Editor
 
 public class CorpseGenerator : NetworkBehaviour
 {
-    Rigidbody rb;
-
     [Header("º»")]
     [SerializeField] private Transform root;
     [SerializeField] private List<Transform> bones = new List<Transform>();
+
+    private Stat owner;
 
     private Corpse corpse;
     public Corpse Corpse => corpse;
@@ -43,7 +43,7 @@ public class CorpseGenerator : NetworkBehaviour
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        owner = GetComponent<Stat>();
     }
 
 #if UNITY_EDITOR
@@ -66,8 +66,7 @@ public class CorpseGenerator : NetworkBehaviour
         corpse.transform.parent = null;
         corpse.transform.position = this.transform.position;
         corpse.transform.rotation = this.transform.rotation;
-        if (gameObject == GameManager.GetInstance().MyPlayer) Debug.Log($"{rb.linearVelocity}");
-        corpse.PasteBoneTransforms(bones, LatestHittedPart, ShotOrigin, rb.linearVelocity);
+        corpse.PasteBoneTransforms(bones, LatestHittedPart, ShotOrigin, owner.ServerVelocity);
     }
 
     public void DespawnCorpse()

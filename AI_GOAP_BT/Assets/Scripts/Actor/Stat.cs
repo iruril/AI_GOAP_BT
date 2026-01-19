@@ -39,6 +39,12 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     [SyncVar(hook = nameof(OnKDAChanged))]
     public KDA CurrentKDA = new();
 
+    [SyncVar]
+    public Vector3 ServerVelocity;
+
+    private Vector3 prevPosition;
+    private Vector3 nextPosition;
+
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
 
@@ -66,6 +72,10 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         rm = NetworkManager.singleton as RoomManager;
         InitHP();
         hpRegenHandle = Timing.RunCoroutine(HPRegenHandle());
+
+        prevPosition = transform.position;
+        nextPosition = transform.position;
+        ServerVelocity = Vector3.zero;
 
         SetTeam(MyTeam);
         if (MyTeam == Team.Blue)
@@ -105,6 +115,28 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     private void InitHP()
     {
         CurrentHP = MaxHP;
+    }
+
+    private void FixedUpdate()
+    {
+        RecordServerVelocity();
+    }
+
+    [Server]
+    private void RecordServerVelocity()
+    {
+        nextPosition = transform.position;
+
+        if (prevPosition != Vector3.zero)
+        {
+            ServerVelocity = (nextPosition - prevPosition) / Time.fixedDeltaTime;
+        }
+        else
+        {
+            ServerVelocity = Vector3.zero;
+        }
+
+        prevPosition = nextPosition;
     }
 
     #region Damageable Field

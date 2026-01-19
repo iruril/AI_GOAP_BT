@@ -80,6 +80,7 @@ namespace Player.FSM
         public override void OnStartClient()
         {
             MyStat.OnDead += CorpseSpawner.SpawnCorpse;
+            MyStat.OnDead += () => IsOnJumping = false;
             MyStat.OnRevive += CorpseSpawner.DespawnCorpse;
         }
 

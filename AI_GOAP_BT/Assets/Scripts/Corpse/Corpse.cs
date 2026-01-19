@@ -79,11 +79,11 @@ public class Corpse : MonoBehaviour
         }
 
         Vector3 forceDir = (this.transform.position - shotOrigin).normalized;
-        PhysicsBones[latestHittedPart].AddForce(forceDir * PhysicsBones[latestHittedPart].mass * 10f, ForceMode.Impulse);
         foreach (var item in PhysicsBones)
         {
-            item.Value.AddForce(velocity * item.Value.mass, ForceMode.Impulse);
+            item.Value.linearVelocity = velocity;
         }
+        PhysicsBones[latestHittedPart].AddForce(forceDir * 10f, ForceMode.Impulse);
     }
 
     void Update()

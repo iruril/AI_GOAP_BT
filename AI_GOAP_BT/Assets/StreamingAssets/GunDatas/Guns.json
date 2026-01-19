@@ -10,7 +10,7 @@
         "Spread": 1.2,
         "MagazineCapacity": 30,
         "RPM": 600,
-        "ProjectileSpeed": 250,
+        "ProjectileSpeed": 350,
         "FireModes": [
           0,
           2
@@ -32,7 +32,7 @@
         "Spread": 0.5,
         "MagazineCapacity": 35,
         "RPM": 850,
-        "ProjectileSpeed": 150,
+        "ProjectileSpeed": 250,
         "FireModes": [
           0,
           2
