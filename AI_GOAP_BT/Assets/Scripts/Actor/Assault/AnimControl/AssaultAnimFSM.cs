@@ -191,7 +191,7 @@ namespace AnimControl.Assault
         {
             if (AttackedDirection == Vector3.zero) return;
 
-            AttackedDirection = MathUtility.IsSameDirectionXZ(transform.forward, AttackedDirection, 30f)
+            AttackedDirection = MathUtility.IsSameDirectionXZ(transform.forward, AttackedDirection, 45f)
                 ? Vector3.zero : AttackedDirection;
         }
 

@@ -54,15 +54,26 @@ namespace Player
                 && !player.MyStat.IsDead;
         }
 
+        private RaycastHit[] gunWallHits = new RaycastHit[1];
         private void CheckGunInWall()
         {
             if (!isLocalPlayer) return;
 
-            IsGunInWall = Physics.Linecast(
-                player.GunController.AimIKStandard.position,
-                player.GunController.Muzzle.position,
+            Vector3 start = player.GunController.AimIKStandard.position;
+            Vector3 end = player.GunController.Muzzle.position;
+
+            Vector3 dir = end - start;
+            float dist = dir.magnitude;
+
+            int hitCount = Physics.RaycastNonAlloc(
+                start,
+                dir.normalized,
+                gunWallHits,
+                dist,
                 WorldManager.Instance.GetLevelLayers()
-                );
+            );
+
+            IsGunInWall = hitCount > 0;
         }
     }
 }

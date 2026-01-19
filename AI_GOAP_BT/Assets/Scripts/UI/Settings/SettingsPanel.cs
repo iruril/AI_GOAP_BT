@@ -1,5 +1,7 @@
+using Mirror;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SettingsPanel : MonoBehaviour
@@ -14,6 +16,8 @@ public class SettingsPanel : MonoBehaviour
     private Slider gamepadSensitivitySlider;
     [SerializeField]
     private TextMeshProUGUI gamepadSensitivityValueText;
+    [SerializeField]
+    private Button exitButton;
     [SerializeField]
     private Button closeButton; 
     
@@ -35,6 +39,7 @@ public class SettingsPanel : MonoBehaviour
         mouseSensitivitySlider.onValueChanged.AddListener(OnMouseSensitivityChanged);
         gamepadSensitivitySlider.onValueChanged.AddListener(OnGamepadSensitivityChanged);
         closeButton.onClick.AddListener(CloseSettings);
+        exitButton.onClick.AddListener(Exit);
 
         gameObject.SetActive(false);
     }
@@ -51,13 +56,13 @@ public class SettingsPanel : MonoBehaviour
         gamepadSensitivityValueText.text = value.ToString();
     }
 
-    public void SetMouseSliderValue(float value)
+    private void SetMouseSliderValue(float value)
     {
         mouseSensitivitySlider.value = value;
         mouseSensitivityValueText.text = value.ToString();
     }
 
-    public void SetGamepadSliderValue(float value)
+    private void SetGamepadSliderValue(float value)
     {
         gamepadSensitivitySlider.value = value;
         gamepadSensitivityValueText.text = value.ToString();
@@ -74,5 +79,34 @@ public class SettingsPanel : MonoBehaviour
     {
         GameManager.GetInstance().Settings.SaveFile();
         gameObject.SetActive(false);
+    }
+
+    private void Exit()
+    {
+        var manager = NetworkManager.singleton as RoomManager;
+
+        bool isHost = NetworkServer.active;
+        bool isClient = NetworkClient.active && !NetworkServer.active;
+
+        if (isHost)
+        {
+            if (GameManager.GetInstance().IsGameplayScene)
+            {
+                manager.ServerChangeScene(manager.RoomScene);
+                return;
+            }
+            SteamLobby.Instance.LeaveLobby();
+            SceneManager.LoadScene("MainMenu");
+            return;
+        }
+
+        if (isClient)
+        {
+            SteamLobby.Instance.LeaveLobby();
+            SceneManager.LoadScene("MainMenu");
+            return;
+        }
+
+        Application.Quit();
     }
 }

@@ -37,7 +37,8 @@ namespace Player
 
             camTarget.position = transform.position + Vector3.up;
             CamTargetRotate(); 
-            ZoonHandle();
+            ZoonHandle(); 
+            LeanHandle();
         }
 
         private void CamTargetRotate()
@@ -93,6 +94,14 @@ namespace Player
                 MainCamManager.Instance.ActivateAimModeCam();
             else
                 MainCamManager.Instance.ActivateDefaultModeCam();
+        }
+
+        private void LeanHandle()
+        {
+            if(player.Input.LeanLeft)
+                MainCamManager.Instance.Lean(true);
+            else
+                MainCamManager.Instance.Lean(false);
         }
     }
 }

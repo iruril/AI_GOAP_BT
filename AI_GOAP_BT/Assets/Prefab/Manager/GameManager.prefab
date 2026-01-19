@@ -48,7 +48,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GunListReady: 0
-  RespawnTime: 15
 --- !u!114 &-9083412935549270331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -304,6 +303,38 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 0b3d3de8-4670-4602-993a-77f554b89161
     m_ActionName: 'Player/Tab[/Keyboard/tab]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -9083412935549270331}
+        m_TargetAssemblyTypeName: Player.Input.InputRecorder, Assembly-CSharp
+        m_MethodName: OnLeanLeftInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 4f5fd4ea-9435-44a4-8003-ca04e4f8ec21
+    m_ActionName: 'Player/LeanL[/Keyboard/q]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -9083412935549270331}
+        m_TargetAssemblyTypeName: Player.Input.InputRecorder, Assembly-CSharp
+        m_MethodName: OnLeanRightInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 38e63320-413f-49ed-b340-bf53f74ff62f
+    m_ActionName: 'Player/LeanR[/Keyboard/e]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

@@ -51,6 +51,7 @@ namespace Player.Input
         public bool Reload { get; set; } = false;
         public bool ESC { get; set; } = false;
         public bool Tab { get; set; } = false;
+        public bool LeanLeft { get; set; } = false;
 
         public UIState CurrentUIState { get; set; } = UIState.None;
         public bool IsOnStaticUI => CurrentUIState != UIState.None && CurrentUIState != UIState.Scoreboard;
@@ -132,6 +133,16 @@ namespace Player.Input
         public void OnTabInput(InputAction.CallbackContext context)
         {
             Tab = context.performed;
+        }
+
+        public void OnLeanLeftInput(InputAction.CallbackContext context)
+        {
+            LeanLeft = true;
+        }
+
+        public void OnLeanRightInput(InputAction.CallbackContext context)
+        {
+            LeanLeft = false;
         }
 
         public bool ConsumeChatKeyDown()
