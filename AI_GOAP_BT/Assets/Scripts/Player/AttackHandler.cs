@@ -63,10 +63,10 @@ namespace Player
                 ? player.CamController.GetCenterWorldPoint()
                 : transform.position + transform.forward * 20f + Vector3.up * 1.2f;
 
-            syncedAimWeight = player.IKManager.IsOnAim && !player.GunController.OnReload ? 1f : 0f;
+            syncedAimWeight = player.IKManager.IsOnAim && !player.IKManager.IsGunInWall && !player.GunController.OnReload
+                ? 1f : 0f;
         }
 
-        Vector3 aimPosVel;
         float aimWeightVel;
         private void UpdateIK()
         {

@@ -179,7 +179,6 @@ namespace Player.FSM
             PlayerRight = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.right;
         }
 
-
         public void CalculateOnAirSpeed()
         {
             Vector2 xzVelocity = new Vector2(PlayerCC.velocity.x, PlayerCC.velocity.z);

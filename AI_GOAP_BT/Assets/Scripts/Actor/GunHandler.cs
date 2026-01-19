@@ -20,7 +20,10 @@ public class GunHandler : NetworkBehaviour
     [Header("Aim IK Target ¼¼ÆÃ")]
     [SerializeField] Transform aimIKStandard;
     [SerializeField] Transform aimIKTarget;
+
+    public Transform Muzzle { get { return muzzle; } }
     public Transform AimIKTarget { get { return aimIKTarget; } }
+    public Transform AimIKStandard { get { return aimIKStandard; } }
 
     [SyncVar(hook = nameof(OnGunNameChanged))] public string syncedGunName;
     private Gun currentGun;

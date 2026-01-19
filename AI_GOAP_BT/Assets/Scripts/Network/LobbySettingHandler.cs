@@ -70,7 +70,6 @@ public class LobbySettingHandler : MonoBehaviour
             maxPlayers = 16;
 
         options.MaxPlayers = maxPlayers;
-        Debug.Log($"{options.MaxPlayers}");
 
         switch (LobbyType.options[LobbyType.value].text)
         {
@@ -87,18 +86,14 @@ public class LobbySettingHandler : MonoBehaviour
                 options.lobbyVisibility = SteamLobby.LobbyVisibility.Public;
                 break;
         }
-        Debug.Log($"{options.lobbyVisibility}");
 
         options.SpawnBots = SpawnBots.isOn;
-        Debug.Log($"{options.SpawnBots}");
         options.FriendlyFire = FriendlyFire.isOn;
-        Debug.Log($"{options.FriendlyFire}");
 
         if (!float.TryParse(RespawnDelay.options[RespawnDelay.value].text, out var delay))
             delay = 5f;
 
         options.RespawnDelay = delay;
-        Debug.Log($"{options.RespawnDelay}");
 
         return options;
     }
