@@ -79,6 +79,11 @@ public class SettingsPanel : MonoBehaviour
     {
         GameManager.GetInstance().Settings.SaveFile();
         gameObject.SetActive(false);
+
+        if (GameManager.GetInstance().IsGameplayScene)
+        {
+            GameManager.GetInstance().InputMap.LockCursor(true);
+        }
     }
 
     private void Exit()

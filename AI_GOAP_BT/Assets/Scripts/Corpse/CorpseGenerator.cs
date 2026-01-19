@@ -29,15 +29,22 @@ public class CorpseGeneratorEditor : Editor
 
 public class CorpseGenerator : NetworkBehaviour
 {
+    Rigidbody rb;
+
     [Header("º»")]
     [SerializeField] private Transform root;
     [SerializeField] private List<Transform> bones = new List<Transform>();
 
-    [Header("½ÃÃ¼ Obj")]
-    [SerializeField] private Corpse corpse;
+    private Corpse corpse;
+    public Corpse Corpse => corpse;
 
     [SyncVar] public string LatestHittedPart;
     public Vector3 ShotOrigin { get; set; }
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
 
 #if UNITY_EDITOR
     public void GetBones()
@@ -59,7 +66,8 @@ public class CorpseGenerator : NetworkBehaviour
         corpse.transform.parent = null;
         corpse.transform.position = this.transform.position;
         corpse.transform.rotation = this.transform.rotation;
-        corpse.PasteBoneTransforms(bones, LatestHittedPart, ShotOrigin);
+        if (gameObject == GameManager.GetInstance().MyPlayer) Debug.Log($"{rb.linearVelocity}");
+        corpse.PasteBoneTransforms(bones, LatestHittedPart, ShotOrigin, rb.linearVelocity);
     }
 
     public void DespawnCorpse()

@@ -42,6 +42,10 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
 
+    public Vector3 SpawnPosition => spawnPosition;
+    public Quaternion SpawnRotation => spawnRotation;
+    public Vector3 LastDeadPosition { get; private set; }
+
     public CapturePoint.CapturePoint CurrentCapture { get; set; } = null;
 
     private float lastDamageTime = -999f;
@@ -296,11 +300,15 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         {
             OnDead?.Invoke();
             gameObject.SetActive(false);
+            LastDeadPosition = transform.position;
         }
         else
         {
             transform.position = spawnPosition;
             transform.rotation = spawnRotation;
+
+            if (isLocalPlayer) MainCamManager.Instance.TeleportAllCamera(spawnPosition);
+
             gameObject.SetActive(true);
             OnRevive?.Invoke();
         }

@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Player
@@ -16,6 +17,8 @@ namespace Player
 
         private RaycastHit[] centerHits = new RaycastHit[4];
 
+        private float initYRotation;
+
         private void Awake()
         {
             player = GetComponent<Player.FSM.PlayerController>();
@@ -25,17 +28,22 @@ namespace Player
         {
             MainCamManager.Instance.SetCamTarget(CamTarget);
 
-            camTarget.transform.parent = null;
+            camTarget.parent = null;
             camTarget.rotation = transform.rotation;
             YRotation = camTarget.eulerAngles.y;
+            initYRotation = YRotation;
+
+            player.MyStat.OnRevive += OnRevive;
         }
 
         public void Update()
         {
             if (!player.isLocalPlayer) return;
-            if (GameManager.GetInstance().InputMap.IsOnStaticUI) return;
 
             camTarget.position = transform.position + Vector3.up;
+
+            if (GameManager.GetInstance().InputMap.IsOnStaticUI) return;
+
             CamTargetRotate(); 
             ZoonHandle(); 
             LeanHandle();
@@ -47,7 +55,7 @@ namespace Player
             XRotation += player.Input.XRotationEuler;
             XRotation = Mathf.Clamp(XRotation, -60, 60);
 
-            CamTarget.transform.rotation = Quaternion.Euler(XRotation, YRotation, 0);
+            camTarget.rotation = Quaternion.Euler(XRotation, YRotation, 0);
         }
 
         public Vector3 GetCenterWorldPoint(float maxDistance = 300f)
@@ -102,6 +110,12 @@ namespace Player
                 MainCamManager.Instance.Lean(true);
             else
                 MainCamManager.Instance.Lean(false);
+        }
+
+        private void OnRevive()
+        {
+            xRotation = 0;
+            yRotation = initYRotation;
         }
     }
 }

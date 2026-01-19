@@ -101,7 +101,9 @@ namespace Player.FSM
 
             Input = GameManager.GetInstance().InputMap;
             GameManager.GetInstance().MyPlayer = this.gameObject;
+
             CamController.InitCam();
+            MainCamManager.Instance.SetTargetStat(MyStat);
 
             GameManager.GetInstance().InputMap.LockCursor(true);
         }
@@ -173,7 +175,7 @@ namespace Player.FSM
                 return;
             }
 
-            float yRotation = MainCamManager.Instance.GetCameraRotaionY();
+            float yRotation = CamController.CamTarget.rotation.eulerAngles.y;
 
             PlayerForward = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.forward;
             PlayerRight = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.right;

@@ -7,8 +7,12 @@ public class MainCamManager : MonoBehaviour
 {
     public static MainCamManager Instance = null;
 
+    private Transform camTarget;
+    private Stat targetStat;
+
     [SerializeField] Camera cam;
     public Camera MainCam { get { return cam; } }
+
     [SerializeField] CinemachineCamera defaultCam;
     [SerializeField] CinemachineCamera aimCam;
 
@@ -26,12 +30,8 @@ public class MainCamManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else
-        {
-            Destroy(this.gameObject);
-            return;
-        }
+        Instance = this;
+
         defaultCamFollow = defaultCam.GetComponent<CinemachineThirdPersonFollow>();
         aimCamFollow = aimCam.GetComponent<CinemachineThirdPersonFollow>();
     }
@@ -39,17 +39,23 @@ public class MainCamManager : MonoBehaviour
     private void OnDestroy()
     {
         Timing.KillCoroutines(leanHandle);
-    }
 
-    private void OnDisable()
-    {
-        Timing.KillCoroutines(leanHandle);
+        Instance = null;
     }
 
     public void SetCamTarget(Transform target)
     {
+        camTarget = target;
         defaultCam.Target.TrackingTarget = target;
         aimCam.Target.TrackingTarget = target;
+    }
+
+    public void SetTargetStat(Stat target)
+    {
+        targetStat = target;
+
+        targetStat.OnRevive += OnRevive;
+        targetStat.OnDead += OnDead;
     }
 
     public float GetCameraRotaionY()
@@ -105,5 +111,36 @@ public class MainCamManager : MonoBehaviour
 
         defaultCamFollow.CameraSide = targetSide;
         aimCamFollow.CameraSide = targetSide;
+    }
+
+    private void OnDead()
+    {
+
+    }
+
+    private void OnRevive()
+    {
+        ActivateDefaultModeCam();
+        Lean(false);
+
+        camTarget.position = targetStat.SpawnPosition + Vector3.up;
+        camTarget.rotation = targetStat.SpawnRotation;
+
+        TeleportAllCamera(camTarget.position);
+    }
+
+    public void TeleportAllCamera(Vector3 teleportTo)
+    {
+        TeleportCamera(defaultCam, teleportTo);
+        TeleportCamera(aimCam, teleportTo);
+    }
+
+    private void TeleportCamera(CinemachineCamera virtualCamera, Vector3 teleportTo)
+    {
+        Transform target = virtualCamera.Target.TrackingTarget;
+        var delta = teleportTo - target.position;
+
+        virtualCamera.OnTargetObjectWarped(target, delta);
+        virtualCamera.PreviousStateIsValid = false;
     }
 }

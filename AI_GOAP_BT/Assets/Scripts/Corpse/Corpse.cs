@@ -29,6 +29,7 @@ public class CorpseEditor : Editor
 public class Corpse : MonoBehaviour
 {
     [SerializeField] private Transform root;
+    public Transform Hip => root;
     [SerializeField] private List<Transform> bones = new List<Transform>();
 
     [SerializedDictionary("Bone Name", "RigidBody")]
@@ -59,7 +60,7 @@ public class Corpse : MonoBehaviour
     }
 #endif
 
-    public void PasteBoneTransforms(List<Transform> skeletons, string latestHittedPart, Vector3 shotOrigin)
+    public void PasteBoneTransforms(List<Transform> skeletons, string latestHittedPart, Vector3 shotOrigin, Vector3 velocity)
     {
         root.gameObject.SetActive(false);
         for (int i = 0; i < bones.Count; i++)
@@ -78,7 +79,11 @@ public class Corpse : MonoBehaviour
         }
 
         Vector3 forceDir = (this.transform.position - shotOrigin).normalized;
-        PhysicsBones[latestHittedPart].AddForce(forceDir * 10f, ForceMode.VelocityChange);
+        PhysicsBones[latestHittedPart].AddForce(forceDir * PhysicsBones[latestHittedPart].mass * 10f, ForceMode.Impulse);
+        foreach (var item in PhysicsBones)
+        {
+            item.Value.AddForce(velocity * item.Value.mass, ForceMode.Impulse);
+        }
     }
 
     void Update()
