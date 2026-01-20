@@ -131,6 +131,7 @@ namespace Player
         {
             xRotation = 0;
             yRotation = initYRotation;
+            recoil.ResetRecoil();
         }
     }
 }

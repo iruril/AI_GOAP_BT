@@ -166,14 +166,14 @@ public class Bullet : MonoBehaviour
 
         if (target.TryGetComponent<HitBox>(out var hitBox))
         {
-            if (NetworkServer.active && owner != null)
+            bool result = hitBox.ApplyDamage(damage, shotOrigin, hitPoint, friendLayers, owner != null);
+            if (NetworkServer.active && owner != null && result)
             {
                 hitBox.SendShooterInfo(
                     owner.gameObject.transform,
                     WorldManager.Instance.IsBlueTeam(friendLayers)
                 );
             }
-            hitBox.ApplyDamage(damage, shotOrigin, hitPoint, friendLayers, owner != null);
         }
 
         if (((1 << target.gameObject.layer) & WorldManager.Instance.GetBleedLayers()) != 0)

@@ -59,7 +59,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     private CoroutineHandle respawnHandle;
 
     private HashSet<uint> damageContributors = new();
-    public uint KillerNetId { get; private set; }
+    public uint RecentAttackerNetId { get; private set; }
 
     bool combatEnded = false;
     private const float NO_DAMAGE_DURATION = 5f;
@@ -165,9 +165,23 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     }
 
     [Server]
-    public void SetKiller(uint attackerNetId)
+    public void SetAttacker(uint attackerNetId)
     {
-        KillerNetId = attackerNetId;
+        RecentAttackerNetId = attackerNetId;
+
+        if (!NetworkServer.spawned.TryGetValue(attackerNetId, out NetworkIdentity attackerIdentity))
+            return;
+
+        if (attackerIdentity.connectionToClient == null)
+            return;
+
+        TargetPlayHitMark(attackerIdentity.connectionToClient);
+    }
+
+    [TargetRpc]
+    private void TargetPlayHitMark(NetworkConnection target)
+    {
+        InGameUI.Instance?.PlayHitMark();
     }
 
     [Server]
@@ -208,11 +222,11 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         AddDeath();
 
         // Killer 贸府
-        if (NetworkServer.spawned.TryGetValue(KillerNetId, out var killerIdentity))
+        if (NetworkServer.spawned.TryGetValue(RecentAttackerNetId, out var killerIdentity))
         {
             var killerStat = killerIdentity.GetComponent<Stat>();
 
-            if(KillerNetId != netId && IsEnemy(killerStat)) 
+            if(RecentAttackerNetId != netId && IsEnemy(killerStat)) 
                 killerStat?.AddKill();
 
             LogManager.Instance.ReportKill(
@@ -231,7 +245,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         // Assist 贸府
         foreach (uint contributorNetId in damageContributors)
         {
-            if (contributorNetId == KillerNetId)
+            if (contributorNetId == RecentAttackerNetId)
                 continue; // 懦矾 力寇
 
             if (NetworkServer.spawned.TryGetValue(contributorNetId, out var identity))

@@ -4439,8 +4439,9 @@ MonoBehaviour:
   returnDamping: 12
   firingRecoveryScale: 0.05
   recoilLifeTime: 0.15
-  snapTime: 0.03
+  snapTime: 0.05
   maxPitch: 45
+  maxRoll: 2
 --- !u!1 &8522177062250388504
 GameObject:
   m_ObjectHideFlags: 0

@@ -128,8 +128,8 @@ public class CameraManager : MonoBehaviour
         ActivateDefaultModeCam();
         Lean(false);
 
-        camTarget.position = targetStat.SpawnPosition + Vector3.up;
-        camTarget.rotation = targetStat.SpawnRotation;
+        camTarget.parent.position = targetStat.SpawnPosition + Vector3.up;
+        camTarget.parent.rotation = targetStat.SpawnRotation;
 
         TeleportAllCamera(camTarget.position);
     }

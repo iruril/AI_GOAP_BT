@@ -27,7 +27,6 @@ public class RecoilController : MonoBehaviour
 
         if (Time.time - lastApplyTime < recoilLifeTime)
         {
-            Debug.Log("True");
             damping *= firingRecoveryScale;
         }
 
@@ -53,5 +52,14 @@ public class RecoilController : MonoBehaviour
         recoilPitch = pitch;
         recoilYaw = yaw;
         recoilRoll = roll;
+    }
+
+    public void ResetRecoil()
+    {
+        targetRotation = Vector3.zero;
+        currentRotation = Vector3.zero;
+
+        transform.localRotation = Quaternion.identity;
+        transform.localPosition = Vector3.zero;
     }
 }

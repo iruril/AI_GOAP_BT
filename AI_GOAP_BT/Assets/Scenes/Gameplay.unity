@@ -107315,7 +107315,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 3331953984
-  _assetId: 3875235918
+  _assetId: 0
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -107468,7 +107468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1763029642749760386, guid: 2be18af2664eef442bc719e25295b8eb, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -275
+      value: -274.99997
       objectReference: {fileID: 0}
     - target: {fileID: 1893926129499552068, guid: 2be18af2664eef442bc719e25295b8eb, type: 3}
       propertyPath: m_AnchorMax.y
@@ -107604,7 +107604,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3435204892022725915, guid: 2be18af2664eef442bc719e25295b8eb, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00004196167
+      value: 0.000000022710019
       objectReference: {fileID: 0}
     - target: {fileID: 3607966847279266224, guid: 2be18af2664eef442bc719e25295b8eb, type: 3}
       propertyPath: m_AnchorMax.x
@@ -107792,7 +107792,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6064039943664114168, guid: 2be18af2664eef442bc719e25295b8eb, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 385
+      value: 385.00003
       objectReference: {fileID: 0}
     - target: {fileID: 6134152260859854094, guid: 2be18af2664eef442bc719e25295b8eb, type: 3}
       propertyPath: m_AnchorMax.y
@@ -107952,7 +107952,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7297970718373714031, guid: 2be18af2664eef442bc719e25295b8eb, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 385
+      value: 385.00003
       objectReference: {fileID: 0}
     - target: {fileID: 7302272638209244148, guid: 2be18af2664eef442bc719e25295b8eb, type: 3}
       propertyPath: m_AnchorMax.y
@@ -109108,7 +109108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11b88f8e22e049d4b8566f6971633388, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 6308085440522439343}
   pointImage: {fileID: 897190891508306660}
   pointName: {fileID: 1508182124316838776}
   colorLerpTime: 0.25
@@ -109307,7 +109306,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11b88f8e22e049d4b8566f6971633388, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 1354489455}
   pointImage: {fileID: 424791255}
   pointName: {fileID: 532721405}
   colorLerpTime: 0.25
@@ -109346,7 +109344,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11b88f8e22e049d4b8566f6971633388, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 996710385}
   pointImage: {fileID: 751358408}
   pointName: {fileID: 912590473}
   colorLerpTime: 0.25
@@ -109385,7 +109382,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11b88f8e22e049d4b8566f6971633388, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 1095613721}
   pointImage: {fileID: 736169807}
   pointName: {fileID: 892233299}
   colorLerpTime: 0.25

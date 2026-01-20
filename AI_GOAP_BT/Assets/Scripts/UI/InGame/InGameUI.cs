@@ -1,5 +1,7 @@
+using MEC;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InGameUI : MonoBehaviour
 {
@@ -9,6 +11,13 @@ public class InGameUI : MonoBehaviour
     [SerializeField] private RectTransform scoreBoardHUD;
     [SerializeField] private RectTransform gameWinHUD;
     [SerializeField] private RectTransform gameLoseHUD;
+
+    [Header("Hit Mark")]
+    [SerializeField] private Image hitMark;
+    [SerializeField] private float hitMarkFadeTime = 0.08f;
+
+    private CoroutineHandle hitmarkHandle;
+
     public RectTransform GameWinHUD { get => gameWinHUD;}
     public RectTransform GameLoseHUD { get => gameLoseHUD;}
 
@@ -21,12 +30,50 @@ public class InGameUI : MonoBehaviour
     {
         gameWinHUD.gameObject.SetActive(false);
         gameLoseHUD.gameObject.SetActive(false);
+
+        Color startColor = hitMark.color;
+        startColor.a = 0f;
+        hitMark.color = startColor;
     }
 
     private void OnDestroy()
     {
-        if (Instance == this)
-            Instance = null;
+        Timing.KillCoroutines(hitmarkHandle);
+        Instance = null;
+    }
+
+    public void PlayHitMark()
+    {
+        if (hitMark == null) return;
+
+        Timing.KillCoroutines(hitmarkHandle);
+
+        hitmarkHandle = Timing.RunCoroutine(FadeHitMark());
+    }
+
+    private IEnumerator<float> FadeHitMark()
+    {
+        float elapsed = 0f;
+
+        Color fadeColor = hitMark.color;
+        fadeColor.a = 1f;
+        hitMark.color = fadeColor;
+
+        while (elapsed < hitMarkFadeTime)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / hitMarkFadeTime);
+            float alpha = 1f - Mathf.Pow(t, 3f);
+
+            fadeColor.a = alpha;
+            hitMark.color = fadeColor;
+
+            yield return Timing.WaitForOneFrame;
+        }
+
+        Color endColor = hitMark.color;
+        endColor.a = 0f;
+        hitMark.color = endColor;
     }
 
     public void ShowRealTimeHUDs()
