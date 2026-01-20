@@ -1,4 +1,3 @@
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Player
@@ -20,6 +19,8 @@ namespace Player
         private float xRotation = 0;
         public float YRotation { get => yRotation; private set => yRotation = value; }
         public float XRotation { get => xRotation; private set => xRotation = value; }
+
+        private float initXRotation;
 
         private RaycastHit[] centerHits = new RaycastHit[4];
 
@@ -59,15 +60,21 @@ namespace Player
 
             if (GameManager.GetInstance().InputMap.IsOnStaticUI) return;
 
-            CamTargetRotate(); 
-            ZoonHandle(); 
-            LeanHandle();
+            HandleRotation(); 
+            HandleZoom(); 
+            HandleLean();
         }
 
-        private void CamTargetRotate()
+        private void HandleRotation()
         {
-            YRotation += player.Input.YRotationEuler;
-            XRotation += player.Input.XRotationEuler;
+            float inputYaw = player.Input.YRotationEuler;
+            float inputPitch = player.Input.XRotationEuler;
+
+            inputPitch = recoil.ConsumePitch(inputPitch);
+            inputYaw = recoil.ConsumeYaw(inputYaw);
+
+            YRotation += inputYaw;
+            XRotation += inputPitch;
             XRotation = Mathf.Clamp(XRotation, -60, 60);
 
             camTarget.rotation = Quaternion.Euler(XRotation, YRotation, 0);
@@ -111,7 +118,7 @@ namespace Player
             return result;
         }
 
-        private void ZoonHandle()
+        private void HandleZoom()
         {
             if (player.IKManager.IsOnAim)
                 CameraManager.Instance.ActivateAimModeCam();
@@ -119,7 +126,7 @@ namespace Player
                 CameraManager.Instance.ActivateDefaultModeCam();
         }
 
-        private void LeanHandle()
+        private void HandleLean()
         {
             if(player.Input.LeanLeft)
                 CameraManager.Instance.Lean(true);

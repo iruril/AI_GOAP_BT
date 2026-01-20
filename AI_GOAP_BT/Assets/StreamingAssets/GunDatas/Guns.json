@@ -6,8 +6,8 @@
       "GunInfo": {
         "TimeToADS": 0.25,
         "RoundDamage": 34,
-        "Stability": 12,
-        "Spread": 0.8,
+        "Stability": 20,
+        "Spread": 0.5,
         "RecoilPitch": -2.0,
         "RecoilYaw": 1.2,
         "RecoilRoll": 0.35,
@@ -31,8 +31,8 @@
       "GunInfo": {
         "TimeToADS": 0.18,
         "RoundDamage": 25,
-        "Stability": 15,
-        "Spread": 0.6,
+        "Stability": 25,
+        "Spread": 0.3,
         "RecoilPitch": -1,
         "RecoilYaw": 0.6,
         "RecoilRoll": 0.35,

@@ -17,7 +17,9 @@ public class RecoilController : MonoBehaviour
 
     [SerializeField] private float snapTime = 0.03f;
     [SerializeField] private float maxPitch = 45f;
-    [SerializeField] private float maxRoll = 3f;
+    [SerializeField] private float maxRoll = 3f; 
+    
+    [SerializeField] private float recoilDeadZone = 5f;
 
     float lastApplyTime = 0f;
 
@@ -38,10 +40,46 @@ public class RecoilController : MonoBehaviour
         transform.localRotation = Quaternion.Euler(currentRotation);
     }
 
+    public float ConsumePitch(float inputPitch)
+    {
+        if (Mathf.Abs(currentRotation.x) < recoilDeadZone)
+            return inputPitch;
+
+        float cancelAmount = Mathf.Min(
+            Mathf.Abs(inputPitch),
+            Mathf.Abs(currentRotation.x)
+        );
+
+        cancelAmount *= Mathf.Sign(inputPitch);
+
+        targetRotation.x += cancelAmount;
+        currentRotation.x += cancelAmount;
+
+        return inputPitch - cancelAmount;
+    }
+
+    public float ConsumeYaw(float inputYaw)
+    {
+        if (Mathf.Abs(currentRotation.y) < recoilDeadZone)
+            return inputYaw;
+
+        float cancelAmount = Mathf.Min(
+            Mathf.Abs(inputYaw),
+            Mathf.Abs(currentRotation.y)
+        );
+
+        cancelAmount *= Mathf.Sign(inputYaw);
+
+        targetRotation.y += cancelAmount;
+        currentRotation.y += cancelAmount;
+
+        return inputYaw - cancelAmount;
+    }
+
     public void ApplyRecoil()
     {
         targetRotation.x = Mathf.Clamp(targetRotation.x + recoilPitch, -maxPitch, maxPitch);
-        targetRotation.y += Random.Range(-recoilYaw, recoilYaw);
+        targetRotation.y += Random.Range(-recoilYaw * 0.25f, recoilYaw);
         targetRotation.z = Mathf.Clamp(targetRotation.z + Random.Range(-recoilRoll, recoilRoll), -maxRoll, maxRoll);
 
         lastApplyTime = Time.time;
