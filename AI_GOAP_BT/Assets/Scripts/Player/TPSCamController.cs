@@ -6,9 +6,15 @@ namespace Player
     public class TPSCamController : MonoBehaviour
     {
         private Player.FSM.PlayerController player;
+        private RecoilController recoil;
 
+        [Header("Camera Target")]
         [SerializeField] private Transform camTarget;
         public Transform CamTarget { get { return camTarget; } }
+
+        [Header("Recoil Target")]
+        [SerializeField] private Transform recoilTarget;
+        public Transform RecoilTarget { get { return recoilTarget; } }
 
         private float yRotation = 0;
         private float xRotation = 0;
@@ -22,11 +28,12 @@ namespace Player
         private void Awake()
         {
             player = GetComponent<Player.FSM.PlayerController>();
+            recoil = recoilTarget.GetComponent<RecoilController>();
         }
 
         public void InitCam()
         {
-            CameraManager.Instance.SetCamTarget(CamTarget);
+            CameraManager.Instance.SetCamTarget(RecoilTarget);
 
             camTarget.parent = null;
             camTarget.rotation = transform.rotation;
@@ -34,6 +41,14 @@ namespace Player
             initYRotation = YRotation;
 
             player.MyStat.OnRevive += OnRevive;
+            player.GunController.OnFired += recoil.ApplyRecoil;
+            player.GunController.OnGunRecoilChanged += recoil.SetRecoilValue;
+
+            recoil.SetRecoilValue(
+                player.GunController.CurrentGun.GunInfo.RecoilPitch,
+                player.GunController.CurrentGun.GunInfo.RecoilYaw,
+                player.GunController.CurrentGun.GunInfo.RecoilRoll
+            );
         }
 
         public void Update()

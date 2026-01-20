@@ -10,6 +10,8 @@ using System.Collections;
 public class GunHandler : NetworkBehaviour
 {
     public event Action<int> OnRoundChanged;
+    public event Action OnFired;
+    public event Action<float, float, float> OnGunRecoilChanged;
 
     [Header("Gun 트랜스폼 세팅")]
     [SerializeField] Transform gunPos;
@@ -107,6 +109,11 @@ public class GunHandler : NetworkBehaviour
             WeaponHUD.Instance.OnGunChanged(
                 currentGun.GunName,
                 currentGun.GunInfo.MagazineCapacity + 1
+            );
+            OnGunRecoilChanged?.Invoke(
+                currentGun.GunInfo.RecoilPitch,
+                currentGun.GunInfo.RecoilYaw,
+                currentGun.GunInfo.RecoilRoll
             );
         }
     }
@@ -291,6 +298,7 @@ public class GunHandler : NetworkBehaviour
     private void RpcPlayMuzzleFlash(Vector3 muzzlePos, Quaternion rot)
     {
         EffectPoolManager.SpawnFromPool("MuzzleFlash", muzzlePos, rot);
+        if (isLocalPlayer) OnFired?.Invoke();
     }
 
     [Server]

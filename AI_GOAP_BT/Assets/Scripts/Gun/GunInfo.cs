@@ -16,6 +16,9 @@ public class GunInfo
     public int RoundDamage { get; }
     public float Stability { get; }
     public float Spread { get; }
+    public float RecoilPitch { get; }
+    public float RecoilYaw { get; }
+    public float RecoilRoll { get; }
     public int MagazineCapacity { get; }
     public int RPM { get; }
     public float ProjectileSpeed { get; }
@@ -27,6 +30,9 @@ public class GunInfo
         int RoundDamage,
         float Stability,
         float Spread,
+        float RecoilPitch,
+        float RecoilYaw,
+        float RecoilRoll,
         int MagazineCapacity,
         int RPM,
         float ProjectileSpeed,
@@ -36,6 +42,9 @@ public class GunInfo
         this.RoundDamage = RoundDamage;
         this.Stability = Stability;
         this.Spread = Spread;
+        this.RecoilPitch = RecoilPitch;
+        this.RecoilYaw = RecoilYaw;
+        this.RecoilRoll = RecoilRoll;
         this.MagazineCapacity = MagazineCapacity;
         this.RPM = RPM;
         this.ProjectileSpeed = ProjectileSpeed;
@@ -54,7 +63,6 @@ public class Gun
     public string GunID { get; }
     public string GunName { get; }
     public GunInfo GunInfo { get; }
-
     public Vector3 GunPosition { get; }
     public Vector3 MuzzlePosition { get; }
     public Vector3 AimStandardPosition { get; }
