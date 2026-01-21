@@ -19,12 +19,9 @@ namespace Player
         private float xRotation = 0;
         public float YRotation { get => yRotation; private set => yRotation = value; }
         public float XRotation { get => xRotation; private set => xRotation = value; }
-
-        private float initXRotation;
+        private float initYRotation;
 
         private RaycastHit[] centerHits = new RaycastHit[4];
-
-        private float initYRotation;
 
         private void Awake()
         {

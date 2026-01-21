@@ -16,6 +16,15 @@ public class InGameUI : MonoBehaviour
     [SerializeField] private Image hitMark;
     [SerializeField] private float hitMarkFadeTime = 0.08f;
 
+    [Header("Crosshair")]
+    [SerializeField] private Image crossHair_L;
+    [SerializeField] private Image crossHair_R;
+    [SerializeField] private Image crossHair_U;
+    [SerializeField] private Image crossHair_D;
+    [SerializeField] private float crossHairSpreadScale = 4.0f;
+
+    private Vector2 pos_L, pos_R, pos_U, pos_D;
+
     private CoroutineHandle hitmarkHandle;
 
     public RectTransform GameWinHUD { get => gameWinHUD;}
@@ -24,6 +33,11 @@ public class InGameUI : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        pos_L = crossHair_L.rectTransform.anchoredPosition;
+        pos_R = crossHair_R.rectTransform.anchoredPosition;
+        pos_U = crossHair_U.rectTransform.anchoredPosition;
+        pos_D = crossHair_D.rectTransform.anchoredPosition;
     }
 
     private void Start()
@@ -40,6 +54,16 @@ public class InGameUI : MonoBehaviour
     {
         Timing.KillCoroutines(hitmarkHandle);
         Instance = null;
+    }
+
+    public void SetCrossHairSpread(float weight)
+    {
+        weight = Mathf.Clamp01(weight);
+
+        crossHair_L.rectTransform.anchoredPosition = pos_L * weight + (pos_L * crossHairSpreadScale) * (1 - weight);
+        crossHair_R.rectTransform.anchoredPosition = pos_R * weight + (pos_R * crossHairSpreadScale) * (1 - weight);
+        crossHair_U.rectTransform.anchoredPosition = pos_U * weight + (pos_U * crossHairSpreadScale) * (1 - weight);
+        crossHair_D.rectTransform.anchoredPosition = pos_D * weight + (pos_D * crossHairSpreadScale) * (1 - weight);
     }
 
     public void PlayHitMark()

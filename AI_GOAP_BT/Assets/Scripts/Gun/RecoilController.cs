@@ -13,7 +13,7 @@ public class RecoilController : MonoBehaviour
 
     [SerializeField] private float returnDamping = 12f;
     [SerializeField, Range(0f, 1f)] private float firingRecoveryScale = 0.1f;
-    [SerializeField] private float recoilLifeTime = 0.05f;
+    [SerializeField, Range(0f, 0.5f)] private float recoilLifeTime = 0.15f;
 
     [SerializeField] private float snapTime = 0.03f;
     [SerializeField] private float maxPitch = 45f;

@@ -4436,12 +4436,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d907191942b3cc4bb2fa604008e25ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  returnDamping: 25
-  firingRecoveryScale: 0.05
-  recoilLifeTime: 0.25
+  returnDamping: 12
+  firingRecoveryScale: 0.02
+  recoilLifeTime: 0.1
   snapTime: 0.05
   maxPitch: 45
-  maxRoll: 3
+  maxRoll: 5
 --- !u!1 &8522177062250388504
 GameObject:
   m_ObjectHideFlags: 0

@@ -48,6 +48,8 @@ namespace Player
                 player.GunController.CurrentGun.GunInfo.TimeToADS
             );
             Anim.SetFloat(AnimHash.AimWeight, aimWeight);
+
+            if (isLocalPlayer) InGameUI.Instance.SetCrossHairSpread(aimWeight);
         }
 
         void SyncAim()
