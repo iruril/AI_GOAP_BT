@@ -4438,11 +4438,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   returnDamping: 25
   firingRecoveryScale: 0.05
-  recoilLifeTime: 0.15
+  recoilLifeTime: 0.25
   snapTime: 0.05
   maxPitch: 45
-  maxRoll: 2
-  recoilDeadZone: 3
+  maxRoll: 3
 --- !u!1 &8522177062250388504
 GameObject:
   m_ObjectHideFlags: 0

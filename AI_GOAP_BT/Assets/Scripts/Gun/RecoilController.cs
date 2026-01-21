@@ -17,17 +17,17 @@ public class RecoilController : MonoBehaviour
 
     [SerializeField] private float snapTime = 0.03f;
     [SerializeField] private float maxPitch = 45f;
-    [SerializeField] private float maxRoll = 3f; 
-    
-    [SerializeField] private float recoilDeadZone = 5f;
+    [SerializeField] private float maxRoll = 3f;
 
+    bool isFiring = false;
     float lastApplyTime = 0f;
 
     void Update()
     {
         float damping = returnDamping;
+        isFiring = Time.time - lastApplyTime < recoilLifeTime;
 
-        if (Time.time - lastApplyTime < recoilLifeTime)
+        if (isFiring)
         {
             damping *= firingRecoveryScale;
         }
@@ -42,7 +42,12 @@ public class RecoilController : MonoBehaviour
 
     public float ConsumePitch(float inputPitch)
     {
-        if (Mathf.Abs(currentRotation.x) < recoilDeadZone)
+        if (Mathf.Abs(currentRotation.x) < 0.01f)
+            return inputPitch;
+
+        bool isOpposite = (inputPitch < 0 && currentRotation.x > 0) || (inputPitch > 0 && currentRotation.x < 0);
+        
+        if (!isOpposite)
             return inputPitch;
 
         float cancelAmount = Mathf.Min(
@@ -60,7 +65,12 @@ public class RecoilController : MonoBehaviour
 
     public float ConsumeYaw(float inputYaw)
     {
-        if (Mathf.Abs(currentRotation.y) < recoilDeadZone)
+        if (Mathf.Abs(currentRotation.y) < 0.01f)
+            return inputYaw;
+
+        bool isOpposite = (inputYaw < 0 && currentRotation.y > 0) || (inputYaw > 0 && currentRotation.y < 0);
+
+        if (!isOpposite)
             return inputYaw;
 
         float cancelAmount = Mathf.Min(
