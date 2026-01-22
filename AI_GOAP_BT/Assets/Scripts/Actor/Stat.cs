@@ -175,13 +175,13 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         if (attackerIdentity.connectionToClient == null)
             return;
 
-        TargetPlayHitMark(attackerIdentity.connectionToClient);
+        TargetPlayHitMark(attackerIdentity.connectionToClient, IsDead);
     }
 
     [TargetRpc]
-    private void TargetPlayHitMark(NetworkConnection target)
+    private void TargetPlayHitMark(NetworkConnection target, bool isKilled)
     {
-        InGameUI.Instance?.PlayHitMark();
+        InGameUI.Instance?.PlayHitMark(isKilled);
     }
 
     [Server]

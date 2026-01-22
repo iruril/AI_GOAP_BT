@@ -14,6 +14,7 @@ public class InGameUI : MonoBehaviour
 
     [Header("Hit Mark")]
     [SerializeField] private Image hitMark;
+    [SerializeField] private Image killMark;
     [SerializeField] private float hitMarkFadeTime = 0.08f;
 
     [Header("Crosshair")]
@@ -26,6 +27,7 @@ public class InGameUI : MonoBehaviour
     private Vector2 pos_L, pos_R, pos_U, pos_D;
 
     private CoroutineHandle hitmarkHandle;
+    private CoroutineHandle killmarkHandle;
 
     public RectTransform GameWinHUD { get => gameWinHUD;}
     public RectTransform GameLoseHUD { get => gameLoseHUD;}
@@ -48,6 +50,10 @@ public class InGameUI : MonoBehaviour
         Color startColor = hitMark.color;
         startColor.a = 0f;
         hitMark.color = startColor;
+
+        startColor = killMark.color;
+        startColor.a = 0f;
+        killMark.color = startColor;
     }
 
     private void OnDestroy()
@@ -66,38 +72,55 @@ public class InGameUI : MonoBehaviour
         crossHair_D.rectTransform.anchoredPosition = pos_D * weight + (pos_D * crossHairSpreadScale) * (1 - weight);
     }
 
-    public void PlayHitMark()
+    public void PlayHitMark(bool isKill)
     {
         if (hitMark == null) return;
 
-        Timing.KillCoroutines(hitmarkHandle);
+        Image mark = isKill ? killMark : hitMark;
+        float fadeTime = isKill ? hitMarkFadeTime * 1.5f : hitMarkFadeTime;
 
-        hitmarkHandle = Timing.RunCoroutine(FadeHitMark());
+        if (isKill)
+        {
+            Timing.KillCoroutines(killmarkHandle);
+            killmarkHandle = Timing.RunCoroutine(FadeHitMark(mark, fadeTime));
+        }
+        else
+        {
+            Timing.KillCoroutines(hitmarkHandle);
+            hitmarkHandle = Timing.RunCoroutine(FadeHitMark(mark, fadeTime));
+        }
     }
 
-    private IEnumerator<float> FadeHitMark()
+    private IEnumerator<float> FadeHitMark(Image image, float fadeTime)
     {
         float elapsed = 0f;
 
-        Color fadeColor = hitMark.color;
+        Color fadeColor = image.color;
         fadeColor.a = 1f;
-        hitMark.color = fadeColor;
+        image.color = fadeColor;
 
-        while (elapsed < hitMarkFadeTime)
+        Transform target = image.transform;
+        Vector3 startScale = Vector3.one;
+        Vector3 endScale = Vector3.one * 1.5f;
+        target.localScale = startScale;
+
+        while (elapsed < fadeTime)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / hitMarkFadeTime);
-            float alpha = 1f - Mathf.Pow(t, 3f);
+            float t = Mathf.Clamp01(elapsed / fadeTime);
 
+            float alpha = 1f - Mathf.Pow(t, 3f);
             fadeColor.a = alpha;
-            hitMark.color = fadeColor;
+            image.color = fadeColor;
+
+            target.localScale = Vector3.Lerp(startScale, endScale, t);
 
             yield return Timing.WaitForOneFrame;
         }
 
-        Color endColor = hitMark.color;
-        endColor.a = 0f;
-        hitMark.color = endColor;
+        fadeColor.a = 0f;
+        image.color = fadeColor;
+        target.localScale = endScale;
     }
 
     public void ShowRealTimeHUDs()
