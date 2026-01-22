@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using UnityEngine;
 using MEC;
 using Mirror;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
@@ -166,14 +166,16 @@ public class Bullet : MonoBehaviour
 
         if (target.TryGetComponent<HitBox>(out var hitBox))
         {
-            bool result = hitBox.ApplyDamage(damage, shotOrigin, hitPoint, friendLayers, owner != null);
-            if (NetworkServer.active && owner != null && result)
-            {
-                hitBox.SendShooterInfo(
-                    owner.gameObject.transform,
-                    WorldManager.Instance.IsBlueTeam(friendLayers)
-                );
-            }
+            bool isServer = !NetworkServer.active;
+            hitBox.ApplyDamage(
+                damage,
+                shotOrigin,
+                hitPoint,
+                friendLayers,
+                owner.gameObject.transform,
+                WorldManager.Instance.IsBlueTeam(friendLayers),
+                isServer
+            );
         }
 
         if (((1 << target.gameObject.layer) & WorldManager.Instance.GetBleedLayers()) != 0)
@@ -183,6 +185,7 @@ public class Bullet : MonoBehaviour
 
         if (NetworkServer.active && owner != null) 
             owner.ServerReportHit(hitPoint, rot, vfxName);
+
         Deactivate();
     }
 
