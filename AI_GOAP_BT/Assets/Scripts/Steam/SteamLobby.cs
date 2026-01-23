@@ -160,9 +160,12 @@ public class SteamLobby : MonoBehaviour
             LobbyVisibility.FriendsOnly => "friends",
             _ => "private"
         };
+
         SteamMatchmaking.SetLobbyData(lobbyId, "visibility", visibilityStr);
         SteamMatchmaking.SetLobbyData(lobbyId, "state", "lobby");
-        SteamMatchmaking.SetLobbyData(lobbyId, "hasPassword", "false");
+        string hasPassword = currentLobbyOptions.UsePassword ? "true" : "false";
+        SteamMatchmaking.SetLobbyData(lobbyId, "hasPassword", hasPassword);
+        SteamMatchmaking.SetLobbyData(lobbyId, "Password", currentLobbyOptions.Password);
         SteamMatchmaking.SetLobbyData(lobbyId, "version", Application.version);
         SteamMatchmaking.SetLobbyData(lobbyId, "maxPlayers", currentLobbyOptions.MaxPlayers.ToString());
         SteamMatchmaking.SetLobbyData(lobbyId, "spawnBots", currentLobbyOptions.SpawnBots ? "true" : "false");

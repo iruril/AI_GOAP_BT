@@ -5,12 +5,13 @@ using UnityEngine.UI;
 public class ChatItem : MonoBehaviour
 {
     public RectTransform ItemRect;
-    public TextMeshProUGUI Nickname, Chat;
+    public TextMeshProUGUI Chat;
 
-    public void SendMessage(string sender, string messege, Color nicknameColor)
+    public void SendMessage(string sender, string message, Color nicknameColor)
     {
-        Nickname.text = sender;
-        Nickname.color = nicknameColor;
-        Chat.text = messege;
+        string nickColor = ColorUtility.ToHtmlStringRGBA(nicknameColor);
+        message = message.Replace("<", "&lt;").Replace(">", "&gt;");
+
+        Chat.text = $"<color=#{nickColor}>{sender} </color>" + $"<color=#FFFFFF>: {message}</color>";
     }
 }

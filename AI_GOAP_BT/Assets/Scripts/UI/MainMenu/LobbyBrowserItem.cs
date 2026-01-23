@@ -6,8 +6,10 @@ using UnityEngine.UI;
 public class LobbyBrowserItem : MonoBehaviour
 {
     public TextMeshProUGUI LobbyName, MaxPlayers, CurrentPlayers, LobbyType;
+    public Image HasPassword;
     public Button JoinLobbyButton;
     private ulong lobbyID;
+    private bool hasPassword = false;
 
     private void Start()
     {
@@ -88,11 +90,26 @@ public class LobbyBrowserItem : MonoBehaviour
                 SetLobbyType(SteamLobby.LobbyVisibility.Public);
                 break;
         }
+
+        hasPassword = SteamMatchmaking.GetLobbyData(lobbyCSteamID, "hasPassword") == "true" ? true : false;
+        Color passwordColor = HasPassword.color;
+        passwordColor.a = hasPassword ? 1.0f : 0f;
+        HasPassword.color = passwordColor;
     }
 
     public void JoinLobby()
     {
-        SteamLobby.Instance.JoinLobby(lobbyID);
+        if (!hasPassword) SteamLobby.Instance.JoinLobby(lobbyID);
+        else
+        {
+            LobbyBrowser.Instance.RequestValidatePassword(lobbyID, (isValid) =>
+            {
+                if (isValid)
+                {
+                    SteamLobby.Instance.JoinLobby(lobbyID);
+                }
+            });
+        }
     }
 
     public void SetInteractable(bool value)
