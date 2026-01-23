@@ -80948,6 +80948,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6718827548851829341, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6718827548851829341, guid: ad5e565b2a7e0dd4c8e60b484aad1298, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 325
       objectReference: {fileID: 0}

@@ -66,11 +66,9 @@ public class LobbyBrowser : MonoBehaviour
         PasswordPanelClose.onClick.AddListener(
             () =>
             {
-                if (!PassworldInputPanel.gameObject.activeSelf)
-                    PassworldInputPanel.gameObject.SetActive(false);
-
                 PassworldInputField.onEndEdit.RemoveAllListeners();
                 Refresh();
+                PassworldInputPanel.gameObject.SetActive(false);
             }
         );
 

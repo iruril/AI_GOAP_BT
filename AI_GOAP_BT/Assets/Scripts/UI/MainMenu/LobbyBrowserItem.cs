@@ -99,14 +99,14 @@ public class LobbyBrowserItem : MonoBehaviour
 
     public void JoinLobby()
     {
-        if (!hasPassword) SteamLobby.Instance.JoinLobby(lobbyID);
+        if (!hasPassword) SteamLobby.Instance?.JoinLobby(lobbyID);
         else
         {
-            LobbyBrowser.Instance.RequestValidatePassword(lobbyID, (isValid) =>
+            LobbyBrowser.Instance?.RequestValidatePassword(lobbyID, (isValid) =>
             {
                 if (isValid)
                 {
-                    SteamLobby.Instance.JoinLobby(lobbyID);
+                    SteamLobby.Instance?.JoinLobby(lobbyID);
                 }
             });
         }
