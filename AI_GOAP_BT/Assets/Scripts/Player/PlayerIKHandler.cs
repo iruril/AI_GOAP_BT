@@ -11,6 +11,7 @@ namespace Player
         public Animator Anim { get; private set; }
         public FullBodyBipedIK FBBIK { get; private set; }
         public AimIK AimIK { get; private set; }
+        public LookAtIK LookIK { get; private set; }
 
         [SyncVar] public bool IsOnAim;
         [SyncVar] public bool IsGunInWall;
@@ -22,6 +23,7 @@ namespace Player
             Anim = GetComponent<Animator>();
             FBBIK = GetComponent<FullBodyBipedIK>();
             AimIK = GetComponent<AimIK>();
+            LookIK = GetComponent<LookAtIK>();
         }
 
         private void OnDisable()

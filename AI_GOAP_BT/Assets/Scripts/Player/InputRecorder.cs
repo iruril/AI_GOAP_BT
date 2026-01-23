@@ -52,6 +52,7 @@ namespace Player.Input
         public bool ESC { get; set; } = false;
         public bool Tab { get; set; } = false;
         public bool LeanLeft { get; set; } = false;
+        public bool Crouch { get; set; } = false;
 
         public UIState CurrentUIState { get; set; } = UIState.None;
         public bool IsOnStaticUI => CurrentUIState != UIState.None && CurrentUIState != UIState.Scoreboard;
@@ -143,6 +144,11 @@ namespace Player.Input
         public void OnLeanRightInput(InputAction.CallbackContext context)
         {
             LeanLeft = false;
+        }
+
+        public void OnCrouchInput(InputAction.CallbackContext context)
+        {
+            Crouch = context.performed;
         }
 
         public bool ConsumeChatKeyDown()

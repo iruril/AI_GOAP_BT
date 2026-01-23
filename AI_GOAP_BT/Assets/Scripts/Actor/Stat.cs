@@ -151,7 +151,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
         OnUnderAttack?.Invoke(shotOrigin);
 
-        if (CurrentHP <= 0f)
+        if (CurrentHP <= 0f && !IsDead)
         {
             Die();
             respawnHandle = Timing.RunCoroutine(Respawn());
@@ -167,14 +167,13 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     [Server]
     public void SetAttacker(uint attackerNetId)
     {
-        RecentAttackerNetId = attackerNetId;
-
+        if (IsDead) return;
         if (!NetworkServer.spawned.TryGetValue(attackerNetId, out NetworkIdentity attackerIdentity))
             return;
-
         if (attackerIdentity.connectionToClient == null)
             return;
 
+        RecentAttackerNetId = attackerNetId;
         TargetPlayHitMark(attackerIdentity.connectionToClient, IsDead);
     }
 

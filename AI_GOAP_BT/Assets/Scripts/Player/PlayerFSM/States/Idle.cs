@@ -42,6 +42,7 @@ namespace Player.FSM
         {
             if (ctx.Input.Jump && !GameManager.GetInstance().InputMap.IsOnStaticUI) return PlayerState.Jump;
             if (!ctx.IsGrounded) return PlayerState.Fall;
+            if (ctx.Input.Crouch) return PlayerState.CrouchIdle;
             if (ctx.Input.MoveInputMap != Vector2.zero)
             {
                 return PlayerState.Move;
@@ -71,21 +72,22 @@ namespace Player.FSM
 
             if (MathUtility.IsRightDirectionXZ(ctx.transform.forward, targetDir, 60))
             {
-                turnHandle = Timing.RunCoroutine(DoTurn(false, targetDir, ctx.Input.Aim), Segment.FixedUpdate);
+                Timing.KillCoroutines(turnHandle);
+                turnHandle = Timing.RunCoroutine(DoTurn(false, ctx.Input.Aim), Segment.FixedUpdate);
             }
             else if (MathUtility.IsLeftDirectionXZ(ctx.transform.forward, targetDir, 60))
             {
-                turnHandle = Timing.RunCoroutine(DoTurn(true, targetDir, ctx.Input.Aim), Segment.FixedUpdate);
+                Timing.KillCoroutines(turnHandle);
+                turnHandle = Timing.RunCoroutine(DoTurn(true, ctx.Input.Aim), Segment.FixedUpdate);
             }
         }
 
-        private IEnumerator<float> DoTurn(bool leftTurn, Vector3 targetDir, bool onAim)
+        private IEnumerator<float> DoTurn(bool leftTurn, bool onAim)
         {
             float animTime;
+            float step = Time.deltaTime * 5f;
 
             turning = true;
-            Quaternion startRot = ctx.transform.rotation;
-            Quaternion endRot = Quaternion.LookRotation(targetDir);
 
             int turnHash;
             if (onAim)
@@ -107,14 +109,19 @@ namespace Player.FSM
             {
                 if (ctx.MyStat.IsDead) yield break;
 
-                float t = time / animTime;
-                ctx.transform.rotation = Quaternion.Slerp(startRot, endRot, t);
+                float yRotation = Vector3.SignedAngle(Vector3.forward, ctx.PlayerForward, Vector3.up);
+                ctx.transform.rotation =
+                    Quaternion.Slerp
+                    (
+                        ctx.transform.rotation,
+                        Quaternion.Euler(0, yRotation, 0),
+                        step
+                    );
 
                 time += Timing.DeltaTime;
                 yield return Timing.WaitForOneFrame;
             }
 
-            ctx.transform.rotation = endRot;
             turning = false;
             ctx.Anim.applyRootMotion = true;
             ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.1f);

@@ -53,7 +53,7 @@ namespace Player
         {
             if (!player.isLocalPlayer) return;
 
-            camTarget.position = transform.position + Vector3.up;
+            camTarget.position = player.Input.Crouch ? transform.position + Vector3.up * 0.5f : transform.position + Vector3.up;
 
             if (GameManager.GetInstance().InputMap.IsOnStaticUI) return;
 

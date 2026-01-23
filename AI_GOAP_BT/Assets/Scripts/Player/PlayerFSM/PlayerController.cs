@@ -11,7 +11,9 @@ namespace Player.FSM
         TurnOpposite,
         Jump,
         Fall,
-        Land
+        Land,
+        Crouch,
+        CrouchIdle
     }
 
     public class PlayerController : StateManager<PlayerState>
@@ -128,6 +130,7 @@ namespace Player.FSM
             UpdateStandardNormals();
             UpdateXZProjectionVelocity();
             UpdateAccelation();
+            UpdateAnimVelocity();
         }
 
         protected override void FixedUpdate()
@@ -145,6 +148,8 @@ namespace Player.FSM
             States.Add(PlayerState.Jump, new Jump(this, PlayerState.Jump));
             States.Add(PlayerState.Fall, new Fall(this, PlayerState.Fall));
             States.Add(PlayerState.Land, new Land(this, PlayerState.Land));
+            States.Add(PlayerState.CrouchIdle, new CrouchIdle(this, PlayerState.CrouchIdle));
+            States.Add(PlayerState.Crouch, new Crouch(this, PlayerState.Crouch));
 
             CurrentState = States[PlayerState.Idle];
         }
@@ -152,6 +157,12 @@ namespace Player.FSM
         private void CalculateJumpVelocity()
         {
             JumpImpulseVelocity = Mathf.Sqrt(2f * 9.81f * maxJumpHeight);
+        }
+
+        private void UpdateAnimVelocity()
+        {
+            Anim.SetFloat(AnimHash.XAxis, Input.HorizontalInput);
+            Anim.SetFloat(AnimHash.YAxis, Input.VerticalInput);
         }
 
         float accelRef;

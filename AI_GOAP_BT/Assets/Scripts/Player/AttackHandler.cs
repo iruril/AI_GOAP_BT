@@ -22,6 +22,7 @@ namespace Player
         {
             syncedAimWeight = 0f;
             player.IKManager.AimIK.solver.IKPositionWeight = 0f;
+            player.IKManager.LookIK.solver.IKPositionWeight = 0f;
         }
 
         public override void OnStartLocalPlayer()
@@ -37,6 +38,7 @@ namespace Player
         public override void OnStartClient()
         {
             player.IKManager.AimIK.solver.IKPositionWeight = 0f;
+            player.IKManager.LookIK.solver.IKPositionWeight = 0f;
             player.IKManager.FBBIK.solver.leftHandEffector.target = player.GunController.LeftHandIKTarget;
             player.IKManager.FBBIK.solver.leftHandEffector.positionWeight = 1f;
         }
@@ -85,6 +87,7 @@ namespace Player
                     ref aimWeightVel,
                     0.1f
                 );
+            player.IKManager.LookIK.solver.IKPositionWeight = player.IKManager.AimIK.solver.IKPositionWeight;
         }
 
         private void UpdateRateOfFire()

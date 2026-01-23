@@ -1,14 +1,7 @@
 fileFormatVersion: 2
 guid: 3787889f507548045abba6b87370b07d
-AssetOrigin:
-  serializedVersion: 1
-  productId: 305180
-  packageName: CombatGirls_RifleCharacterPack
-  packageVersion: 1.0.4
-  assetPath: Assets/CombatGirlsCharacterPack/RifleGirl/Animations/Normal/Idle.fbx
-  uploadId: 770882
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 21300
   internalIDToNameTable:
   - first:
       74: -5109575877556825824
@@ -26,6 +19,8 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 1
     motionNodeName: root
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -63,32 +58,7 @@ ModelImporter:
       heightFromFeet: 0
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves:
-      - name: LHandIK
-        curve:
-          serializedVersion: 2
-          curve:
-          - serializedVersion: 3
-            time: 0
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          preInfinity: 3
-          postInfinity: 3
-          rotationOrder: 4
+      curves: []
       events: []
       transformMask:
       - path: 
@@ -238,7 +208,6 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
-    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 0
@@ -266,7 +235,6 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -1043,15 +1011,22 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: c0426d61788399a4aa9702989176ee68, type: 3}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: c0426d61788399a4aa9702989176ee68,
+    type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
   avatarSetup: 2
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
-  importBlendShapeDeformPercent: 0
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305180
+  packageName: CombatGirls_RifleCharacterPack
+  packageVersion: 1.1
+  assetPath: Assets/Animations/Animations_Rifle/Normal/Idle.fbx
+  uploadId: 838852

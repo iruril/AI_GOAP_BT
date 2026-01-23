@@ -1027,6 +1027,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 305180
   packageName: CombatGirls_RifleCharacterPack
-  packageVersion: 1.0.4
-  assetPath: Assets/CombatGirlsCharacterPack/RifleGirl/Animations/Normal/Evade.fbx
-  uploadId: 770882
+  packageVersion: 1.1
+  assetPath: Assets/Animations/Animations_Rifle/Normal/Evade.fbx
+  uploadId: 838852

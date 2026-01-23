@@ -28,8 +28,6 @@ namespace Player.FSM
 
         public override void PhysicsUpdateState()
         {
-            ctx.Anim.SetFloat(AnimHash.XAxis, ctx.Input.HorizontalInput);
-            ctx.Anim.SetFloat(AnimHash.YAxis, ctx.Input.VerticalInput);
             base.PhysicsUpdateState();
         }
 
@@ -37,6 +35,7 @@ namespace Player.FSM
         {
             if (ctx.Input.Jump && !GameManager.GetInstance().InputMap.IsOnStaticUI) return PlayerState.Jump;
             if (!ctx.IsGrounded) return PlayerState.Fall;
+            if (ctx.Input.Crouch) return PlayerState.Crouch;
             if (ctx.Input.MoveInputMap == Vector2.zero)
             {
                 return PlayerState.Idle;
