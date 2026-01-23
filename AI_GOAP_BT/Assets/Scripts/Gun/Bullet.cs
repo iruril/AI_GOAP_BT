@@ -163,10 +163,10 @@ public class Bullet : MonoBehaviour
     {
         Quaternion rot = Quaternion.LookRotation(hitNormal);
         string vfxName = "Hit";
+        bool isServer = NetworkServer.active && owner != null;
 
         if (target.TryGetComponent<HitBox>(out var hitBox))
         {
-            bool isServer = !NetworkServer.active;
             hitBox.ApplyDamage(
                 damage,
                 shotOrigin,
@@ -178,13 +178,14 @@ public class Bullet : MonoBehaviour
             );
         }
 
-        if (((1 << target.gameObject.layer) & WorldManager.Instance.GetBleedLayers()) != 0)
-            vfxName = "Blood";
-        else 
-            vfxName = "Hit";
-
-        if (NetworkServer.active && owner != null) 
+        if (isServer)
+        {
+            if (((1 << target.gameObject.layer) & WorldManager.Instance.GetBleedLayers()) != 0)
+                vfxName = "Blood";
+            else
+                vfxName = "Hit";
             owner.ServerReportHit(hitPoint, rot, vfxName);
+        }
 
         Deactivate();
     }
