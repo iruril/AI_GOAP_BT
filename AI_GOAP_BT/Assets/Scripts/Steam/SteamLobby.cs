@@ -321,7 +321,14 @@ public class SteamLobby : MonoBehaviour
             "state",
             "lobby",
             ELobbyComparison.k_ELobbyComparisonEqual
-        ); 
+        );
+
+        SteamMatchmaking.AddRequestLobbyListStringFilter(
+            "hasPassword",
+            "true",
+            ELobbyComparison.k_ELobbyComparisonNotEqual
+        );
+
         SteamMatchmaking.AddRequestLobbyListDistanceFilter(ELobbyDistanceFilter.k_ELobbyDistanceFilterWorldwide);
         SteamMatchmaking.AddRequestLobbyListFilterSlotsAvailable(1);
         SteamMatchmaking.RequestLobbyList();
