@@ -63,7 +63,7 @@ namespace Player.Input
 
         private Vector2 _smoothInputMap = Vector3.zero;
         public Vector2 CurrentInputMap { get; private set; }
-        private const float _smoothTimeOnGround = 0.15f;
+        private const float SMOOTH_TIME = 0.08f;
 
         private void Update()
         {
@@ -167,7 +167,7 @@ namespace Player.Input
 
         private void InputMapCompensate()
         {
-            CurrentInputMap = Vector2.SmoothDamp(CurrentInputMap, MoveInputMap, ref _smoothInputMap, _smoothTimeOnGround);
+            CurrentInputMap = Vector2.SmoothDamp(CurrentInputMap, MoveInputMap, ref _smoothInputMap, SMOOTH_TIME);
 
             VerticalInput = CurrentInputMap.y;
             HorizontalInput = CurrentInputMap.x;
