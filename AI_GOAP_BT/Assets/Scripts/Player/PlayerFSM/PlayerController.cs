@@ -198,9 +198,25 @@ namespace Player.FSM
 
         public void CalculateOnAirSpeed()
         {
-            Vector2 xzVelocity = new Vector2(PlayerCC.velocity.x, PlayerCC.velocity.z);
-            float currentSpeed = xzVelocity.magnitude;
-            OnAirSpeed = Mathf.Lerp(0f, 6.5f, currentSpeed / 6.5f);
+            //Vector2 xzVelocity = new Vector2(PlayerCC.velocity.x, PlayerCC.velocity.z);
+            //float currentSpeed = xzVelocity.magnitude;
+            //OnAirSpeed = Mathf.Lerp(0f, 6.5f, currentSpeed / 6.5f);
+
+            if (Input.MoveInputMap != Vector2.zero)
+            {
+                if (Input.Run)
+                {
+                    OnAirSpeed = 6.5f;
+                    return;
+                }
+                else
+                {
+                    OnAirSpeed = 3.5f;
+                    return;
+                }
+            }
+            else 
+                OnAirSpeed = 0f;
         }
     }
 }

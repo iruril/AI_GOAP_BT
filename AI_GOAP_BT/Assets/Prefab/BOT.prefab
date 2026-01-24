@@ -1583,7 +1583,7 @@ MonoBehaviour:
     XY: 0
     bones:
     - transform: {fileID: 4541341677793966817}
-      weight: 1
+      weight: 0.5
       solverPosition: {x: 0, y: 0, z: 0}
       solverRotation: {x: 0, y: 0, z: 0, w: 0}
       defaultLocalPosition: {x: -0.061101913, y: 0.015401356, z: -0.0002768403}
@@ -1592,7 +1592,7 @@ MonoBehaviour:
       sqrMag: 0
       axis: {x: 0, y: 0, z: 0}
     - transform: {fileID: 6732675037903908856}
-      weight: 1
+      weight: 0.75
       solverPosition: {x: 0, y: 0, z: 0}
       solverRotation: {x: 0, y: 0, z: 0, w: 0}
       defaultLocalPosition: {x: -0.091812134, y: -0.00007914304, z: 0.0000000104680655}
@@ -1847,6 +1847,7 @@ MonoBehaviour:
     Kills: 0
     Assists: 0
     Deaths: 0
+  ServerVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &2621712713207012491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2053,7 +2054,6 @@ MonoBehaviour:
   - {fileID: 6871850033737476818}
   - {fileID: 9107090864865688775}
   - {fileID: 1792424239067795329}
-  corpse: {fileID: 0}
   LatestHittedPart: 
 --- !u!114 &1286322669042044507
 MonoBehaviour:
@@ -3010,7 +3010,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncDirection: 0
   syncMode: 0
-  syncInterval: 0.01
+  syncInterval: 0
   clientAuthority: 0
   animator: {fileID: 5124921793324620322}
 --- !u!114 &1612278945683807786

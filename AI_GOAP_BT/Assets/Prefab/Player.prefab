@@ -1711,7 +1711,7 @@ MonoBehaviour:
     XY: 0
     bones:
     - transform: {fileID: 366605066637369344}
-      weight: 1
+      weight: 0.5
       solverPosition: {x: 0, y: 0, z: 0}
       solverRotation: {x: 0, y: 0, z: 0, w: 0}
       defaultLocalPosition: {x: -0.061101913, y: 0.015401356, z: -0.0002768403}
@@ -1720,7 +1720,7 @@ MonoBehaviour:
       sqrMag: 0
       axis: {x: 0, y: 0, z: 0}
     - transform: {fileID: 7769570156464747774}
-      weight: 1
+      weight: 0.75
       solverPosition: {x: 0, y: 0, z: 0}
       solverRotation: {x: 0, y: 0, z: 0, w: 0}
       defaultLocalPosition: {x: -0.091812134, y: -0.00007914304, z: 0.0000000104680655}
@@ -1761,7 +1761,7 @@ MonoBehaviour:
   solver:
     executedInEditor: 0
     IKPosition: {x: -8.021731, y: 1.4084613, z: 0.055735826}
-    IKPositionWeight: 1
+    IKPositionWeight: 0.5
     root: {fileID: 4530299076479977941}
     target: {fileID: 7175498607167974741}
     spine:
@@ -2889,7 +2889,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncDirection: 1
   syncMode: 0
-  syncInterval: 0.01
+  syncInterval: 0
   clientAuthority: 1
   animator: {fileID: 4460953585574970759}
 --- !u!114 &2023396316786459820

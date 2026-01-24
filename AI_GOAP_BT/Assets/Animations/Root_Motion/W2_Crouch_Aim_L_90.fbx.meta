@@ -503,8 +503,8 @@ ModelImporter:
       name: W2_Crouch_Aim_L_90
       takeName: W2_Crouch_Aim_L_90
       internalID: 0
-      firstFrame: 0
-      lastFrame: 67
+      firstFrame: 12
+      lastFrame: 48
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

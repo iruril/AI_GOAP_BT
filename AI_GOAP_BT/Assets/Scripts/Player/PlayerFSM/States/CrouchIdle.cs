@@ -88,12 +88,12 @@ namespace Player.FSM
             int turnHash;
             if (onAim)
             {
-                animTime = 1.2f;
+                animTime = 0.55f;
                 turnHash = leftTurn ? AnimHash.AimCrouchTurn_L : AnimHash.AimCrouchTurn_R;
             }
             else
             {
-                animTime = 1.2f;
+                animTime = 0.55f;
                 turnHash = leftTurn ? AnimHash.CrouchTurn_L : AnimHash.CrouchTurn_R;
             }
 

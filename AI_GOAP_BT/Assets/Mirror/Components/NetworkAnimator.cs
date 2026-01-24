@@ -247,7 +247,7 @@ namespace Mirror
             // NOTE: there is no API to play a transition(?)
             if (stateHash != 0 && animator.enabled)
             {
-                animator.Play(stateHash, layerId, normalizedTime);
+                animator.CrossFade(stateHash, 0.15f, layerId, normalizedTime);
             }
 
             animator.SetLayerWeight(layerId, weight);
