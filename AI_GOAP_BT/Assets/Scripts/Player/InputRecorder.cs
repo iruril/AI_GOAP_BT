@@ -138,11 +138,15 @@ namespace Player.Input
 
         public void OnLeanLeftInput(InputAction.CallbackContext context)
         {
+            if (IsOnStaticUI) return;
+
             LeanLeft = true;
         }
 
         public void OnLeanRightInput(InputAction.CallbackContext context)
         {
+            if (IsOnStaticUI) return;
+
             LeanLeft = false;
         }
 
@@ -167,7 +171,10 @@ namespace Player.Input
 
         private void InputMapCompensate()
         {
-            CurrentInputMap = Vector2.SmoothDamp(CurrentInputMap, MoveInputMap, ref _smoothInputMap, SMOOTH_TIME);
+            if (IsOnStaticUI)
+                CurrentInputMap = Vector2.zero;
+            else
+                CurrentInputMap = Vector2.SmoothDamp(CurrentInputMap, MoveInputMap, ref _smoothInputMap, SMOOTH_TIME);
 
             VerticalInput = CurrentInputMap.y;
             HorizontalInput = CurrentInputMap.x;
