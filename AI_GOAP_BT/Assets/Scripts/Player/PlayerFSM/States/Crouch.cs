@@ -12,7 +12,7 @@ namespace Player.FSM
         {
             base.EnterState();
             ctx.Anim.applyRootMotion = true;
-            ctx.Anim.CrossFadeInFixedTime(AnimHash.Crouch, 0.25f);
+            ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.25f);
         }
 
         public override void ExitState()

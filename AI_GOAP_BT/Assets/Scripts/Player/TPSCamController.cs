@@ -117,6 +117,8 @@ namespace Player
 
         private void HandleZoom()
         {
+            if (GameManager.GetInstance().InputMap.IsOnStaticUI) return;
+
             if (player.IKManager.IsOnAim)
                 CameraManager.Instance.ActivateAimModeCam();
             else
@@ -125,7 +127,9 @@ namespace Player
 
         private void HandleLean()
         {
-            if(player.Input.LeanLeft)
+            if (GameManager.GetInstance().InputMap.IsOnStaticUI) return;
+
+            if (player.Input.LeanLeft)
                 CameraManager.Instance.Lean(true);
             else
                 CameraManager.Instance.Lean(false);

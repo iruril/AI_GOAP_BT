@@ -172,9 +172,8 @@ public class Bullet : MonoBehaviour
                 shotOrigin,
                 hitPoint,
                 friendLayers,
-                owner.gameObject.transform,
-                WorldManager.Instance.IsBlueTeam(friendLayers),
-                isServer
+                isServer ? owner.gameObject.transform : null,
+                WorldManager.Instance.IsBlueTeam(friendLayers)
             );
         }
 

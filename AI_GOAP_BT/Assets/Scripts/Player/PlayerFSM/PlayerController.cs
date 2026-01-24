@@ -129,7 +129,8 @@ namespace Player.FSM
 
             UpdateStandardNormals();
             UpdateXZProjectionVelocity();
-            UpdateAccelation();
+            UpdateAccelation(); 
+            UpdateCrouchWeight();
             UpdateAnimVelocity();
         }
 
@@ -194,6 +195,15 @@ namespace Player.FSM
 
             PlayerForward = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.forward;
             PlayerRight = Quaternion.AngleAxis(yRotation, Vector3.up) * Vector3.right;
+        }
+
+        float crouchRef;
+        private void UpdateCrouchWeight()
+        {
+            float targetWeight = Input.Crouch ? 1f : 0f;
+            float currentWeight = Anim.GetFloat(AnimHash.CrouchWeight);
+
+            Anim.SetFloat(AnimHash.CrouchWeight, Mathf.SmoothDamp(currentWeight, targetWeight, ref crouchRef, 0.15f));
         }
 
         public void CalculateOnAirSpeed()

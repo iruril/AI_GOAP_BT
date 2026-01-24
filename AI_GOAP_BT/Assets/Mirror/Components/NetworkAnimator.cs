@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -247,11 +248,10 @@ namespace Mirror
             // NOTE: there is no API to play a transition(?)
             if (stateHash != 0 && animator.enabled)
             {
-                animator.CrossFade(stateHash, 0.15f, layerId, normalizedTime);
+                animator.CrossFadeInFixedTime(stateHash, 0.08f, layerId, 0f, normalizedTime);
             }
 
             animator.SetLayerWeight(layerId, weight);
-
             ReadParameters(reader);
         }
 

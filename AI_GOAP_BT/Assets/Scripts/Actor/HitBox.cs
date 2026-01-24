@@ -8,22 +8,20 @@ public class HitBox : MonoBehaviour
     [SerializeField] private HitReaction hitReactIK;
     [SerializeField] private Transform owner;
 
-    public void ApplyDamage(float dmg, Vector3 shotOrigin, Vector3 hitPoint, LayerMask friendLayer, Transform attacker, bool isBlueTeam, bool isServer)
+    public void ApplyDamage(float dmg, Vector3 shotOrigin, Vector3 hitPoint, LayerMask friendLayer, Transform attacker, bool isBlueTeam)
     {
         if ((friendLayer & (1 << owner.gameObject.layer)) != 0) return;
 
-        if (owner.TryGetComponent<IDamageable>(out var damageable))
+        if (attacker != null && owner.TryGetComponent<IDamageable>(out var damageable))
         {
-            if (isServer)
-            {
-                SendShooterInfo(attacker, isBlueTeam);
-                damageable.ApplyDamage(dmg, shotOrigin, hitPoint);
-                corpseGenerator.LatestHittedPart = this.transform.name;
-            }
-            corpseGenerator.ShotOrigin = shotOrigin;
-            Vector3 hitforce = (transform.position - shotOrigin).normalized;
-            hitReactIK.Hit(col, hitforce, hitPoint);
+            SendShooterInfo(attacker, isBlueTeam);
+            damageable.ApplyDamage(dmg, shotOrigin, hitPoint);
+            corpseGenerator.LatestHittedPart = this.transform.name;
         }
+
+        corpseGenerator.ShotOrigin = shotOrigin;
+        Vector3 hitforce = (transform.position - shotOrigin).normalized;
+        hitReactIK.Hit(col, hitforce, hitPoint);
     }
 
     private void SendShooterInfo(Transform attacker, bool isBlueTeam)

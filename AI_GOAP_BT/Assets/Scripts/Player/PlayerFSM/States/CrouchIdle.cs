@@ -17,7 +17,7 @@ namespace Player.FSM
         {
             base.EnterState();
             ctx.Anim.applyRootMotion = true;
-            ctx.Anim.CrossFadeInFixedTime(AnimHash.Crouch, 0.25f);
+            ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.25f);
             turning = false;
         }
 
@@ -120,7 +120,7 @@ namespace Player.FSM
 
             turning = false;
             ctx.Anim.applyRootMotion = true;
-            ctx.Anim.CrossFadeInFixedTime(AnimHash.Crouch, 0.1f);
+            ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.1f);
         }
     }
 }
