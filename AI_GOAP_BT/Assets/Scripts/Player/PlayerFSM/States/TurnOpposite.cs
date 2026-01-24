@@ -16,6 +16,7 @@ namespace Player.FSM
         {
             base.EnterState();
             ctx.Anim.applyRootMotion = true;
+            ctx.IsOnJumping = false;
 
             Vector3 tgt = ctx.CamController.CamTarget.forward;
             tgt.y = 0f;

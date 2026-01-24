@@ -34,7 +34,6 @@ namespace Player.FSM
         {
             if (ctx.StateTime > 0.3f)
             {
-                if (ctx.IsGrounded && ctx.Input.Jump) return PlayerState.Jump;
                 if (ctx.Input.MoveInputMap == Vector2.zero)
                 {
                     return PlayerState.Idle;

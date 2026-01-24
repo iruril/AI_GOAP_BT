@@ -310,7 +310,7 @@ namespace Player.Input
             InGameUI.Instance.HideScoreboardHUD();
         }
 
-        private void RestoreCursor()
+        public void RestoreCursor()
         {
             if (GameManager.GetInstance().IsGameplayScene)
                 LockCursor(true);

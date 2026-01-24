@@ -17,6 +17,7 @@ namespace Player.FSM
         {
             base.EnterState();
             ctx.Anim.applyRootMotion = true;
+            ctx.IsOnJumping = false;
             ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.25f);
             turning = false;
         }

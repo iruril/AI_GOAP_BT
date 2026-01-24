@@ -1,4 +1,5 @@
 using Mirror;
+using Player.Input;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -80,10 +81,8 @@ public class SettingsPanel : MonoBehaviour
         GameManager.GetInstance().Settings.SaveFile();
         gameObject.SetActive(false);
 
-        if (GameManager.GetInstance().IsGameplayScene)
-        {
-            GameManager.GetInstance().InputMap.LockCursor(true);
-        }
+        GameManager.GetInstance().InputMap.RestoreCursor();
+        GameManager.GetInstance().InputMap.CurrentUIState = UIState.None;
     }
 
     private void Exit()
