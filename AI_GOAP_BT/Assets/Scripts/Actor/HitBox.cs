@@ -16,8 +16,8 @@ public class HitBox : MonoBehaviour
         {
             if (isServer)
             {
-                damageable.ApplyDamage(dmg, shotOrigin, hitPoint);
                 SendShooterInfo(attacker, isBlueTeam);
+                damageable.ApplyDamage(dmg, shotOrigin, hitPoint);
                 corpseGenerator.LatestHittedPart = this.transform.name;
             }
             corpseGenerator.ShotOrigin = shotOrigin;

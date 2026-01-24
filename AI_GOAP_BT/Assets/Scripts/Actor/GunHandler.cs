@@ -6,6 +6,7 @@ using RootMotion.FinalIK;
 using Mirror;
 using System;
 using System.Collections;
+using Pathfinding;
 
 public class GunHandler : NetworkBehaviour
 {
@@ -330,94 +331,87 @@ public class GunHandler : NetworkBehaviour
     {
         if (OnReload) return;
 
-        if (isServer)
-            reloadHandle = Timing.RunCoroutine(ServerReloadRoutine());
-        else
-            CmdRequestReload();
+        CmdRequestReload();
     }
 
     [Command]
     private void CmdRequestReload()
     {
-        reloadHandle = Timing.RunCoroutine(ServerReloadRoutine());
+        double startTime = NetworkTime.time;
+        reloadHandle = Timing.RunCoroutine(ServerReloadRoutine(startTime));
     }
 
-    private IEnumerator<float> ServerReloadRoutine()
+    private IEnumerator<float> ServerReloadRoutine(double serverStartTime)
     {
         OnReload = true;
 
-        if (isServer) //Host
-        {
-            Animator anim = GetComponent<Animator>();
-            IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
-            anim.CrossFade(AnimHash.Reload, 0.1f);
-            layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.15f));
-        }
+        RpcStartReload(serverStartTime);
 
-        RpcStartReload();
-
-        yield return Timing.WaitForSeconds(1.9f);
+        yield return Timing.WaitForSeconds(1.66f);
 
         int newRounds = (CurrentRounds == 0)
             ? currentGun.GunInfo.MagazineCapacity
             : currentGun.GunInfo.MagazineCapacity + 1;
 
         CurrentRounds = newRounds;
-
         OnReload = false;
 
-        if (isServer) //Host
-        {
-            Animator anim = GetComponent<Animator>();
-            IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
-            layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.15f));
-        }
-
-        RpcCompleteReload();
+        RpcCompleteReload(serverStartTime + 1.66f);
     }
 
     [ClientRpc]
-    private void RpcStartReload()
+    private void RpcStartReload(double serverStartTime)
     {
-        if (isServer) return;
+        if (!isClient) return;
 
         Animator anim = GetComponent<Animator>();
         IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
 
         anim.CrossFade(AnimHash.Reload, 0.1f);
-        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.15f));
+
+        double now = NetworkTime.time;
+        float elapsed = (float)(now - serverStartTime);
+
+        Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.25f, elapsed));
     }
 
     [ClientRpc]
-    private void RpcCompleteReload()
+    private void RpcCompleteReload(double serverCompleteTime)
     {
-        if (isServer) return;
+        if (!isClient) return;
 
         Animator anim = GetComponent<Animator>();
         IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
-        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.15f));
+        double now = NetworkTime.time;
+        float elapsed = (float)(now - serverCompleteTime);
+
+        Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.25f, elapsed));
     }
 
     private IEnumerator<float> LerpIKAndLayer(Animator anim, IKEffector leftHand,
-        float targetIK, float targetLayer, float duration)
+        float targetIK, float targetLayer, float duration, float startOffset)
     {
-        float t = 0f;
+        float t = Mathf.Clamp(startOffset, 0f, duration);
 
-        float startIK = leftHand.positionWeight;
-        float startLayer = anim.GetLayerWeight(1);
+        if (t >= duration)
+        {
+            leftHand.positionWeight = targetIK;
+            anim.SetLayerWeight(1, targetLayer);
+            yield break;
+        }
+
+        float k0 = t / duration;
+
+        float startIK = Mathf.Lerp(leftHand.positionWeight, targetIK, k0);
+        float startLayer = Mathf.Lerp(anim.GetLayerWeight(1), targetLayer, k0);
 
         while (t < duration)
         {
-            t += Time.deltaTime;
-            float k = t / duration;
+            t += Timing.DeltaTime;
+            float k = Mathf.Clamp01(t / duration);
 
-            leftHand.positionWeight =
-                Mathf.Lerp(startIK, targetIK, k);
-
-            anim.SetLayerWeight(
-                1,
-                Mathf.Lerp(startLayer, targetLayer, k)
-            );
+            leftHand.positionWeight = Mathf.Lerp(startIK, targetIK, k);
+            anim.SetLayerWeight(1, Mathf.Lerp(startLayer, targetLayer, k));
 
             yield return Timing.WaitForOneFrame;
         }

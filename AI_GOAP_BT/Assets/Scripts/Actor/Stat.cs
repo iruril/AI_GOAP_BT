@@ -59,7 +59,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     private CoroutineHandle respawnHandle;
 
     private HashSet<uint> damageContributors = new();
-    public uint RecentAttackerNetId { get; private set; }
+    public NetworkIdentity RecentAttacker { get; private set; }
 
     bool combatEnded = false;
     private const float NO_DAMAGE_DURATION = 5f;
@@ -156,6 +156,9 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
             Die();
             respawnHandle = Timing.RunCoroutine(Respawn());
         }
+
+        if (RecentAttacker.connectionToClient != null)
+            TargetPlayHitMark(RecentAttacker.connectionToClient, IsDead);
     }
 
     [Server]
@@ -168,13 +171,9 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     public void SetAttacker(uint attackerNetId)
     {
         if (IsDead) return;
-        if (!NetworkServer.spawned.TryGetValue(attackerNetId, out NetworkIdentity attackerIdentity))
-            return;
-        if (attackerIdentity.connectionToClient == null)
-            return;
 
-        RecentAttackerNetId = attackerNetId;
-        TargetPlayHitMark(attackerIdentity.connectionToClient, IsDead);
+        if (NetworkServer.spawned.TryGetValue(attackerNetId, out NetworkIdentity attackerIdentity))
+            RecentAttacker = attackerIdentity;
     }
 
     [TargetRpc]
@@ -221,11 +220,11 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         AddDeath();
 
         // Killer 贸府
-        if (NetworkServer.spawned.TryGetValue(RecentAttackerNetId, out var killerIdentity))
+        if (RecentAttacker != null)
         {
-            var killerStat = killerIdentity.GetComponent<Stat>();
+            var killerStat = RecentAttacker.GetComponent<Stat>();
 
-            if(RecentAttackerNetId != netId && IsEnemy(killerStat)) 
+            if(RecentAttacker.netId != netId && IsEnemy(killerStat)) 
                 killerStat?.AddKill();
 
             LogManager.Instance.ReportKill(
@@ -244,7 +243,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         // Assist 贸府
         foreach (uint contributorNetId in damageContributors)
         {
-            if (contributorNetId == RecentAttackerNetId)
+            if (contributorNetId == RecentAttacker.netId)
                 continue; // 懦矾 力寇
 
             if (NetworkServer.spawned.TryGetValue(contributorNetId, out var identity))
