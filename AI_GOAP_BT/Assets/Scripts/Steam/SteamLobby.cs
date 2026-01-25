@@ -435,6 +435,7 @@ public class SteamLobby : MonoBehaviour
         {
             Debug.Log("랜덤 입장 가능한 로비가 없습니다.");
             IsJoining = false;
+            OnJoinResult?.Invoke(JoinResult.Failed);
             joinPurpose = JoinPurpose.None;
             return;
         }
