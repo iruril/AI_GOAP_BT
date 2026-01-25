@@ -56,10 +56,20 @@ public class LoadingMessageHandler : MonoBehaviour
             Timing.KillCoroutines(popUpHandle);
             Status.text = DEF_MESSAGE;
             gameObject.SetActive(popUp);
+
+            SettingsPanel.Instance?.CloseSettings();
+            LobbyBrowser.Instance?.CloseBrowser();
+            LobbySettingHandler.Instance?.gameObject.SetActive(false);
+            LobbyUI.Instance?.ManageList.DisablePanel();
+            LobbyUI.Instance?.FriendListPanel.DisablePanel();
+
+            GameManager.GetInstance().InputMap.CurrentUIState = Player.Input.UIState.Loading;
         }
         else
         {
             popUpHandle = Timing.RunCoroutine(DelayedClose());
+
+            GameManager.GetInstance().InputMap.CurrentUIState = Player.Input.UIState.None;
         }
     }
 

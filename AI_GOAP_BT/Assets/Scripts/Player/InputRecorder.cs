@@ -8,7 +8,8 @@ namespace Player.Input
         None,
         Chat,
         Settings,
-        Scoreboard
+        Scoreboard,
+        Loading
     }
 
     public class InputRecorder : MonoBehaviour
@@ -99,6 +100,7 @@ namespace Player.Input
 
         public void OnChatKey(InputAction.CallbackContext context)
         {
+            if (CurrentUIState == UIState.Loading) return;
             Chat = context.performed;
         }
 
@@ -128,11 +130,13 @@ namespace Player.Input
 
         public void OnESCInput(InputAction.CallbackContext context)
         {
+            if (CurrentUIState == UIState.Loading) return;
             ESC = context.performed;
         }
 
         public void OnTabInput(InputAction.CallbackContext context)
         {
+            if (CurrentUIState == UIState.Loading) return;
             Tab = context.performed;
         }
 
@@ -203,6 +207,11 @@ namespace Player.Input
 
                 case UIState.None:
                     EnterSetting();
+                    break;
+
+                case UIState.Loading:
+                    ChatLog.Instance?.InputField.DeactivateInputField();
+                    ChatLog.Instance?.InputField.gameObject.SetActive(false);
                     break;
             }
         }
