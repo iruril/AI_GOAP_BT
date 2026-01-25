@@ -23,14 +23,14 @@ public class InviteMessageHandler : MonoBehaviour
     private void Start()
     {
         if (SteamLobby.Instance != null)
-            SteamLobby.Instance.OnInviteRecieced += OnInviteRecived;
+            SteamLobby.Instance.OnInviteReceived += OnInviteRecived;
         Clear();
     }
 
     private void OnDestroy()
     {
         if (SteamLobby.Instance != null)
-            SteamLobby.Instance.OnInviteRecieced -= OnInviteRecived;
+            SteamLobby.Instance.OnInviteReceived -= OnInviteRecived;
 
         Clear();
         Instance = null;

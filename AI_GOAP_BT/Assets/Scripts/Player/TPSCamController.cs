@@ -64,7 +64,9 @@ namespace Player
 
         private void HandleCamPosition()
         {
-            float currentWeight = player.Anim.GetFloat(AnimHash.CrouchWeight);
+            bool isOnCrouch = player.State == FSM.PlayerState.Crouch || player.State == FSM.PlayerState.CrouchIdle;
+            
+            float currentWeight = isOnCrouch ? player.Anim.GetFloat(AnimHash.CrouchWeight) : 0;
             float height = Mathf.Lerp(1.0f, 0.5f, currentWeight);
 
             Vector3 pos = transform.position;

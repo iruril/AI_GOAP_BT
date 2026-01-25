@@ -8,9 +8,18 @@ public class SteamLobby : MonoBehaviour
 {
     public static SteamLobby Instance;
 
-    public event Action<ulong, ulong> OnInviteRecieced;
+    public event Action<ulong, ulong> OnInviteReceived;
     public event Action<bool> OnJoiningStateChanged;
-    public event Action<LobbyCreateOptions> OnLobbyOptionChanged;
+    public event Action<LobbyCreateOptions> OnLobbyOptionChanged; 
+    public event Action<JoinResult> OnJoinResult;
+
+    public enum JoinResult
+    {
+        Success,
+        Failed,
+        Timeout,
+        Canceled
+    }
 
     public enum LobbyVisibility
     {
@@ -55,14 +64,15 @@ public class SteamLobby : MonoBehaviour
         RespawnDelay = 5f
     }; 
     
-    private enum LobbyListPurpose
+    private enum JoinPurpose
     {
         None,
-        Browse,
-        RandomJoin
+        Join,
+        RandomJoin,
+        Host
     }
 
-    private LobbyListPurpose currentPurpose = LobbyListPurpose.None;
+    private JoinPurpose joinPurpose = JoinPurpose.None;
 
     protected Callback<LobbyCreated_t> LobbyCreated;
     protected Callback<GameLobbyJoinRequested_t> JoinRequest;
@@ -87,6 +97,12 @@ public class SteamLobby : MonoBehaviour
             OnJoiningStateChanged?.Invoke(value);
         }
     }
+
+    private uint joinRequestToken = 0;
+    private uint activeJoinToken = 0;
+
+    private Coroutine joinTimeoutCoroutine;
+    private const float JoinTimeoutSeconds = 30f;
 
     private void Awake()
     {
@@ -116,7 +132,10 @@ public class SteamLobby : MonoBehaviour
         LobbyMatchList = null;
         InviteRecieved = null;
 
-        CleanupSession();
+        CleanupSession(); 
+        
+        if (joinTimeoutCoroutine != null)
+            StopCoroutine(joinTimeoutCoroutine);
     }
 
     private IEnumerator InitSteamLobby()
@@ -133,8 +152,21 @@ public class SteamLobby : MonoBehaviour
     #region Steam Callbacks
     private void OnLobbyCreated(LobbyCreated_t callback)
     {
-        if (callback.m_eResult != EResult.k_EResultOK)
+        if (joinPurpose != JoinPurpose.Host)
             return;
+
+        if (callback.m_eResult != EResult.k_EResultOK)
+        {
+            OnJoinResult?.Invoke(JoinResult.Failed);
+            CancelJoining();
+            return;
+        }
+
+        if (joinTimeoutCoroutine != null)
+        {
+            StopCoroutine(joinTimeoutCoroutine);
+            joinTimeoutCoroutine = null;
+        }
 
         CurrentLobbyID = callback.m_ulSteamIDLobby;
         var lobbyId = new CSteamID(CurrentLobbyID);
@@ -178,7 +210,12 @@ public class SteamLobby : MonoBehaviour
             Debug.LogWarning("RoomManager not ready");
             return;
         }
+
         Manager.StartHost();
+
+        OnJoinResult?.Invoke(JoinResult.Success);
+        IsJoining = false;
+        joinPurpose = JoinPurpose.None;
     }
 
     private void OnJoinRequest(GameLobbyJoinRequested_t callback)
@@ -188,19 +225,33 @@ public class SteamLobby : MonoBehaviour
         if (IsJoining)
             return;
 
-        IsJoining = true;
         CleanupSession(false);
+
+        joinPurpose = JoinPurpose.Join;
+        BeginJoining();
 
         SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
     }
 
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
+        if (!IsJoining)
+            return;
+
+        if (activeJoinToken != joinRequestToken)
+            return;
+
+        if (joinTimeoutCoroutine != null)
+        {
+            StopCoroutine(joinTimeoutCoroutine);
+            joinTimeoutCoroutine = null;
+        }
+
         CurrentLobbyID = callback.m_ulSteamIDLobby;
 
         Debug.Log("Entered Steam Lobby");
 
-        if (NetworkServer.active)
+        if (NetworkServer.active || joinPurpose == JoinPurpose.Host)
         {
             IsJoining = false;
             return;
@@ -221,28 +272,29 @@ public class SteamLobby : MonoBehaviour
         manager.networkAddress = hostAddress; 
         manager.StartClient();
 
+        OnJoinResult?.Invoke(JoinResult.Success);
         IsJoining = false;
     }
 
     private void OnLobbyMatchList(LobbyMatchList_t callback)
     {
-        switch (currentPurpose)
+        switch (joinPurpose)
         {
-            case LobbyListPurpose.Browse:
+            case JoinPurpose.Join:
                 HandleBrowseLobbyList(callback);
                 break;
 
-            case LobbyListPurpose.RandomJoin:
+            case JoinPurpose.RandomJoin:
                 HandleRandomJoin(callback);
                 break;
         }
 
-        currentPurpose = LobbyListPurpose.None;
+        joinPurpose = JoinPurpose.None;
     }
 
     private void OnLobbyInvite(LobbyInvite_t callback)
     {
-        OnInviteRecieced?.Invoke(callback.m_ulSteamIDLobby, callback.m_ulSteamIDUser);
+        OnInviteReceived?.Invoke(callback.m_ulSteamIDLobby, callback.m_ulSteamIDUser);
     }
     #endregion
 
@@ -258,9 +310,12 @@ public class SteamLobby : MonoBehaviour
 
         CleanupSession();
 
+        joinPurpose = JoinPurpose.Host;
         CurrentLobbyOptions = options;
-        ELobbyType lobbyType;
 
+        BeginJoining();
+
+        ELobbyType lobbyType;
         switch (options.lobbyVisibility)
         {
             case LobbyVisibility.Public:
@@ -301,8 +356,10 @@ public class SteamLobby : MonoBehaviour
         if (IsJoining)
             return;
 
-        IsJoining = true;
         CleanupSession(false);
+
+        joinPurpose = JoinPurpose.Join;
+        BeginJoining();
 
         SteamMatchmaking.JoinLobby(new CSteamID(lobbyID));
     }
@@ -312,10 +369,10 @@ public class SteamLobby : MonoBehaviour
         if (IsJoining)
             return;
 
-        IsJoining = true;
         CleanupSession(false);
 
-        currentPurpose = LobbyListPurpose.RandomJoin;
+        joinPurpose = JoinPurpose.RandomJoin;
+        BeginJoining();
 
         SteamMatchmaking.AddRequestLobbyListStringFilter(
             "state",
@@ -336,7 +393,10 @@ public class SteamLobby : MonoBehaviour
 
     public void RequestLobbyList()
     {
-        currentPurpose = LobbyListPurpose.Browse;
+        if (IsJoining)
+            return;
+
+        joinPurpose = JoinPurpose.Join;
 
         SteamMatchmaking.AddRequestLobbyListResultCountFilter(50);
 
@@ -351,13 +411,31 @@ public class SteamLobby : MonoBehaviour
         SteamMatchmaking.RequestLobbyList();
     }
 
+    public void CancelJoining(JoinResult result = JoinResult.Canceled)
+    {
+        if (!IsJoining)
+            return;
+
+        activeJoinToken = 0;
+        IsJoining = false;
+
+        if (joinTimeoutCoroutine != null)
+        {
+            StopCoroutine(joinTimeoutCoroutine);
+            joinTimeoutCoroutine = null;
+        }
+
+        OnJoinResult?.Invoke(result);
+        CleanupSession();
+    }
+
     private void HandleRandomJoin(LobbyMatchList_t cb)
     {
         if (cb.m_nLobbiesMatching == 0)
         {
             Debug.Log("랜덤 입장 가능한 로비가 없습니다.");
             IsJoining = false;
-            currentPurpose = LobbyListPurpose.None;
+            joinPurpose = JoinPurpose.None;
             return;
         }
 
@@ -387,6 +465,8 @@ public class SteamLobby : MonoBehaviour
         if (resetJoinFlag)
             IsJoining = false;
 
+        joinPurpose = JoinPurpose.None;
+
         // 기존 로비 탈퇴
         if (CurrentLobbyID != 0)
         {
@@ -402,6 +482,38 @@ public class SteamLobby : MonoBehaviour
         else if (NetworkClient.active)
         {
             NetworkManager.singleton.StopClient();
+        }
+    }
+
+    private void BeginJoining()
+    {
+        activeJoinToken = ++joinRequestToken;
+
+        IsJoining = true;
+
+        if (joinTimeoutCoroutine != null)
+            StopCoroutine(joinTimeoutCoroutine);
+
+        joinTimeoutCoroutine = StartCoroutine(JoinTimeoutRoutine(activeJoinToken));
+    }
+
+    private IEnumerator JoinTimeoutRoutine(uint token)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < JoinTimeoutSeconds)
+        {
+            if (!IsJoining || activeJoinToken != token)
+                yield break;
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (activeJoinToken == token)
+        {
+            Debug.LogWarning("Steam Lobby Join Timeout");
+            CancelJoining(JoinResult.Timeout);
         }
     }
 }
