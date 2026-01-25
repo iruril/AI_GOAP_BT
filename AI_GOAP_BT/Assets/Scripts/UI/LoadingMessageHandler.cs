@@ -6,7 +6,7 @@ using MEC;
 using System.Collections;
 using System.Collections.Generic;
 
-public class LoadingPanel : MonoBehaviour
+public class LoadingMessageHandler : MonoBehaviour
 {
     public TextMeshProUGUI Status;
     public Button QuitButton;
@@ -19,6 +19,11 @@ public class LoadingPanel : MonoBehaviour
     CoroutineHandle popUpHandle;
 
     private const string DEF_MESSAGE = "Connecting...";
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
+    }
 
     void Start()
     {
