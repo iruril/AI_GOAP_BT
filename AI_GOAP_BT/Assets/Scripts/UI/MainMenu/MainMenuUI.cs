@@ -1,4 +1,3 @@
-using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,10 +16,14 @@ public class MainMenuUI : MonoBehaviour
         {
             if (SettingsPanel.Instance == null) return;
 
-            if (!SettingsPanel.Instance.IsOpen) 
-                SettingsPanel.Instance.OpenSettings();
-            else 
-                SettingsPanel.Instance.CloseSettings();
+            if (GameManager.GetInstance().InputMap.CurrentUIState == Player.Input.UIState.None)
+            {
+                GameManager.GetInstance().InputMap.EnterSetting();
+            }
+            else if (GameManager.GetInstance().InputMap.CurrentUIState == Player.Input.UIState.Settings)
+            {
+                GameManager.GetInstance().InputMap.ExitSetting();
+            }
         });
         BrowseLobbyButton.onClick.AddListener(() =>
         {

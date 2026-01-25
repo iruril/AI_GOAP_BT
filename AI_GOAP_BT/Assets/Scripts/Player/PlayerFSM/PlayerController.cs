@@ -176,7 +176,7 @@ namespace Player.FSM
                 targetAccel = Input.Run && !GunController.OnReload ? 4f : 2f;
 
             float currentAccel = Anim.GetFloat(AnimHash.Accelation);
-            Anim.SetFloat(AnimHash.Accelation, Mathf.SmoothDamp(currentAccel, targetAccel, ref accelRef, 0.25f));
+            Anim.SetFloat(AnimHash.Accelation, Mathf.SmoothDamp(currentAccel, targetAccel, ref accelRef, 0.1f));
         }
 
         private void UpdateXZProjectionVelocity()
@@ -203,7 +203,7 @@ namespace Player.FSM
             float targetWeight = Input.Crouch ? 1f : 0f;
             float currentWeight = Anim.GetFloat(AnimHash.CrouchWeight);
 
-            Anim.SetFloat(AnimHash.CrouchWeight, Mathf.SmoothDamp(currentWeight, targetWeight, ref crouchRef, 0.15f));
+            Anim.SetFloat(AnimHash.CrouchWeight, Mathf.SmoothDamp(currentWeight, targetWeight, ref crouchRef, 0.08f));
         }
 
         public void CalculateOnAirSpeed()

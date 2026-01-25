@@ -53,13 +53,24 @@ namespace Player
         {
             if (!player.isLocalPlayer) return;
 
-            camTarget.position = player.Input.Crouch ? transform.position + Vector3.up * 0.5f : transform.position + Vector3.up;
+            HandleCamPosition();
 
             if (GameManager.GetInstance().InputMap.IsOnStaticUI) return;
 
-            HandleRotation(); 
-            HandleZoom(); 
+            HandleRotation();
+            HandleZoom();
             HandleLean();
+        }
+
+        private void HandleCamPosition()
+        {
+            float currentWeight = player.Anim.GetFloat(AnimHash.CrouchWeight);
+            float height = Mathf.Lerp(1.0f, 0.5f, currentWeight);
+
+            Vector3 pos = transform.position;
+            pos.y += height;
+
+            CamTarget.position = pos;
         }
 
         private void HandleRotation()
