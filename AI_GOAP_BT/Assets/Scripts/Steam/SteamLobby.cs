@@ -131,8 +131,6 @@ public class SteamLobby : MonoBehaviour
         LobbyEntered = null;
         LobbyMatchList = null;
         InviteRecieved = null;
-
-        CleanupSession(); 
         
         if (joinTimeoutCoroutine != null)
             StopCoroutine(joinTimeoutCoroutine);
@@ -230,9 +228,11 @@ public class SteamLobby : MonoBehaviour
 
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
+        Debug.Log("[Network] Entering Lobby...");
         if (!IsJoining)
             return;
 
+        Debug.Log("[Network] Verifying Token...");
         if (activeJoinToken != joinRequestToken)
             return;
 
@@ -245,13 +245,14 @@ public class SteamLobby : MonoBehaviour
         CurrentLobbyID = callback.m_ulSteamIDLobby;
 
         Debug.Log("Entered Steam Lobby");
-
         if (NetworkServer.active || joinPurpose == JoinPurpose.Host)
         {
+            Debug.Log("[Network] Host Exception");
             IsJoining = false;
             return;
         }
 
+        Debug.Log("[Network] Loading LobbyData");
         string hostAddress = SteamMatchmaking.GetLobbyData(
             new CSteamID(CurrentLobbyID),
             HostAddressKey
@@ -264,9 +265,11 @@ public class SteamLobby : MonoBehaviour
             return;
         }
 
+        Debug.Log("[Network] Start Client");
         manager.networkAddress = hostAddress; 
         manager.StartClient();
 
+        Debug.Log("[Network] Join Success");
         OnJoinResult?.Invoke(JoinResult.Success);
         IsJoining = false;
     }
@@ -391,20 +394,18 @@ public class SteamLobby : MonoBehaviour
         if (IsJoining)
             return;
 
+        CleanupSession(false);
+        joinPurpose = JoinPurpose.Join;
+        BeginJoining();
         StartCoroutine(SwitchLobbyRoutine(lobbyId));
+        Debug.Log("[Network] Switching Lobby...");
     }
 
     private IEnumerator SwitchLobbyRoutine(ulong lobbyId)
     {
-        CleanupSession(false);
-
         yield return null;
-        yield return new WaitForEndOfFrame();
-
-        joinPurpose = JoinPurpose.Join;
-        BeginJoining();
-
         SteamMatchmaking.JoinLobby(new CSteamID(lobbyId));
+        Debug.Log("[Network] Joining Lobby...");
     }
 
     public void RequestLobbyList()
@@ -481,8 +482,6 @@ public class SteamLobby : MonoBehaviour
 
     private void CleanupSession(bool resetJoinFlag = true)
     {
-        activeJoinToken = 0;
-
         if (resetJoinFlag)
             IsJoining = false;
 
@@ -500,6 +499,7 @@ public class SteamLobby : MonoBehaviour
         {
             NetworkManager.singleton.StopClient();
         }
+        Debug.Log("[Network] Clean Up Session Complete");
     }
 
     private void BeginJoining()
@@ -512,6 +512,7 @@ public class SteamLobby : MonoBehaviour
             StopCoroutine(joinTimeoutCoroutine);
 
         joinTimeoutCoroutine = StartCoroutine(JoinTimeoutRoutine(activeJoinToken));
+        Debug.Log("[Network] Begin Joining...");
     }
 
     private IEnumerator JoinTimeoutRoutine(uint token)
