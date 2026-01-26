@@ -53,6 +53,7 @@ namespace AnimControl.Assault
 
         private void Start()
         {
+            /// 플레이어와 충돌 무시
             foreach (var player in FindObjectsByType<PlayerController>(sortMode: FindObjectsSortMode.None))
             {
                 Physics.IgnoreCollision(
