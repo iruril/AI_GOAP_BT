@@ -64,7 +64,7 @@ namespace Player.Input
 
         private Vector2 _smoothInputMap = Vector3.zero;
         public Vector2 CurrentInputMap { get; private set; }
-        private const float SMOOTH_TIME = 0.08f;
+        private const float SMOOTH_TIME = 0.15f;
 
         private void Update()
         {
