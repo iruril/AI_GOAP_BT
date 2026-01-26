@@ -2,6 +2,7 @@ using UnityEngine;
 using FSM;
 using RootMotion.FinalIK;
 using Mirror;
+using Player.FSM;
 
 namespace AnimControl.Assault
 {
@@ -21,6 +22,7 @@ namespace AnimControl.Assault
         private AssaultAnimFSM _context => this;
         public Animator Anim { get; private set; }
         public Rigidbody MyRigid { get; private set; }
+        public CapsuleCollider MyCol { get; private set; }
         public FullBodyBipedIK FBBIK { get; private set; }
         public AimIK AimIK { get; private set; }
 
@@ -41,11 +43,24 @@ namespace AnimControl.Assault
             MyBrain = GetComponent<GOAP.Assualt.AssaultBrain>();
             Anim = GetComponent<Animator>();
             MyRigid = GetComponent<Rigidbody>();
+            MyCol = GetComponent<CapsuleCollider>();
             FBBIK = GetComponent<FullBodyBipedIK>();
             AimIK = GetComponent<AimIK>();
 
             InitializeStates();
             CurrentState = States[AnimState.Idle];
+        }
+
+        private void Start()
+        {
+            foreach (var player in FindObjectsByType<PlayerController>(sortMode: FindObjectsSortMode.None))
+            {
+                Physics.IgnoreCollision(
+                    MyCol,
+                    player.GetComponent<Collider>(),
+                    true
+                );
+            }
         }
 
         public override void OnStartServer()

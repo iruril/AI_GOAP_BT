@@ -331,11 +331,25 @@ public class GunHandler : NetworkBehaviour
     {
         if (OnReload) return;
 
-        CmdRequestReload();
+        if (isServer) // 서버 authority
+        {
+            StartReloadServerSide();
+        }
+        else // 클라이언트 authority
+        {
+            CmdRequestReload();
+        }
     }
 
     [Command]
     private void CmdRequestReload()
+    {
+        double startTime = NetworkTime.time;
+        reloadHandle = Timing.RunCoroutine(ServerReloadRoutine(startTime));
+    }
+
+    [Server]
+    private void StartReloadServerSide()
     {
         double startTime = NetworkTime.time;
         reloadHandle = Timing.RunCoroutine(ServerReloadRoutine(startTime));
