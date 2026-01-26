@@ -14,6 +14,7 @@ public struct KDA
 
 public class Stat : NetworkBehaviour, IDamageable, IChatSender
 {
+    public event Action<Team> OnTeamChange;
     public event Action OnDead;
     public event Action OnRevive;
     public event Action<Vector3> OnUnderAttack;
@@ -310,6 +311,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
     private void OnTeamChanged(Team oldValue, Team newTeam)
     {
+        OnTeamChange?.Invoke(newTeam);
         gameObject.layer = newTeam == Team.Blue
             ? LayerMask.NameToLayer("TeamBlue")
             : LayerMask.NameToLayer("TeamRed");

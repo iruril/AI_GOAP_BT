@@ -21,6 +21,8 @@ namespace CapturePoint
 
         private static readonly RaycastHit[] rayHits = new RaycastHit[1];
 
+        Vector3 worldPos;
+
         private void Awake()
         {
             point = GetComponent<CapturePoint>();
@@ -50,11 +52,14 @@ namespace CapturePoint
         {
             if (CameraManager.Instance.MainCam == null) return;
 
-            Camera cam = CameraManager.Instance.MainCam;
-            Vector3 worldPos = point.transform.position + Vector3.up * 5f;
+            worldPos = point.transform.position + Vector3.up * 5f;
 
-            Billboard(cam, worldPos);
-            AlphaUpdate(cam, worldPos);
+            Billboard(CameraManager.Instance.MainCam, worldPos);
+        }
+
+        private void FixedUpdate()
+        {
+            AlphaUpdate(CameraManager.Instance.MainCam, worldPos);
             ScaleUpdate();
         }
 
