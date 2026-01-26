@@ -1,63 +1,41 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using TMPro;
+using Mirror;
+using Unity.VisualScripting;
 
-[RequireComponent(typeof(Stat))]
 public class ActorUIMarker : MonoBehaviour
 {
-    private Stat myActor;
-
-    [SerializeField] Image marker;
-    [SerializeField] TextMeshProUGUI nickname;
+    public Image Marker;
+    public TextMeshProUGUI Nickname;
 
     Vector3 baseImageScale;
     Vector3 worldPos;
     bool isAlly;
+    bool disable = false;
+    public void SetDisable() => disable = true;
 
     private static readonly RaycastHit[] rayHits = new RaycastHit[1];
 
     private void Awake()
     {
-        myActor = GetComponent<Stat>();
-    }
+        Marker.enabled = false;
+        Nickname.enabled = false;
 
-    private void Start()
-    {
-        myActor.OnTeamChange += SetColor; 
-        marker.enabled = false;
-        nickname.enabled = false;
-
-        StartCoroutine(Init());
-    }
-
-    private void OnDestroy()
-    {
-        myActor.OnTeamChange -= SetColor;
-        StopAllCoroutines();
-    }
-
-    private IEnumerator Init()
-    {
-        yield return new WaitUntil(() => GameManager.GetInstance().MyPlayer != null);
-
-        SetColor(myActor.MyTeam);
-        SetNickname(myActor.Nickname);
-        baseImageScale = marker.rectTransform.localScale;
+        baseImageScale = Marker.rectTransform.localScale;
     }
 
     private void LateUpdate()
     {
-        if(GameManager.GetInstance().MyPlayer == this.gameObject && this.enabled)
+        if (CameraManager.Instance.MainCam == null) return;
+        if (disable)
         {
-            this.enabled = false;
-            marker.enabled = false;
-            nickname.enabled = false;
+            Marker.enabled = false;
+            Nickname.enabled = false;
+            return;
         }
 
-        if (CameraManager.Instance.MainCam == null) return;
-
-        worldPos = myActor.transform.position + Vector3.up * 1.75f;
+        worldPos = transform.position + Vector3.up * 1.75f;
 
         Billboard(CameraManager.Instance.MainCam, worldPos);
         ScaleUpdate();
@@ -65,6 +43,9 @@ public class ActorUIMarker : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (CameraManager.Instance.MainCam == null) return;
+        if (disable) return;
+
         AlphaUpdate(CameraManager.Instance.MainCam, worldPos);
     }
 
@@ -72,8 +53,8 @@ public class ActorUIMarker : MonoBehaviour
     {
         if (!isAlly)
         {
-            marker.enabled = false;
-            nickname.enabled = false;
+            Marker.enabled = false;
+            Nickname.enabled = false;
             return;
         }
 
@@ -81,8 +62,8 @@ public class ActorUIMarker : MonoBehaviour
 
         if (screenPos.z <= 0f)
         {
-            marker.enabled = false;
-            nickname.enabled = false;
+            Marker.enabled = false;
+            Nickname.enabled = false;
             return;
         }
 
@@ -92,14 +73,14 @@ public class ActorUIMarker : MonoBehaviour
 
         if (isOutside)
         {
-            marker.enabled = false;
-            nickname.enabled = false;
+            Marker.enabled = false;
+            Nickname.enabled = false;
             return;
         }
 
-        marker.enabled = true;
-        nickname.enabled = true;
-        marker.transform.position = screenPos;
+        Marker.enabled = true;
+        Nickname.enabled = true;
+        Marker.transform.position = screenPos;
     }
 
     private void AlphaUpdate(Camera cam, Vector3 worldPos)
@@ -119,18 +100,18 @@ public class ActorUIMarker : MonoBehaviour
 
         float alpha = isOccluded ? 0.5f : 1f;
 
-        Color imgColor = marker.color;
+        Color imgColor = Marker.color;
         imgColor.a = alpha;
 
-        marker.color = imgColor;
-        nickname.color = imgColor;
+        Marker.color = imgColor;
+        Nickname.color = imgColor;
     }
 
     private void ScaleUpdate()
     {
         float distance = Vector3.Distance(
             CameraManager.Instance.MainCam.transform.position,
-            myActor.transform.position
+            transform.position
         );
 
         float scaleFactor = 1f;
@@ -142,33 +123,57 @@ public class ActorUIMarker : MonoBehaviour
             scaleFactor = Mathf.Lerp(1f, 0.5f, t);
         }
 
-        marker.rectTransform.localScale = baseImageScale * scaleFactor;
+        Marker.rectTransform.localScale = baseImageScale * scaleFactor;
     }
 
-    private void SetColor(Team team)
+    public void SetColor(Team team)
     {
-        if (WorldManager.Instance == null) return;
+        if (WorldManager.Instance == null || disable) return;
 
-        Team myTeam = GameManager.GetInstance().MyPlayer.GetComponent<Stat>().MyTeam;
-        isAlly = myTeam == team;
-
-        if (!isAlly)
+        if (NetworkClient.localPlayer == null)
         {
-            marker.enabled = false;
-            nickname.enabled = false;
+            Marker.enabled = false;
+            Nickname.enabled = false;
             return;
         }
 
-        Color color = team == Team.Blue 
+        Team localPlayerTeam = Team.Blue;
+
+        if (NetworkClient.localPlayer.TryGetComponent<Stat>(out Stat localStat))
+        {
+            localPlayerTeam = localStat.MyTeam;
+        }
+        else if (NetworkClient.localPlayer.TryGetComponent<LobbyPlayer>(out LobbyPlayer lobbyPlayer))
+        {
+            localPlayerTeam = lobbyPlayer.MyTeam;
+        }
+        else
+        {
+            Debug.LogWarning("LocalPlayer does not have Stat or LobbyPlayer component.");
+            Marker.enabled = false;
+            Nickname.enabled = false;
+            return;
+        }
+
+        isAlly = localPlayerTeam == team;
+
+        if (!isAlly)
+        {
+            Marker.enabled = false;
+            Nickname.enabled = false;
+            return;
+        }
+
+        Color color = team == Team.Blue
             ? WorldManager.Instance.BlueTeamColor
             : WorldManager.Instance.RedTeamColor;
 
-        marker.color = color;
-        nickname.color = color;
+        Marker.color = color;
+        Nickname.color = color;
     }
 
-    private void SetNickname(string name)
+    public void SetNickname(string name)
     {
-        nickname.text = name;
+        Nickname.text = name;
     }
 }

@@ -14,7 +14,6 @@ public struct KDA
 
 public class Stat : NetworkBehaviour, IDamageable, IChatSender
 {
-    public event Action<Team> OnTeamChange;
     public event Action OnDead;
     public event Action OnRevive;
     public event Action<Vector3> OnUnderAttack;
@@ -22,8 +21,10 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     [SyncVar(hook = nameof(OnTeamChanged))]
     public Team MyTeam = Team.Blue;
 
-    [SyncVar]
+    [SyncVar(hook = nameof(OnNicknameChanged))]
     public string Nickname;
+
+    ActorUIMarker marker;
 
     string IChatSender.Nickname => Nickname;
     Team IChatSender.MyTeam => MyTeam;
@@ -68,6 +69,11 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
     RoomManager rm;
 
+    private void Awake()
+    {
+        marker = GetComponent<ActorUIMarker>();
+    }
+
     public override void OnStartServer()
     {
         rm = NetworkManager.singleton as RoomManager;
@@ -91,6 +97,14 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
     public override void OnStartClient()
     {
+        if (!isLocalPlayer)
+        {
+            marker.Marker.enabled = true;
+            marker.Nickname.enabled = true;
+            marker.SetColor(MyTeam);
+            marker.SetNickname(Nickname);
+        }
+
         OnTeamChanged(MyTeam, MyTeam);
         spawnPosition = transform.position;
         spawnRotation = transform.rotation;
@@ -105,6 +119,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     public override void OnStartLocalPlayer()
     {
         HealthGuageHUD.Instance.SetNickname(Nickname);
+        marker.SetDisable();
     }
 
     public override void OnStopServer()
@@ -311,7 +326,6 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
     private void OnTeamChanged(Team oldValue, Team newTeam)
     {
-        OnTeamChange?.Invoke(newTeam);
         gameObject.layer = newTeam == Team.Blue
             ? LayerMask.NameToLayer("TeamBlue")
             : LayerMask.NameToLayer("TeamRed");
@@ -319,6 +333,8 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         gameObject.tag = newTeam == Team.Blue
             ? "TeamBlue"
             : "TeamRed";
+
+        if (!isLocalPlayer) marker.SetColor(newTeam);
 
         var meshUpdater = GetComponent<CharacterMeshUpdater>();
         if (meshUpdater != null)
@@ -330,6 +346,11 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         {
             Debug.LogWarning($"CharacterMeshUpdater not ready on {gameObject.name}");
         }
+    }
+
+    private void OnNicknameChanged(string oldValue, string newValue)
+    {
+        if (!isLocalPlayer) marker.SetNickname(newValue);
     }
 
     private void OnHPChanged(float oldHp, float newHp)

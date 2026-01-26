@@ -2010,8 +2010,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecc01c3b4855c9a40aac1e7efb46c469, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  marker: {fileID: 370587820478401410}
-  nickname: {fileID: 1762806691783832831}
+  Marker: {fileID: 370587820478401410}
+  Nickname: {fileID: 1762806691783832831}
 --- !u!114 &4766842133617169138
 MonoBehaviour:
   m_ObjectHideFlags: 0
