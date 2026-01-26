@@ -62,7 +62,7 @@ public class InviteMessageItem : MonoBehaviour
             return;
         }
 
-        SteamLobby.Instance.JoinLobby(lobbyId);
+        SteamLobby.Instance.SwitchLobby(lobbyId);
 
         AcceptButton.onClick.RemoveAllListeners();
 

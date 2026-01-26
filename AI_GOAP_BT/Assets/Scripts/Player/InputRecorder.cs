@@ -95,6 +95,7 @@ namespace Player.Input
 
         public void OnMoveInput(InputAction.CallbackContext context)
         {
+            if (IsOnStaticUI) return;
             MoveInputMap = context.ReadValue<Vector2>();
         }
 
@@ -106,25 +107,50 @@ namespace Player.Input
 
         public void OnJumpInput(InputAction.CallbackContext context)
         {
+            if (IsOnStaticUI)
+            {
+                Jump = false;
+                return;
+            }
             Jump = context.performed;
         }
 
         public void OnAimInput(InputAction.CallbackContext context)
         {
+            if (IsOnStaticUI)
+            {
+                Aim = false;
+                return;
+            }
             Aim = context.performed;
         }
         public void OnRunInput(InputAction.CallbackContext context)
         {
+            if (IsOnStaticUI)
+            {
+                Run = false;
+                return;
+            }
             Run = context.performed;
         }
 
         public void OnTrrigerInput(InputAction.CallbackContext context)
         {
+            if (IsOnStaticUI)
+            {
+                Trigger = false;
+                return;
+            }
             Trigger = context.performed;
         }
 
         public void OnReloadInput(InputAction.CallbackContext context)
         {
+            if (IsOnStaticUI)
+            {
+                Reload = false;
+                return;
+            }
             Reload = context.performed;
         }
 
@@ -143,19 +169,22 @@ namespace Player.Input
         public void OnLeanLeftInput(InputAction.CallbackContext context)
         {
             if (IsOnStaticUI) return;
-
             LeanLeft = true;
         }
 
         public void OnLeanRightInput(InputAction.CallbackContext context)
         {
             if (IsOnStaticUI) return;
-
             LeanLeft = false;
         }
 
         public void OnCrouchInput(InputAction.CallbackContext context)
         {
+            if (IsOnStaticUI)
+            {
+                Crouch = false;
+                return;
+            }
             Crouch = context.performed;
         }
 
@@ -175,10 +204,9 @@ namespace Player.Input
 
         private void InputMapCompensate()
         {
-            if (IsOnStaticUI)
-                CurrentInputMap = Vector2.zero;
-            else
-                CurrentInputMap = Vector2.SmoothDamp(CurrentInputMap, MoveInputMap, ref _smoothInputMap, SMOOTH_TIME);
+            if (IsOnStaticUI) MoveInputMap = Vector2.zero;
+
+            CurrentInputMap = Vector2.SmoothDamp(CurrentInputMap, MoveInputMap, ref _smoothInputMap, SMOOTH_TIME);
 
             VerticalInput = CurrentInputMap.y;
             HorizontalInput = CurrentInputMap.x;

@@ -225,12 +225,7 @@ public class SteamLobby : MonoBehaviour
         if (IsJoining)
             return;
 
-        CleanupSession(false);
-
-        joinPurpose = JoinPurpose.Join;
-        BeginJoining();
-
-        SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
+        SwitchLobby(callback.m_steamIDLobby.m_SteamID);
     }
 
     private void OnLobbyEntered(LobbyEnter_t callback)
@@ -391,6 +386,27 @@ public class SteamLobby : MonoBehaviour
         SteamMatchmaking.RequestLobbyList();
     }
 
+    public void SwitchLobby(ulong lobbyId)
+    {
+        if (IsJoining)
+            return;
+
+        StartCoroutine(SwitchLobbyRoutine(lobbyId));
+    }
+
+    private IEnumerator SwitchLobbyRoutine(ulong lobbyId)
+    {
+        CleanupSession(false);
+
+        yield return null;
+        yield return new WaitForEndOfFrame();
+
+        joinPurpose = JoinPurpose.Join;
+        BeginJoining();
+
+        SteamMatchmaking.JoinLobby(new CSteamID(lobbyId));
+    }
+
     public void RequestLobbyList()
     {
         if (IsJoining)
@@ -427,6 +443,8 @@ public class SteamLobby : MonoBehaviour
 
         OnJoinResult?.Invoke(result);
         CleanupSession();
+
+        joinPurpose = JoinPurpose.None;
     }
 
     private void HandleRandomJoin(LobbyMatchList_t cb)
@@ -463,19 +481,17 @@ public class SteamLobby : MonoBehaviour
 
     private void CleanupSession(bool resetJoinFlag = true)
     {
+        activeJoinToken = 0;
+
         if (resetJoinFlag)
             IsJoining = false;
 
-        joinPurpose = JoinPurpose.None;
-
-        // 기존 로비 탈퇴
         if (CurrentLobbyID != 0)
         {
             SteamMatchmaking.LeaveLobby(new CSteamID(CurrentLobbyID));
             CurrentLobbyID = 0;
         }
 
-        // 네트워크 정리
         if (NetworkServer.active)
         {
             NetworkManager.singleton.StopHost();
