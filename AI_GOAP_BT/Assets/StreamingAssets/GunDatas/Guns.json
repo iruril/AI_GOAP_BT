@@ -17,7 +17,8 @@
         "FireModes": [
           0,
           2
-        ]
+        ],
+        "HeadDamageMultiplier": 1.25
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
@@ -42,7 +43,8 @@
         "FireModes": [
           0,
           2
-        ]
+        ],
+        "HeadDamageMultiplier": 1.25
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.472, 0.017, 0.086 ],

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using RootMotion.FinalIK;
+using Mirror;
 
 #if UNITY_EDITOR
 
@@ -45,7 +46,28 @@ public class HitBoxSetter : MonoBehaviour
 
             var corpseGenerator = GetComponent<CorpseGenerator>();
             var hitReactIK = GetComponent<HitReaction>();
-            hitBox.InitHitBox(transform, corpseGenerator, hitReactIK, gameObject.layer);
+
+            HitBox.HitBoxType hitBoxType;
+
+            if (item.gameObject.name.ToLower().Contains("head"))
+            {
+                hitBoxType = HitBox.HitBoxType.Head;
+            }
+            else if (item.gameObject.name.ToLower().Contains("arm") ||
+                     item.gameObject.name.ToLower().Contains("leg") ||
+                     item.gameObject.name.ToLower().Contains("hand") ||
+                     item.gameObject.name.ToLower().Contains("foot") ||
+                     item.gameObject.name.ToLower().Contains("thigh") ||
+                     item.gameObject.name.ToLower().Contains("calf"))
+            {
+                hitBoxType = HitBox.HitBoxType.Limb;
+            }
+            else
+            {
+                hitBoxType = HitBox.HitBoxType.Body;
+            }
+
+            hitBox.InitHitBox(transform, corpseGenerator, hitReactIK, gameObject.layer, hitBoxType);
             item.gameObject.layer = LayerMask.NameToLayer("HitBox");
             cols.Add(item);
         }

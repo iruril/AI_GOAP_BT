@@ -74,6 +74,7 @@ MonoBehaviour:
   corpseGenerator: {fileID: 5157146277386418988}
   hitReactIK: {fileID: 1286322669042044507}
   owner: {fileID: 5417977022252455614}
+  hitBoxType: 2
 --- !u!1 &49762836999875377
 GameObject:
   m_ObjectHideFlags: 0
@@ -378,8 +379,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.26, y: 0.18577091, z: 0.22}
-  m_Center: {x: -0.13, y: -0.011251109, z: 0}
+  m_Size: {x: 0.289474, y: 0.18577091, z: 0.22}
+  m_Center: {x: -0.1447371, y: -0.011251109, z: -0.0000000011504466}
 --- !u!114 &1517326103513540036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,6 +397,7 @@ MonoBehaviour:
   corpseGenerator: {fileID: 5157146277386418988}
   hitReactIK: {fileID: 1286322669042044507}
   owner: {fileID: 5417977022252455614}
+  hitBoxType: 1
 --- !u!1 &655623376704586025
 GameObject:
   m_ObjectHideFlags: 0
@@ -600,6 +602,7 @@ MonoBehaviour:
   corpseGenerator: {fileID: 5157146277386418988}
   hitReactIK: {fileID: 1286322669042044507}
   owner: {fileID: 5417977022252455614}
+  hitBoxType: 2
 --- !u!1 &1650932500788011819
 GameObject:
   m_ObjectHideFlags: 0
@@ -769,6 +772,7 @@ MonoBehaviour:
   corpseGenerator: {fileID: 5157146277386418988}
   hitReactIK: {fileID: 1286322669042044507}
   owner: {fileID: 5417977022252455614}
+  hitBoxType: 2
 --- !u!1 &1998691044302790592
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,7 +782,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7382681831241405966}
-  - component: {fileID: 5457564818144712620}
+  - component: {fileID: 4534404289528386494}
   - component: {fileID: 5741248201452862004}
   m_Layer: 6
   m_Name: head
@@ -802,8 +806,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7023672608414415203}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &5457564818144712620
-SphereCollider:
+--- !u!136 &4534404289528386494
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -820,9 +824,11 @@ SphereCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.1070263
-  m_Center: {x: -0.06689349, y: 0.000000004485611, z: 7.965731e-10}
+  serializedVersion: 2
+  m_Radius: 0.09
+  m_Height: 0.25
+  m_Direction: 0
+  m_Center: {x: -0.06, y: -0.005, z: 0}
 --- !u!114 &5741248201452862004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -835,10 +841,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2666df0c376969d40af88cc7b0d87bac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  col: {fileID: 5457564818144712620}
+  col: {fileID: 4534404289528386494}
   corpseGenerator: {fileID: 5157146277386418988}
   hitReactIK: {fileID: 1286322669042044507}
   owner: {fileID: 5417977022252455614}
+  hitBoxType: 0
 --- !u!1 &2042722985164634472
 GameObject:
   m_ObjectHideFlags: 0
@@ -2087,7 +2094,7 @@ MonoBehaviour:
   ik: {fileID: 5869947610570598042}
   effectorHitPoints:
   - name: head
-    collider: {fileID: 5457564818144712620}
+    collider: {fileID: 0}
     crossFadeTime: 0.05
     offsetInForceDirection:
       serializedVersion: 2
@@ -2822,7 +2829,7 @@ MonoBehaviour:
       weight: 0.5
   boneHitPoints:
   - name: head
-    collider: {fileID: 5457564818144712620}
+    collider: {fileID: 0}
     crossFadeTime: 0.05
     aroundCenterOfMass:
       serializedVersion: 2
@@ -3360,6 +3367,7 @@ MonoBehaviour:
   corpseGenerator: {fileID: 5157146277386418988}
   hitReactIK: {fileID: 1286322669042044507}
   owner: {fileID: 5417977022252455614}
+  hitBoxType: 2
 --- !u!1 &3404957466871779961
 GameObject:
   m_ObjectHideFlags: 0
@@ -3755,6 +3763,7 @@ MonoBehaviour:
   corpseGenerator: {fileID: 5157146277386418988}
   hitReactIK: {fileID: 1286322669042044507}
   owner: {fileID: 5417977022252455614}
+  hitBoxType: 2
 --- !u!1 &4567769492338525699
 GameObject:
   m_ObjectHideFlags: 0
@@ -4189,6 +4198,7 @@ MonoBehaviour:
   corpseGenerator: {fileID: 5157146277386418988}
   hitReactIK: {fileID: 1286322669042044507}
   owner: {fileID: 5417977022252455614}
+  hitBoxType: 2
 --- !u!1 &6296512164111028495
 GameObject:
   m_ObjectHideFlags: 0
@@ -4257,7 +4267,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 15, y: 15}
+  m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5904555511630342694
 CanvasRenderer:
@@ -4433,6 +4443,7 @@ MonoBehaviour:
   corpseGenerator: {fileID: 5157146277386418988}
   hitReactIK: {fileID: 1286322669042044507}
   owner: {fileID: 5417977022252455614}
+  hitBoxType: 2
 --- !u!1 &6749028832516540584
 GameObject:
   m_ObjectHideFlags: 0
@@ -4569,6 +4580,7 @@ MonoBehaviour:
   corpseGenerator: {fileID: 5157146277386418988}
   hitReactIK: {fileID: 1286322669042044507}
   owner: {fileID: 5417977022252455614}
+  hitBoxType: 1
 --- !u!1 &6882679759832535686
 GameObject:
   m_ObjectHideFlags: 0
@@ -5183,6 +5195,7 @@ MonoBehaviour:
   corpseGenerator: {fileID: 5157146277386418988}
   hitReactIK: {fileID: 1286322669042044507}
   owner: {fileID: 5417977022252455614}
+  hitBoxType: 2
 --- !u!1 &8451986339679391997
 GameObject:
   m_ObjectHideFlags: 0

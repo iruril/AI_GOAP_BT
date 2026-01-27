@@ -35,26 +35,26 @@ public class BulletPool : MonoBehaviour
 
     }
 
-    public GameObject SpawnBullet(GunHandler owner, Vector3 position, Quaternion rotation, LayerMask myTeamLayer, Vector3 origin, float projectileSpeed, float damage)
+    public GameObject SpawnBullet(GunHandler owner, Vector3 position, Quaternion rotation, LayerMask myTeamLayer, Vector3 origin, float projectileSpeed, float damage, float headMultiplier, float lagTime)
     {
         GameObject obj = _SpawnBullet(position, rotation);
 
         if (obj.TryGetComponent<Bullet>(out var bullet))
         {
             bullet.SetOwner(owner);
-            bullet.Init(myTeamLayer, origin, projectileSpeed, damage);
+            bullet.Init(myTeamLayer, origin, projectileSpeed, damage, headMultiplier, lagTime);
         }
 
         return obj;
     }
 
-    public GameObject SpawnBullet(Vector3 position, Quaternion rotation, LayerMask myTeamLayer, Vector3 origin, float projectileSpeed, float damage)
+    public GameObject SpawnBullet(Vector3 position, Quaternion rotation, LayerMask myTeamLayer, Vector3 origin, float projectileSpeed, float damage, float headMultiplier, float lagTime)
     {
         GameObject obj = _SpawnBullet(position, rotation);
 
         if (obj.TryGetComponent<Bullet>(out var bullet))
         {
-            bullet.Init(myTeamLayer, origin, projectileSpeed, damage);
+            bullet.Init(myTeamLayer, origin, projectileSpeed, damage, headMultiplier, lagTime);
         }
 
         return obj;

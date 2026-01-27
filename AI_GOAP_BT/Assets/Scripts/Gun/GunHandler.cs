@@ -5,8 +5,6 @@ using System.Linq;
 using RootMotion.FinalIK;
 using Mirror;
 using System;
-using System.Collections;
-using Pathfinding;
 
 public class GunHandler : NetworkBehaviour
 {
@@ -205,7 +203,7 @@ public class GunHandler : NetworkBehaviour
         pendingFire = false;
 
         clientMuzzlePos = muzzle.position;
-        clientMuzzleDir = muzzle.forward;
+        clientMuzzleDir = muzzle.forward; 
 
         CmdFire(clientMuzzlePos, clientMuzzleDir);
     }
@@ -214,9 +212,13 @@ public class GunHandler : NetworkBehaviour
     private void CmdFire(Vector3 pos, Vector3 dir)
     {
         if (CurrentRounds <= 0) return;
-        ServerExecuteFire(pos, dir);
+
+        float latency = (float)(NetworkTime.rtt / 2.0);
+
+        ServerExecuteFire(pos, dir, latency);
     }
 
+    [Server]
     public void FireCallback()
     {
         if (!isServer) return;
@@ -227,11 +229,11 @@ public class GunHandler : NetworkBehaviour
         Vector3 pos = muzzle.position;
         Vector3 dir = muzzle.forward;
 
-        ServerExecuteFire(pos, dir);
+        ServerExecuteFire(pos, dir, 0);
     }
 
     [Server]
-    private void ServerExecuteFire(Vector3 muzzlePos, Vector3 muzzleDir)
+    private void ServerExecuteFire(Vector3 muzzlePos, Vector3 muzzleDir, float lagTime)
     {
         if (CurrentRounds == 0) return;
         CurrentRounds = Mathf.Clamp(CurrentRounds - 1, 0, int.MaxValue);
@@ -249,6 +251,7 @@ public class GunHandler : NetworkBehaviour
             : 1 << gameObject.layer;
         float speed = currentGun.GunInfo.ProjectileSpeed;
         float damage = currentGun.GunInfo.RoundDamage;
+        float headMultiplier = currentGun.GunInfo.HeadDamageMultiplier;
 
         bulletPool.SpawnBullet(
             this,
@@ -257,7 +260,9 @@ public class GunHandler : NetworkBehaviour
             ignoreLayerMask,
             muzzlePos,      // shotOrigin
             speed,          // 총알 속도
-            damage          // 데미지
+            damage,
+            headMultiplier,
+            lagTime
         );
 
         RpcSpawnBullet(
@@ -266,7 +271,9 @@ public class GunHandler : NetworkBehaviour
             ignoreLayerMask,
             muzzlePos,      // shotOrigin
             speed,          // 총알 속도
-            damage          // 데미지
+            damage,
+            headMultiplier,
+            lagTime
         );
 
         RpcPlayMuzzleFlash(muzzlePos, Quaternion.LookRotation(muzzleDir));
@@ -281,7 +288,9 @@ public class GunHandler : NetworkBehaviour
         LayerMask myTeamLayer,
         Vector3 origin,
         float projectileSpeed,
-        float damage)
+        float damage,
+        float headMultiplier,
+        float lagTime)
     {
         if (isServer) return;
 
@@ -291,7 +300,9 @@ public class GunHandler : NetworkBehaviour
             myTeamLayer,
             origin,
             projectileSpeed,
-            damage
+            damage,
+            headMultiplier,
+            lagTime
         );
     }
 

@@ -3,6 +3,12 @@ using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class RaycastHitDistanceComparer : IComparer<RaycastHit>
+{
+    public static readonly RaycastHitDistanceComparer Instance = new RaycastHitDistanceComparer();
+    public int Compare(RaycastHit x, RaycastHit y) => x.distance.CompareTo(y.distance);
+}
+
 public class Bullet : MonoBehaviour
 {
     private BulletPool myPool;
@@ -21,18 +27,21 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float drag = 0f;
 
     private float damage = 1f;
+    private float headMultiplier = 1.0f;
     private LayerMask friendLayers;
     [SerializeField] private LayerMask hitMask;
     [SerializeField] private LayerMask grazeMask;
 
     private Vector3 velocity;
-    private Vector3 prevPos; //FixedUpdate 기준 이전 위치
+
+    private Vector3 visualPrevPos;
+    private Vector3 logicPos;
 
     private Vector3 shotOrigin;
 
     private bool initialized = false; 
     
-    private RaycastHit[] hitBuffer = new RaycastHit[8];
+    private RaycastHit[] hitBuffer = new RaycastHit[4];
 
     private void OnEnable()
     {
@@ -48,68 +57,84 @@ public class Bullet : MonoBehaviour
         myPool?.ReturnToPool(gameObject);
     }
 
-    public void Init(LayerMask teamLayer, Vector3 shotOrigin, float projectileSpeed, float damage)
+    public void Init(LayerMask teamLayer, Vector3 shotOrigin, float projectileSpeed, float damage, float headMultiplier, float lagTime)
     {
         friendLayers = teamLayer;
 
         this.shotOrigin = shotOrigin;
         this.velocity = transform.forward * projectileSpeed;
         this.damage = damage;
+        this.headMultiplier = headMultiplier;
 
         initialized = true;
-        prevPos = transform.position;
+        if (lagTime > 0) AdvanceProjectile(lagTime);
+
+        logicPos = transform.position;
+        visualPrevPos = logicPos;
 
         lifeHandle = Timing.RunCoroutine(LifeTimer());
     }
 
-    IEnumerator<float> LifeTimer()
+    private void AdvanceProjectile(float simulateTime)
     {
-        yield return Timing.WaitForSeconds(lifeTime);
-        gameObject.SetActive(false);
+        Vector3 startPos = transform.position;
+
+        Vector3 simulatedVelocity = velocity;
+        simulatedVelocity.y += gravity * simulateTime;
+
+        simulatedVelocity *= Mathf.Exp(-drag * simulateTime);
+
+        Vector3 predictedPos = startPos + (velocity + simulatedVelocity) * 0.5f * simulateTime;
+
+        Vector3 dir = predictedPos - startPos;
+        float dist = dir.magnitude;
+
+        if (dist > 0.00001f)
+        {
+            int count = Physics.RaycastNonAlloc(startPos, dir.normalized, hitBuffer, dist, hitMask | grazeMask);
+
+            if (count > 0)
+            {
+                if (ProcessDamageHits(count)) return;
+            }
+        }
+
+        transform.position = predictedPos;
+        velocity = simulatedVelocity;
+        logicPos = transform.position;
     }
 
     private void Update()
     {
         if (!initialized) return;
-
-        velocity.y += gravity * Time.deltaTime;
-        velocity *= Mathf.Exp(-drag * Time.deltaTime);
-
-        transform.position += velocity * Time.deltaTime;
+        float interpolationFactor = (Time.time - Time.fixedTime) / Time.fixedDeltaTime;
+        transform.position = Vector3.Lerp(visualPrevPos, logicPos, interpolationFactor);
     }
 
     private void FixedUpdate()
     {
-        if (!initialized) return; 
+        if (!initialized) return;
 
-        Vector3 currentPos = transform.position;
+        visualPrevPos = logicPos;
 
-        Vector3 dir = currentPos - prevPos;
+        velocity.y += gravity * Time.fixedDeltaTime;
+        velocity *= Mathf.Exp(-drag * Time.fixedDeltaTime);
+
+        Vector3 nextLogicPos = logicPos + velocity * Time.fixedDeltaTime;
+        Vector3 dir = nextLogicPos - logicPos;
         float dist = dir.magnitude;
 
         if (dist > 0.00001f)
         {
-            int count = Physics.RaycastNonAlloc(
-                prevPos,
-                dir.normalized,
-                hitBuffer,
-                dist,
-                hitMask | grazeMask
-            );
+            int count = Physics.RaycastNonAlloc(logicPos, dir.normalized, hitBuffer, dist, hitMask | grazeMask);
 
             if (count > 0)
             {
-                if (NetworkServer.active) 
-                    ProcessGrazingHits(count);
-                if (ProcessDamageHits(count))
-                {
-                    prevPos = currentPos;
-                    return;
-                }
+                if (NetworkServer.active) ProcessGrazingHits(count);
+                if (ProcessDamageHits(count)) return;
             }
         }
-
-        prevPos = currentPos;
+        logicPos = nextLogicPos;
     }
 
     private void ProcessGrazingHits(int count)
@@ -130,45 +155,32 @@ public class Bullet : MonoBehaviour
 
     private bool ProcessDamageHits(int count)
     {
-        float closestDist = float.MaxValue;
-        RaycastHit closestHit = default;
-        bool found = false;
+        System.Array.Sort(hitBuffer, 0, count, RaycastHitDistanceComparer.Instance);
 
         for (int i = 0; i < count; i++)
         {
             var hit = hitBuffer[i];
-            float dist = hit.distance;
-            var col = hit.collider;
-            int layer = col.gameObject.layer;
+            int layer = hit.collider.gameObject.layer;
 
-            if (IsFriendly(layer)) continue;
+            if (IsFriendly(layer) || (hitMask & (1 << layer)) == 0) continue;
 
-            if ((hitMask & (1 << layer)) == 0) continue;
-
-            if(dist < closestDist)
-            {
-                closestDist = dist;
-                closestHit = hit;
-                found = true;
-            }
+            ProcessDamageHit(hit.collider, hit.point, hit.normal);
+            return true;
         }
 
-        if (!found) return false;
-
-        ProcessDamageHit(closestHit.collider, closestHit.point, closestHit.normal);
-        return true;
+        return false;
     }
 
     private void ProcessDamageHit(Collider target, Vector3 hitPoint, Vector3 hitNormal)
     {
-        Quaternion rot = Quaternion.LookRotation(hitNormal);
-        string vfxName = "Hit";
         bool isServer = NetworkServer.active && owner != null;
 
         if (target.TryGetComponent<HitBox>(out var hitBox))
         {
+            // isServer가 false면 데미지 로직만 내부적으로 스킵됨
             hitBox.ApplyDamage(
                 damage,
+                headMultiplier,
                 shotOrigin,
                 hitPoint,
                 friendLayers,
@@ -179,23 +191,15 @@ public class Bullet : MonoBehaviour
 
         if (isServer)
         {
-            if (((1 << target.gameObject.layer) & WorldManager.Instance.GetBleedLayers()) != 0)
-                vfxName = "Blood";
-            else
-                vfxName = "Hit";
-            owner.ServerReportHit(hitPoint, rot, vfxName);
+            string vfxName = ((1 << target.gameObject.layer) & WorldManager.Instance.GetBleedLayers()) != 0 ? "Blood" : "Hit";
+            owner.ServerReportHit(hitPoint, Quaternion.LookRotation(hitNormal), vfxName);
         }
 
         Deactivate();
     }
 
     private bool IsFriendly(int layer) => ((1 << layer) & friendLayers) != 0;
-
-    private void Deactivate()
-    {
-        initialized = false;
-        gameObject.SetActive(false);
-    }
-
-    public void SetBulletPool(BulletPool pool) => myPool = pool;
+    private void Deactivate() { initialized = false; gameObject.SetActive(false); }
+    public void SetBulletPool(BulletPool pool) => myPool = pool; 
+    IEnumerator<float> LifeTimer() { yield return Timing.WaitForSeconds(lifeTime); gameObject.SetActive(false); }
 }
