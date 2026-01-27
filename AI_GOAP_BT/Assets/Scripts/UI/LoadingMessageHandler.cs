@@ -3,7 +3,6 @@ using TMPro;
 using UnityEngine.UI;
 using AYellowpaper.SerializedCollections;
 using MEC;
-using System.Collections;
 using System.Collections.Generic;
 
 public class LoadingMessageHandler : MonoBehaviour
@@ -19,11 +18,6 @@ public class LoadingMessageHandler : MonoBehaviour
     CoroutineHandle popUpHandle;
 
     private const string DEF_MESSAGE = "Connecting...";
-
-    private void Awake()
-    {
-        DontDestroyOnLoad(this.gameObject);
-    }
 
     void Start()
     {
@@ -56,6 +50,7 @@ public class LoadingMessageHandler : MonoBehaviour
             Timing.KillCoroutines(popUpHandle);
             Status.text = DEF_MESSAGE;
             gameObject.SetActive(popUp);
+            QuitButton.gameObject.SetActive(true);
 
             SettingsPanel.Instance?.CloseSettings();
             LobbyBrowser.Instance?.CloseBrowser();
@@ -78,6 +73,9 @@ public class LoadingMessageHandler : MonoBehaviour
         if (!gameObject.activeSelf) return;
 
         Status.text = joinResults[result];
+        if(result == SteamLobby.JoinResult.Success 
+            || result == SteamLobby.JoinResult.Canceled)
+            QuitButton.gameObject.SetActive(false);
     }
 
     private IEnumerator<float> DelayedClose()

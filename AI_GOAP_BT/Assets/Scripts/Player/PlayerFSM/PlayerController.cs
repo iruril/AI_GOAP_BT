@@ -34,6 +34,10 @@ namespace Player.FSM
         [Header("점프 최대 높이")]
         [SerializeField] private float maxJumpHeight = 1f;
 
+        [Header("점프 중 속도")]
+        [SerializeField] private float jumpSpeedOnSprint = 5.5f;
+        [SerializeField] private float jumpSpeedOnJog = 3f;
+
         public float JumpImpulseVelocity { get; private set; }
         public float PlayerGravityForce { get; private set; }
 
@@ -74,7 +78,7 @@ namespace Player.FSM
 
         public override void OnStartServer()
         {
-            GunController.LoadGun("MPX");
+            //GunController.LoadGun("MPX");
             //LoadGun("AK-12");
             return;
         }
@@ -208,20 +212,16 @@ namespace Player.FSM
 
         public void CalculateOnAirSpeed()
         {
-            //Vector2 xzVelocity = new Vector2(PlayerCC.velocity.x, PlayerCC.velocity.z);
-            //float currentSpeed = xzVelocity.magnitude;
-            //OnAirSpeed = Mathf.Lerp(0f, 6.5f, currentSpeed / 6.5f);
-
             if (Input.MoveInputMap != Vector2.zero)
             {
                 if (Input.Run)
                 {
-                    OnAirSpeed = 6.5f;
+                    OnAirSpeed = jumpSpeedOnSprint;
                     return;
                 }
                 else
                 {
-                    OnAirSpeed = 3.5f;
+                    OnAirSpeed = jumpSpeedOnJog;
                     return;
                 }
             }

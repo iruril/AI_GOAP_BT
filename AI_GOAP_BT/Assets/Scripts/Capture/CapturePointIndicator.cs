@@ -102,9 +102,9 @@ namespace CapturePoint
 
             if (distance > 20f)
             {
-                float t = Mathf.InverseLerp(10f, 50f, distance);
+                float t = Mathf.InverseLerp(10f, 100f, distance);
                 t = Mathf.Clamp01(t);
-                scaleFactor = Mathf.Lerp(1f, 0.5f, t);
+                scaleFactor = Mathf.Lerp(1f, 0.3f, t);
             }
 
             pointImage.rectTransform.localScale = baseImageScale * scaleFactor;

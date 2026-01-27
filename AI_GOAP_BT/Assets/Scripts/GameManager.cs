@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance = null;
 
+    [SerializeField] private GameObject loadingPanelPrefab;
+
     private GameObject myPlayer;
 
     public GameObject MyPlayer
