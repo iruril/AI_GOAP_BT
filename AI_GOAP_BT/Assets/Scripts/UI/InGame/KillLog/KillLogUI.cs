@@ -35,19 +35,39 @@ public class KillLogUI : MonoBehaviour
             Instance = null;
     }
 
-    public void AddLog(string killer, string victim, bool isKillerBlue, bool isVictimBlue)
+    public void AddLog(string killer, string victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot)
     {
         KillLogContent content = GetAvailableContent();
 
-        content.SetKillerContent(killer, isKillerBlue ? WorldManager.Instance.BlueTeamColor : WorldManager.Instance.RedTeamColor);
-        content.SetVictimContent(victim, isVictimBlue ? WorldManager.Instance.BlueTeamColor : WorldManager.Instance.RedTeamColor);
+        string logText = BuildKillLogText(killer, victim, isKillerBlue, isVictimBlue, isHeadshot);
+
+        content.SetContent(logText);
 
         content.gameObject.SetActive(true);
-
         content.transform.SetAsLastSibling();
 
         activeLogs.Add(content);
         timers[content] = Timing.RunCoroutine(AutoDisable(content));
+    }
+
+    private string BuildKillLogText(string killer, string victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot)
+    {
+        Color killerColor = isKillerBlue ? WorldManager.Instance.BlueTeamColor : WorldManager.Instance.RedTeamColor;
+        Color victimColor = isVictimBlue ? WorldManager.Instance.BlueTeamColor : WorldManager.Instance.RedTeamColor;
+
+        string killerText = Colorize(killer, killerColor);
+        string victimText = Colorize(victim, victimColor);
+
+        string headshotText = isHeadshot
+            ? $" {Colorize("[Headshot]", Color.red)}"
+            : string.Empty;
+
+        return $"{killerText} Killed{headshotText} {victimText}";
+    }
+
+    private string Colorize(string text, Color color)
+    {
+        return $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{text}</color>";
     }
 
     private KillLogContent GetAvailableContent()

@@ -3,27 +3,16 @@ using UnityEngine;
 
 public class KillLogContent : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI killer;
-    [SerializeField] TextMeshProUGUI victim;
+    [SerializeField] TextMeshProUGUI log;
 
-    public void SetKillerContent(string text, Color color)
+    public void SetContent(string text)
     {
-        killer.text = text;
-        killer.color = color;
-    }
-
-    public void SetVictimContent(string text, Color color)
-    {
-        victim.text = text;
-        victim.color = color;
+        log.text = text;
     }
 
     public void ResetContent()
     {
-        killer.text = string.Empty;
-        victim.text = string.Empty;
-
-        killer.color = Color.white;
-        victim.color = Color.white;
+        log.text = string.Empty;
+        log.color = Color.white;
     }
 }

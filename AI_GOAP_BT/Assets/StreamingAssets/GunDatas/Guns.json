@@ -5,7 +5,7 @@
       "GunName": "AK-12",
       "GunInfo": {
         "TimeToADS": 0.25,
-        "RoundDamage": 34,
+        "RoundDamage": 34, //34
         "Stability": 20,
         "Spread": 0.5,
         "RecoilPitch": -1.2,
@@ -31,7 +31,7 @@
       "GunName": "MPX",
       "GunInfo": {
         "TimeToADS": 0.18,
-        "RoundDamage": 25,
+        "RoundDamage": 25, //25
         "Stability": 25,
         "Spread": 0.3,
         "RecoilPitch": -0.6,

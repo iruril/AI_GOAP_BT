@@ -1281,6 +1281,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IKComponents:
   - {fileID: 1195883400668731909}
+  - {fileID: 4981464254991424263}
   - {fileID: 9168033542482783614}
   animator: {fileID: 4460953585574970759}
 --- !u!114 &1195883400668731909
@@ -2355,7 +2356,7 @@ MonoBehaviour:
       m_Curve: []
       m_PreInfinity: 0
       m_PostInfinity: 0
-      m_RotationOrder: 0
+      m_RotationOrder: 4
     effectorLinks:
     - effector: 1
       weight: 0.5

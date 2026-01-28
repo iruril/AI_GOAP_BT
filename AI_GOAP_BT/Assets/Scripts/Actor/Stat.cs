@@ -12,6 +12,21 @@ public struct KDA
     public int Deaths;
 }
 
+[Serializable]
+public struct DamageRecord
+{
+    public uint attackerNetId;
+    public HitBox.HitBoxType hitBoxType;
+    public float damage;
+
+    public DamageRecord(uint attackerNetId, HitBox.HitBoxType hitBoxType, float damage)
+    {
+        this.attackerNetId = attackerNetId;
+        this.hitBoxType = hitBoxType;
+        this.damage = damage;
+    }
+}
+
 public class Stat : NetworkBehaviour, IDamageable, IChatSender
 {
     public event Action OnDead;
@@ -42,7 +57,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     public KDA CurrentKDA = new();
 
     [SyncVar]
-    public Vector3 ServerVelocity;
+    public Vector3 ServerVelocity; 
 
     private Vector3 prevPosition;
     private Vector3 nextPosition;
@@ -60,14 +75,14 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     private CoroutineHandle hpRegenHandle;
     private CoroutineHandle respawnHandle;
 
-    private HashSet<uint> damageContributors = new();
-    public NetworkIdentity RecentAttacker { get; private set; }
+    [NonSerialized] private List<DamageRecord> damageRecords = new();
+    [NonSerialized] private readonly HashSet<uint> assistBuffer = new();
 
-    bool combatEnded = false;
     private const float NO_DAMAGE_DURATION = 5f;
     private const float REGEN_RATE = 0.1f;
 
-    RoomManager rm;
+    private RoomManager roomManager;
+
 
     private void Awake()
     {
@@ -76,7 +91,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
     public override void OnStartServer()
     {
-        rm = NetworkManager.singleton as RoomManager;
+        roomManager = NetworkManager.singleton as RoomManager;
         InitHP();
         hpRegenHandle = Timing.RunCoroutine(HPRegenHandle());
 
@@ -161,7 +176,6 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     {
         if (IsDead) return;
 
-        combatEnded = false;
         CurrentHP -= dmg;
         lastDamageTime = Time.time;
 
@@ -172,9 +186,6 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
             Die();
             respawnHandle = Timing.RunCoroutine(Respawn());
         }
-
-        if (RecentAttacker.connectionToClient != null)
-            TargetPlayHitMark(RecentAttacker.connectionToClient, IsDead);
     }
 
     [Server]
@@ -184,24 +195,26 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     }
 
     [Server]
-    public void SetAttacker(uint attackerNetId)
+    public void AddDamageRecord(uint attackerNetId, float damage, HitBox.HitBoxType hitBoxType)
     {
         if (IsDead) return;
 
         if (NetworkServer.spawned.TryGetValue(attackerNetId, out NetworkIdentity attackerIdentity))
-            RecentAttacker = attackerIdentity;
+        {
+            damageRecords.Add(new DamageRecord(attackerNetId, hitBoxType, damage));
+
+            if (attackerIdentity.connectionToClient != null)
+            {
+                bool isFatalHit = CurrentHP - damage <= 0f;
+                TargetPlayHitMark(attackerIdentity.connectionToClient, isFatalHit);
+            }
+        }
     }
 
     [TargetRpc]
     private void TargetPlayHitMark(NetworkConnection target, bool isKilled)
     {
         InGameUI.Instance?.PlayHitMark(isKilled);
-    }
-
-    [Server]
-    public void AddDmgContributer(uint attackerNetId)
-    {
-        damageContributors.Add(attackerNetId);
     }
     #endregion
 
@@ -216,12 +229,6 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
             // 최근 피해 이후 5초가 지났으면 회복
             if (Time.time - lastDamageTime >= NO_DAMAGE_DURATION)
             {
-                if (!combatEnded)
-                {
-                    damageContributors.Clear();
-                    combatEnded = true;
-                }
-
                 float regenAmount = MaxHP * REGEN_RATE * 0.1f;
                 CurrentHP = Mathf.Min(CurrentHP + regenAmount, MaxHP);
             }
@@ -235,55 +242,78 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
         AddDeath();
 
-        // Killer 처리
-        if (RecentAttacker != null)
+        ProcessKillAndAssist();
+
+        CurrentCapture?.RemoveIntruder(this);
+    }
+
+    [Server]
+    private void ProcessKillAndAssist()
+    {
+        if (damageRecords.Count == 0) return;
+
+        DamageRecord killRecord = damageRecords[^1];
+        uint killerNetId = killRecord.attackerNetId;
+        bool isHeadshotKill = killRecord.hitBoxType == HitBox.HitBoxType.Head;
+
+        if (NetworkServer.spawned.TryGetValue(killerNetId, out var killerIdentity))
         {
-            var killerStat = RecentAttacker.GetComponent<Stat>();
+            var killerStat = killerIdentity.GetComponent<Stat>();
 
-            if(RecentAttacker.netId != netId && IsEnemy(killerStat)) 
-                killerStat?.AddKill();
-
-            LogManager.Instance.ReportKill(
-                killerStat.Nickname,
-                Nickname,
-                killerStat.MyTeam == Team.Blue,
-                MyTeam == Team.Blue
-            );
-
-            GameFlowManager.Instance.ApplyKillScore(
-                killerStat.MyTeam,
-                MyTeam
-            );
-        }
-
-        // Assist 처리
-        foreach (uint contributorNetId in damageContributors)
-        {
-            if (contributorNetId == RecentAttacker.netId)
-                continue; // 킬러 제외
-
-            if (NetworkServer.spawned.TryGetValue(contributorNetId, out var identity))
+            if (killerStat != null && IsEnemy(killerStat))
             {
-                var assister = identity.GetComponent<Stat>();
-                if (contributorNetId != netId && IsEnemy(assister)) 
-                    assister?.AddAssist();
+                killerStat.AddKill();
+                LogManager.Instance.ReportKill(
+                    killerStat.Nickname,
+                    Nickname,
+                    killerStat.MyTeam == Team.Blue,
+                    MyTeam == Team.Blue,
+                    killRecord.hitBoxType == HitBox.HitBoxType.Head
+                );
+                GameFlowManager.Instance.ApplyKillScore(killerStat.MyTeam, MyTeam);
             }
         }
 
-        damageContributors.Clear();
-        CurrentCapture?.RemoveIntruder(this);
+        ProcessAssistByDamageLog(killerNetId);
+        damageRecords.Clear();
+    }
+
+    [Server]
+    private void ProcessAssistByDamageLog(uint killerNetId)
+    {
+        assistBuffer.Clear();
+        float accumulatedDamage = 0f;
+
+        for (int i = damageRecords.Count - 1; i >= 0; i--)
+        {
+            var record = damageRecords[i];
+            accumulatedDamage += record.damage;
+
+            if (record.attackerNetId != killerNetId &&
+                assistBuffer.Add(record.attackerNetId))
+            {
+                if (NetworkServer.spawned.TryGetValue(record.attackerNetId, out var identity))
+                {
+                    var assister = identity.GetComponent<Stat>();
+                    if (assister != null && IsEnemy(assister))
+                        assister.AddAssist();
+                }
+            }
+
+            if (accumulatedDamage >= MaxHP)
+                break;
+        }
     }
 
     private void Revive()
     {
         IsDead = false;
         InitHP();
-        damageContributors.Clear();
     }
 
     private IEnumerator<float> Respawn()
     {
-        yield return Timing.WaitForSeconds(rm.RespawnDelay);
+        yield return Timing.WaitForSeconds(roomManager.RespawnDelay);
         Revive();
     }
 

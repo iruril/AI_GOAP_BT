@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using RootMotion.FinalIK;
-using Mirror;
 
 #if UNITY_EDITOR
 

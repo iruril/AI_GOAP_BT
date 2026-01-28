@@ -30,11 +30,6 @@ public class BulletPool : MonoBehaviour
         }
     }
 
-    private void OnDisable()
-    {
-
-    }
-
     public GameObject SpawnBullet(GunHandler owner, Vector3 position, Quaternion rotation, LayerMask myTeamLayer, Vector3 origin, float projectileSpeed, float damage, float headMultiplier, float lagTime)
     {
         GameObject obj = _SpawnBullet(position, rotation);

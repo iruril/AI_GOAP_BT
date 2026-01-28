@@ -33,8 +33,7 @@ public class HitBox : MonoBehaviour
                 _ => BODY_DAMAGE_MULTIPLIER
             });
 
-            if (attacker != null) UpdateAttackerInfo(attacker);
-
+            if (attacker != null) UpdateDamageRecord(attacker, finalDmg);
             damageable.ApplyDamage(finalDmg, shotOrigin, hitPoint);
             corpseGenerator.LatestHittedPart = this.transform.name;
         }
@@ -42,14 +41,13 @@ public class HitBox : MonoBehaviour
         PlayHitEffects(shotOrigin, hitPoint);
     }
 
-    private void UpdateAttackerInfo(Transform attacker)
+    private void UpdateDamageRecord(Transform attacker, float damage)
     {
         if (attacker.TryGetComponent<Stat>(out var attackerStat))
         {
             if (owner.TryGetComponent<Stat>(out var victimStat))
             {
-                victimStat.SetAttacker(attackerStat.netId);
-                victimStat.AddDmgContributer(attackerStat.netId);
+                victimStat.AddDamageRecord(attackerStat.netId, damage, hitBoxType);
             }
         }
     }
