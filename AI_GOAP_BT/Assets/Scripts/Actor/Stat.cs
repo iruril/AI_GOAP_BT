@@ -213,15 +213,16 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
             if (attackerIdentity.connectionToClient != null)
             {
                 bool isFatalHit = CurrentHP - damage <= 0f;
-                TargetPlayHitMark(attackerIdentity.connectionToClient, isFatalHit);
+                TargetReceiveHitFeedback(attackerIdentity.connectionToClient, netId, damage, isFatalHit);
             }
         }
     }
 
     [TargetRpc]
-    private void TargetPlayHitMark(NetworkConnection target, bool isKilled)
+    private void TargetReceiveHitFeedback(NetworkConnection target, uint victimNetId, float damage, bool isKilled)
     {
         InGameUI.Instance?.PlayHitMark(isKilled);
+        DamageStackUI.Instance?.PopDamageStack(victimNetId, damage, isKilled);
     }
     #endregion
 
