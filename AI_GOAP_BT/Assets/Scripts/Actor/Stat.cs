@@ -282,8 +282,8 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
                 }
 
                 LogManager.Instance.ReportKill(
-                    killerStat.Nickname,
-                    Nickname,
+                    killerNetId,
+                    netId,
                     killerStat.MyTeam == Team.Blue,
                     MyTeam == Team.Blue,
                     killRecord.hitBoxType == HitBox.HitBoxType.Head,

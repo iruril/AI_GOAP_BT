@@ -16,13 +16,13 @@ public class LogManager : NetworkBehaviour
     }
 
     [Server]
-    public void ReportKill(string killer, string victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot, string gunName)
+    public void ReportKill(uint killer, uint victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot, string gunName)
     {
         RpcBroadcastKill(killer, victim, isKillerBlue, isVictimBlue, isHeadshot, gunName);
     }
 
     [ClientRpc]
-    void RpcBroadcastKill(string killer, string victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot, string gunName)
+    void RpcBroadcastKill(uint killer, uint victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot, string gunName)
     {
         KillLogUI.Instance?.AddLog(killer, victim, isKillerBlue, isVictimBlue, isHeadshot, gunName);
     }

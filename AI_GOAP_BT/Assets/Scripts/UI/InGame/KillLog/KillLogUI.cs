@@ -1,4 +1,5 @@
 using MEC;
+using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -35,11 +36,25 @@ public class KillLogUI : MonoBehaviour
             Instance = null;
     }
 
-    public void AddLog(string killer, string victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot, string gunName)
+    public void AddLog(uint killerId, uint victimId, bool isKillerBlue, bool isVictimBlue, bool isHeadshot, string gunName)
     {
         KillLogContent content = GetAvailableContent();
 
-        string logText = BuildKillLogText(killer, victim, isKillerBlue, isVictimBlue, isHeadshot, gunName);
+        uint localId = NetworkClient.localPlayer != null ? NetworkClient.localPlayer.netId : uint.MaxValue;
+
+        string killerName = "Unknown";
+        string victimName = "Unknown";
+
+        if (NetworkClient.spawned.TryGetValue(killerId, out var KillerIdentity))
+        {
+            killerName = KillerIdentity.GetComponent<Stat>().Nickname;
+        }
+        if (NetworkClient.spawned.TryGetValue(victimId, out var VictimIdentity))
+        {
+            victimName = VictimIdentity.GetComponent<Stat>().Nickname;
+        }
+
+        string logText = BuildKillLogText(killerId, victimId, localId, killerName, victimName, isKillerBlue, isVictimBlue, isHeadshot, gunName);
 
         content.SetContent(logText);
 
@@ -50,11 +65,15 @@ public class KillLogUI : MonoBehaviour
         timers[content] = Timing.RunCoroutine(AutoDisable(content));
     }
 
-    private string BuildKillLogText(string killer, string victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot, string gunName)
+    private string BuildKillLogText(uint killerId, uint victimId, uint localId, string killer, string victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot, string gunName)
     {
-        Color killerColor = isKillerBlue ? WorldManager.Instance.BlueTeamColor : WorldManager.Instance.RedTeamColor;
-        Color victimColor = isVictimBlue ? WorldManager.Instance.BlueTeamColor : WorldManager.Instance.RedTeamColor;
-
+        Color killerColor = (killerId == localId)
+        ? Color.green
+        : (isKillerBlue ? WorldManager.Instance.BlueTeamColor : WorldManager.Instance.RedTeamColor); 
+        
+        Color victimColor = (victimId == localId)
+        ? Color.green
+        : (isVictimBlue ? WorldManager.Instance.BlueTeamColor : WorldManager.Instance.RedTeamColor);
         string killerText = Colorize(killer, killerColor);
         string victimText = Colorize(victim, victimColor);
 
