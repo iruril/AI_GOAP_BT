@@ -16,7 +16,10 @@ public class Bullet : MonoBehaviour
     public void SetOwner(GunHandler gun)
     {
         owner = gun;
+        gunName = owner.CurrentGun.GunName;
     }
+
+    private string gunName;
 
     [SerializeField]
     private float lifeTime = 5f;
@@ -185,7 +188,8 @@ public class Bullet : MonoBehaviour
                 hitPoint,
                 friendLayers,
                 isServer ? owner.gameObject.transform : null,
-                WorldManager.Instance.IsBlueTeam(friendLayers)
+                WorldManager.Instance.IsBlueTeam(friendLayers),
+                gunName
             );
         }
 

@@ -1,12 +1,25 @@
 using MEC;
 using Mirror;
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Sensor
 {
+
     public abstract class ActorSensorBase : NetworkBehaviour
     {
+        static readonly HumanBodyBones[] AimBones =
+        {
+            HumanBodyBones.UpperChest,
+            HumanBodyBones.Chest,
+            HumanBodyBones.Hips,
+            HumanBodyBones.LeftUpperLeg,
+            HumanBodyBones.RightUpperLeg,
+            HumanBodyBones.LeftUpperArm,
+            HumanBodyBones.RightUpperArm,
+            HumanBodyBones.Head,
+        };
+
         public Stat MyStat { get; private set; }
 
         [Header("My Eyes")]
@@ -15,7 +28,8 @@ namespace Sensor
 
         [Header("Target Info")]
         public Transform CurrentTarget { get; private set; }
-        public Transform CurrentTargetHead { get; private set; }
+        public Animator TargetAnimatorBones { get; private set; }
+        public Transform CurrentTargetAimPoint { get; private set; }
         public Stat CurrentTargetStat { get; private set; }
         public bool HasTarget => CurrentTarget != null;
 
@@ -32,14 +46,20 @@ namespace Sensor
         [SerializeField] private float captureOffsetRadius = 4f;
 
         [Header("Sight Info")]
+        [SerializeField] private float sightCheckInterval = 0.15f;
         [SerializeField] private float sightRange = 50f;
         [SerializeField] private float sightAngle = 160f;
         private float cosHalfFov;
-        [SerializeField] private float visibleOffesetHight = 1.4f;
         private Collider[] sightBuffer = new Collider[8]; 
         private RaycastHit[] rayHits = new RaycastHit[1];
 
+        [Header("Tactical Settings")]
+        [SerializeField] private float targetLoyaltyBonus = 2.0f; //기존 타겟에게 주는 가산점
+        [SerializeField] private float searchBetterTargetInterval = 0.5f;
+        private float lastSearchTime = 0f;
+
         protected CoroutineHandle underAttackHandle;
+        protected CoroutineHandle sightCheckHandle;
 
         protected virtual void Awake()
         {
@@ -50,33 +70,35 @@ namespace Sensor
         public override void OnStartServer()
         {
             MyStat.OnDead += OnDead;
+            MyStat.OnRevive += OnRevive;
+            sightCheckHandle = Timing.RunCoroutine(CheckSightRoutine());
         }
 
         public override void OnStopServer()
         {
             MyStat.OnDead -= OnDead;
+            MyStat.OnRevive -= OnRevive;
+            Timing.KillCoroutines(sightCheckHandle);
+            Timing.KillCoroutines(underAttackHandle);
         }
 
         protected virtual void Update()
         {
             if (!isServer) return;
-            UpdateLostTarget();
-            UpdateLastSeenPosition(); 
             UpdateAlertTimer();
+            UpdateLastSeenPosition();
         }
 
         protected virtual void FixedUpdate()
         {
             if (!isServer) return;
-            CheckHostileInSight();
-            CheckTargetInSight();
-            CheckTargetIsValid();
         }
 
         private void UpdateAlertTimer()
         {
             if (!IsAlert) return;
-            if (HasTarget)
+
+            if (TargetVisible)
             {
                 alertTimer = 0f;
             }
@@ -87,34 +109,28 @@ namespace Sensor
                 if (alertTimer >= alertDuration)
                 {
                     IsAlert = false;
+                    ResetTarget();
                 }
-            }
-        }
-
-        private void UpdateLostTarget()
-        {
-            if (!HasTarget) return;
-            if (!TargetVisible)
-            {
-                ResetTarget();
             }
         }
 
         private void UpdateLastSeenPosition()
         {
             if (!TargetVisible) return;
-            LastSeenPosition = CurrentTargetHead.position;
+            LastSeenPosition = CurrentTargetAimPoint.position;
         }
 
         protected virtual void SetTarget(Transform target)
         {
             CurrentTarget = target;
+
             if (target.TryGetComponent<Stat>(out var stat)) 
                 CurrentTargetStat = stat;
-            if (target.TryGetComponent<Animator>(out var anim))
-                CurrentTargetHead = anim.GetBoneTransform(HumanBodyBones.Head);
 
-            LastSeenPosition = CurrentTargetHead.position;
+            if (target.TryGetComponent<Animator>(out var anim))
+                TargetAnimatorBones = anim;
+
+            CurrentTargetAimPoint = target;
             IsAlert = true;
         }
 
@@ -122,7 +138,7 @@ namespace Sensor
         {
             CurrentTarget = null;
             CurrentTargetStat = null;
-            CurrentTargetHead = null;
+            CurrentTargetAimPoint = null;
             TargetVisible = false;
         }
 
@@ -146,15 +162,18 @@ namespace Sensor
         #region Sight Check & Assgin Target Field
         protected void CheckHostileInSight()
         {
-            if (HasTarget) return;
+            if (HasTarget && TargetVisible && Time.time < lastSearchTime + searchBetterTargetInterval)
+                return;
+
+            lastSearchTime = Time.time;
 
             int hitCount = Physics.OverlapSphereNonAlloc(
                 transform.position,
                 sightRange,
                 sightBuffer,
-                WorldManager.Instance.IsBlueTeam(gameObject.layer) ? 
-                WorldManager.Instance.GetRedTeamLayers() :
-                WorldManager.Instance.GetBlueTeamLayers()
+                WorldManager.Instance.IsBlueTeam(gameObject.layer) 
+                ? WorldManager.Instance.GetRedTeamLayers() 
+                : WorldManager.Instance.GetBlueTeamLayers()
             );
 
             if (hitCount == 0)
@@ -165,16 +184,16 @@ namespace Sensor
 
             Transform best = SelectBestVisibleTarget(hitCount);
 
-            if (best != null) SetTarget(best);
-            else ResetTarget();
+            if (best != null && best != CurrentTarget)
+            {
+                SetTarget(best);
+            }
         }
 
         private Transform SelectBestVisibleTarget(int hitCount)
         {
-            Vector3 origin = transform.position;
-            Vector3 originEye = origin + Vector3.up * visibleOffesetHight;
-
             Transform best = null;
+            Transform bestAimPoint = null;
             float bestScore = float.MinValue;
 
             for (int i = 0; i < hitCount; i++)
@@ -182,22 +201,98 @@ namespace Sensor
                 Transform candidate = sightBuffer[i]?.transform;
                 if (candidate == null) continue;
 
-                if (!IsInSightAngle(candidate, origin))
-                    continue;
+                if (!candidate.TryGetComponent<Animator>(out var anim)) continue;
+                if (!TryFindVisibleAimPoint(anim, out var aimPoint)) continue;
 
-                if (!HasLineOfSight(originEye, candidate))
-                    continue;
+                float score = CalculateTargetScore(candidate, myEyes.position);
 
-                float score = CalculateTargetScore(candidate, origin);
+                if(candidate == CurrentTarget)
+                {
+                    score += targetLoyaltyBonus;
+                }
 
                 if (score > bestScore)
                 {
                     bestScore = score;
                     best = candidate;
+                    bestAimPoint = aimPoint;
                 }
             }
 
+            if(best != null)
+            {
+                CurrentTargetAimPoint = bestAimPoint;
+            }
+
             return best;
+        }
+
+        private float CalculateTargetScore(Transform target, Vector3 origin)
+        {
+            Vector3 flat = target.position - origin;
+            flat.y = 0f;
+
+            float sqrDist = flat.sqrMagnitude; 
+            float distScore = 1000f / (10f + sqrDist);
+
+            Vector3 dir = flat.normalized;
+            float dot = Vector3.Dot(transform.forward, dir);
+            float angleScore = dot * 5f;
+
+            return distScore + angleScore;
+        }
+
+        private IEnumerator<float> CheckSightRoutine()
+        {
+            while (true)
+            {
+                CheckHostileInSight();
+                CheckTargetInSight(); 
+                CheckTargetIsValid();
+
+                yield return Timing.WaitForSeconds(sightCheckInterval);
+            }
+        }
+
+        protected void CheckTargetInSight()
+        {
+            if (!HasTarget || TargetAnimatorBones == null)
+            {
+                TargetVisible = false;
+                return;
+            }
+
+            if (TryFindVisibleAimPoint(TargetAnimatorBones, out var aimPoint))
+            {
+                TargetVisible = true;
+                CurrentTargetAimPoint = aimPoint;
+            }
+            else
+            {
+                TargetVisible = false;
+            }
+        }
+
+        protected void CheckTargetIsValid()
+        {
+            if (!HasTarget || CurrentTargetStat == null) return;
+
+            if (CurrentTargetStat.IsDead)
+            {
+                ResetTarget();
+                return;
+            }
+            
+            float sqrSightRange = sightRange * sightRange;
+            Vector3 flat = CurrentTarget.position - myEyes.position;
+            flat.y = 0f;
+
+            if(flat.sqrMagnitude > sqrSightRange * 1.44f || !IsInSightAngle(CurrentTarget, transform.position))
+            {
+                //ResetTarget();
+                TargetVisible = false;
+                return;
+            }
         }
 
         private bool IsInSightAngle(Transform target, Vector3 origin)
@@ -214,76 +309,45 @@ namespace Sensor
             return Vector3.Dot(transform.forward, dir) >= cosHalfFov;
         }
 
-        private bool HasLineOfSight(Vector3 originEye, Transform target)
+        private bool TryFindVisibleAimPoint(Animator targetAnim, out Transform visiblePoint)
         {
-            Vector3 targetEye = target.position + Vector3.up * visibleOffesetHight;
+            visiblePoint = null;
 
-            Vector3 dir = targetEye - originEye;
-            float dist = dir.magnitude;
-            dir /= dist;
+            foreach (var bone in AimBones)
+            {
+                Transform t = targetAnim.GetBoneTransform(bone);
+                if (t == null) continue;
 
-            int hit = Physics.RaycastNonAlloc(
-                originEye,
-                dir,
-                rayHits,
-                dist,
-                WorldManager.Instance.GetLevelLayers()
-            );
+                Vector3 dir = t.position - myEyes.position;
+                float dist = dir.magnitude;
+                if (dist <= 0.01f) continue;
 
-            return hit == 0;
-        }
+                dir /= dist;
 
-        private float CalculateTargetScore(Transform target, Vector3 origin)
-        {
-            Vector3 flat = target.position - origin;
-            flat.y = 0f;
+                int hit = Physics.SphereCastNonAlloc(myEyes.position, 0.05f, dir, rayHits, dist, WorldManager.Instance.GetLevelLayers());
 
-            float dist = flat.magnitude;
-            float distScore = (1f / (1f + dist)) * 10f;
+                if (hit == 0)
+                {
+                    visiblePoint = t;
+                    return true;
+                }
+            }
 
-            Vector3 dir = flat / dist;
-            float dot = Vector3.Dot(transform.forward, dir);
-            float angleScore = dot * 5f;
-
-            return distScore + angleScore;
-        }
-
-        protected void CheckTargetInSight()
-        {
-            if (!HasTarget) return;
-
-            Vector3 originEye = myEyes.position;
-            Vector3 targetEye = CurrentTargetHead.position;
-
-            Vector3 dir = targetEye - originEye;
-            float dist = dir.magnitude;
-            dir /= dist;
-
-            int hit = Physics.SphereCastNonAlloc(
-                originEye,
-                0.15f,
-                dir,
-                rayHits,
-                dist,
-                WorldManager.Instance.GetLevelLayers()
-            );
-
-            bool visible = (hit == 0);
-            TargetVisible = visible;
-        }
-
-        protected void CheckTargetIsValid()
-        {
-            if (!HasTarget) return;
-
-            if (CurrentTargetStat.IsDead) ResetTarget();
+            return false;
         }
         #endregion
+
+        private void OnRevive()
+        {
+            sightCheckHandle = Timing.RunCoroutine(CheckSightRoutine());
+        }
 
         private void OnDead()
         {
             ResetTarget();
             ResetCapture();
+            Timing.KillCoroutines(underAttackHandle);
+            Timing.KillCoroutines(sightCheckHandle);
             IsAlert = false;
             alertTimer = 0f;
         }

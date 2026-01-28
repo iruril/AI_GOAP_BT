@@ -58,30 +58,30 @@ namespace AnimControl.Assault
 
         void LookAtTarget()
         {
-            Vector3 targetDir;
-            Quaternion targetRot;
-            Quaternion newRot;
+            Vector3 targetDir = Vector3.zero;
+            Quaternion targetRot = ctx.MyRigid.rotation;
+            bool hasValidDir = false;
 
-            if (ctx.AttackedDirection != Vector3.zero)
+            if(ctx.AttackedDirection.sqrMagnitude > 0.001f)
             {
-                targetRot = Quaternion.LookRotation(ctx.AttackedDirection);
+                targetDir = ctx.AttackedDirection;
+                hasValidDir = true;
             }
-            else if (ctx.MyBrain.Sensor.IsAlert)
+            else if(ctx.MyBrain.Sensor.IsAlert || ctx.MyBrain.Sensor.LastSeenPosition != Vector3.negativeInfinity)
             {
                 targetDir = ctx.MyBrain.Sensor.LastSeenPosition - ctx.transform.position;
-                targetDir.y = 0f;
+                targetDir.y = 0;
                 targetDir.Normalize();
 
-                targetRot = Quaternion.LookRotation(targetDir);
-            }
-            else
-            {
-                return;
+                if(targetDir.sqrMagnitude > 0.001f) hasValidDir = true;
             }
 
+            if (!hasValidDir) return;
+
+            targetRot = Quaternion.LookRotation(targetDir, Vector3.up);
             float maxStep = ctx.MyBrain.Sensor.MyStat.RotateSpeedToTarget * Time.fixedDeltaTime;
-            newRot = Quaternion.RotateTowards(ctx.MyRigid.rotation, targetRot, maxStep);
 
+            Quaternion newRot = Quaternion.RotateTowards(ctx.MyRigid.rotation, targetRot, maxStep);
             ctx.MyRigid.MoveRotation(newRot);
         }
     }

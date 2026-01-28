@@ -225,7 +225,7 @@ namespace AnimControl.Assault
         {
             return AimIK.solver.IKPositionWeight >= 0.99f 
                 && MyBrain.Sensor.TargetVisible
-                && (MyBrain.Sensor.CurrentTargetHead.position - MyBrain.GunController.AimIKTarget.position).sqrMagnitude <= 1;
+                && (MyBrain.Sensor.CurrentTargetAimPoint.position - MyBrain.GunController.AimIKTarget.position).sqrMagnitude <= 1;
         }
 
         private void OnDead()

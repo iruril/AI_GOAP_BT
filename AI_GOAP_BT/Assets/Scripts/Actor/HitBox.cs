@@ -20,7 +20,7 @@ public class HitBox : MonoBehaviour
     private const float LIMB_DAMAGE_MULTIPLIER = 0.5f;
     private const float BODY_DAMAGE_MULTIPLIER = 1.0f;
 
-    public void ApplyDamage(float dmg, float headMultiplier, Vector3 shotOrigin, Vector3 hitPoint, LayerMask friendLayer, Transform attacker, bool isBlueTeam)
+    public void ApplyDamage(float dmg, float headMultiplier, Vector3 shotOrigin, Vector3 hitPoint, LayerMask friendLayer, Transform attacker, bool isBlueTeam, string gunName)
     {
         if ((friendLayer & (1 << owner.gameObject.layer)) != 0) return;
 
@@ -33,7 +33,7 @@ public class HitBox : MonoBehaviour
                 _ => BODY_DAMAGE_MULTIPLIER
             });
 
-            if (attacker != null) UpdateDamageRecord(attacker, finalDmg);
+            if (attacker != null) UpdateDamageRecord(attacker, finalDmg, gunName);
             damageable.ApplyDamage(finalDmg, shotOrigin, hitPoint);
             corpseGenerator.LatestHittedPart = this.transform.name;
         }
@@ -41,13 +41,13 @@ public class HitBox : MonoBehaviour
         PlayHitEffects(shotOrigin, hitPoint);
     }
 
-    private void UpdateDamageRecord(Transform attacker, float damage)
+    private void UpdateDamageRecord(Transform attacker, float damage, string gunName)
     {
         if (attacker.TryGetComponent<Stat>(out var attackerStat))
         {
             if (owner.TryGetComponent<Stat>(out var victimStat))
             {
-                victimStat.AddDamageRecord(attackerStat.netId, damage, hitBoxType);
+                victimStat.AddDamageRecord(attackerStat.netId, damage, hitBoxType, gunName);
             }
         }
     }

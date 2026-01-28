@@ -18,12 +18,14 @@ public struct DamageRecord
     public uint attackerNetId;
     public HitBox.HitBoxType hitBoxType;
     public float damage;
+    public string gunName;
 
-    public DamageRecord(uint attackerNetId, HitBox.HitBoxType hitBoxType, float damage)
+    public DamageRecord(uint attackerNetId, HitBox.HitBoxType hitBoxType, float damage, string gunName)
     {
         this.attackerNetId = attackerNetId;
         this.hitBoxType = hitBoxType;
         this.damage = damage;
+        this.gunName = gunName;
     }
 }
 
@@ -195,13 +197,13 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     }
 
     [Server]
-    public void AddDamageRecord(uint attackerNetId, float damage, HitBox.HitBoxType hitBoxType)
+    public void AddDamageRecord(uint attackerNetId, float damage, HitBox.HitBoxType hitBoxType, string gunName)
     {
         if (IsDead) return;
 
         if (NetworkServer.spawned.TryGetValue(attackerNetId, out NetworkIdentity attackerIdentity))
         {
-            damageRecords.Add(new DamageRecord(attackerNetId, hitBoxType, damage));
+            damageRecords.Add(new DamageRecord(attackerNetId, hitBoxType, damage, gunName));
 
             if (attackerIdentity.connectionToClient != null)
             {
@@ -268,7 +270,8 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
                     Nickname,
                     killerStat.MyTeam == Team.Blue,
                     MyTeam == Team.Blue,
-                    killRecord.hitBoxType == HitBox.HitBoxType.Head
+                    killRecord.hitBoxType == HitBox.HitBoxType.Head,
+                    killRecord.gunName
                 );
                 GameFlowManager.Instance.ApplyKillScore(killerStat.MyTeam, MyTeam);
             }

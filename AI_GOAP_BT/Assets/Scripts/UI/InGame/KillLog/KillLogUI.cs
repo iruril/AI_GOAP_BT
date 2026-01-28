@@ -35,11 +35,11 @@ public class KillLogUI : MonoBehaviour
             Instance = null;
     }
 
-    public void AddLog(string killer, string victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot)
+    public void AddLog(string killer, string victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot, string gunName)
     {
         KillLogContent content = GetAvailableContent();
 
-        string logText = BuildKillLogText(killer, victim, isKillerBlue, isVictimBlue, isHeadshot);
+        string logText = BuildKillLogText(killer, victim, isKillerBlue, isVictimBlue, isHeadshot, gunName);
 
         content.SetContent(logText);
 
@@ -50,7 +50,7 @@ public class KillLogUI : MonoBehaviour
         timers[content] = Timing.RunCoroutine(AutoDisable(content));
     }
 
-    private string BuildKillLogText(string killer, string victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot)
+    private string BuildKillLogText(string killer, string victim, bool isKillerBlue, bool isVictimBlue, bool isHeadshot, string gunName)
     {
         Color killerColor = isKillerBlue ? WorldManager.Instance.BlueTeamColor : WorldManager.Instance.RedTeamColor;
         Color victimColor = isVictimBlue ? WorldManager.Instance.BlueTeamColor : WorldManager.Instance.RedTeamColor;
@@ -58,11 +58,12 @@ public class KillLogUI : MonoBehaviour
         string killerText = Colorize(killer, killerColor);
         string victimText = Colorize(victim, victimColor);
 
+        string weaponText = Colorize($"[{gunName}]", WorldManager.Instance.DefColor);
         string headshotText = isHeadshot
             ? $" {Colorize("[Headshot]", Color.red)}"
             : string.Empty;
 
-        return $"{killerText} Killed{headshotText} {victimText}";
+        return $"{killerText} {weaponText} Killed{headshotText} {victimText}";
     }
 
     private string Colorize(string text, Color color)

@@ -78,7 +78,7 @@ namespace GOAP.Assualt
 
         private void ServerUpdateAimValues()
         {
-            syncedAimTarget = myBrain.Sensor.IsAlert
+            syncedAimTarget = myBrain.Sensor.IsAlert && myBrain.Sensor.LastSeenPosition != Vector3.negativeInfinity
                 ? myBrain.Sensor.LastSeenPosition
                 : transform.position + transform.forward * 20f + Vector3.up * 1.2f;
 
@@ -91,7 +91,10 @@ namespace GOAP.Assualt
         float aimWeightVel;
         private void ClientUpdateIK()
         {
-            myBrain.GunController.AimIKTarget.position =
+            bool isPosValid = !float.IsInfinity(syncedAimTarget.x) && !float.IsNaN(syncedAimTarget.x);
+            if (isPosValid)
+            {
+                myBrain.GunController.AimIKTarget.position =
                 Vector3.SmoothDamp(
                     myBrain.GunController.AimIKTarget.position,
                     syncedAimTarget,
@@ -100,11 +103,18 @@ namespace GOAP.Assualt
                     Mathf.Infinity,
                     Time.deltaTime
                 );
+            }
+            else
+            {
+                aimPosVel = Vector3.zero;
+            }
+
+            float targetWeight = isPosValid ? syncedAimWeight : 0f;
 
             myBrain.MotionController.AimIK.solver.IKPositionWeight =
                 Mathf.SmoothDamp(
                     myBrain.MotionController.AimIK.solver.IKPositionWeight,
-                    syncedAimWeight,
+                    targetWeight,
                     ref aimWeightVel,
                     0.1f
                 );
@@ -151,8 +161,9 @@ namespace GOAP.Assualt
 
         private void OnGunChanged()
         {
+            // 다 맞아도 죽지 않을 정도로만 격발
             burstCount = Mathf.CeilToInt(myBrain.Sensor.MyStat.MaxHP /
-                                (float)myBrain.GunController.CurrentGun.GunInfo.RoundDamage);
+                                (float)myBrain.GunController.CurrentGun.GunInfo.RoundDamage) - 1;
         }
     }
 }
