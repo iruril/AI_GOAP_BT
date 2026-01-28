@@ -152,7 +152,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
     private void FixedUpdate()
     {
-        RecordServerVelocity();
+        if(isServer) RecordServerVelocity();
     }
 
     [Server]
