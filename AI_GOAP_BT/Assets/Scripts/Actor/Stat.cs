@@ -81,10 +81,10 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     [NonSerialized] private readonly HashSet<uint> assistBuffer = new();
 
     private const float NO_DAMAGE_DURATION = 5f;
-    private const float REGEN_RATE = 0.1f;
+    private const float REGEN_RATE = 0.1f; 
+    private const int MAX_DAMAGE_RECORDS = 10;
 
     private RoomManager roomManager;
-
 
     private void Awake()
     {
@@ -203,6 +203,11 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
         if (NetworkServer.spawned.TryGetValue(attackerNetId, out NetworkIdentity attackerIdentity))
         {
+            if (damageRecords.Count >= MAX_DAMAGE_RECORDS)
+            {
+                damageRecords.RemoveAt(0);
+            }
+
             damageRecords.Add(new DamageRecord(attackerNetId, hitBoxType, damage, gunName));
 
             if (attackerIdentity.connectionToClient != null)
@@ -234,6 +239,12 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
                 float regenAmount = MaxHP * REGEN_RATE * 0.1f;
                 CurrentHP = Mathf.Min(CurrentHP + regenAmount, MaxHP);
             }
+
+            if (CurrentHP >= MaxHP)
+            {
+                CurrentHP = MaxHP;
+                if (damageRecords.Count > 0) damageRecords.Clear(); // 풀피면 기록 삭제
+            }
         }
     }
 
@@ -261,10 +272,15 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         if (NetworkServer.spawned.TryGetValue(killerNetId, out var killerIdentity))
         {
             var killerStat = killerIdentity.GetComponent<Stat>();
-
-            if (killerStat != null && IsEnemy(killerStat))
+            if (killerStat != null)
             {
-                killerStat.AddKill();
+                bool isEnemy = IsEnemy(killerStat);
+                if (isEnemy)
+                {
+                    killerStat.AddKill();
+                    GameFlowManager.Instance.ApplyKillScore(killerStat.MyTeam, MyTeam);
+                }
+
                 LogManager.Instance.ReportKill(
                     killerStat.Nickname,
                     Nickname,
@@ -273,7 +289,6 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
                     killRecord.hitBoxType == HitBox.HitBoxType.Head,
                     killRecord.gunName
                 );
-                GameFlowManager.Instance.ApplyKillScore(killerStat.MyTeam, MyTeam);
             }
         }
 

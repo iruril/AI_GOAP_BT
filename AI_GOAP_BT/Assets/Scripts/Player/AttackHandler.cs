@@ -103,14 +103,26 @@ namespace Player
 
         private void TryShoot()
         {
-            if (!player.Input.Trigger || player.IKManager.AimIK.solver.IKPositionWeight < 0.99f)
+            if (!player.Input.Trigger)
+                return;
+
+            if (player.IKManager.AimIK.solver.IKPositionWeight < 0.99f)
                 return;
 
             if (rateOfFireTime > 0f)
                 return;
 
-            rateOfFireTime = player.GunController.CurrentGun.GunInfo.ShotInterval;
-            Shoot();
+            var gun = player.GunController;
+
+            if (gun.CurrentRounds > 0)
+            {
+                rateOfFireTime = gun.CurrentGun.GunInfo.ShotInterval;
+                Shoot();
+            }
+            else
+            {
+                TryReload(true);
+            }
         }
 
         private void Shoot()
@@ -119,14 +131,18 @@ namespace Player
             player.GunController.Fire();
         }
 
-        private void TryReload()
+        private void TryReload(bool forceByEmptyFire = false)
         {
-            if (!player.Input.Reload || GameManager.GetInstance().InputMap.IsOnStaticUI) return;
+            if (GameManager.GetInstance().InputMap.IsOnStaticUI) return;
 
-            if (player.GunController.CurrentRounds >= player.GunController.CurrentGun.GunInfo.MagazineCapacity + 1)
+            if (!forceByEmptyFire && !player.Input.Reload)
                 return;
 
-            player.GunController.Reload();
+            var gun = player.GunController;
+            if (gun.CurrentRounds >= gun.CurrentGun.GunInfo.MagazineCapacity + 1)
+                return;
+
+            gun.Reload();
         }
     }
 }

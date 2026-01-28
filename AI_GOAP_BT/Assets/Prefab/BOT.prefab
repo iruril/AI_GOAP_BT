@@ -1924,9 +1924,11 @@ MonoBehaviour:
   myEyes: {fileID: 7382681831241405966}
   alertDuration: 7.5
   captureOffsetRadius: 4
+  sightCheckInterval: 0.25
   sightRange: 50
   sightAngle: 160
-  visibleOffesetHight: 1.4
+  targetLoyaltyBonus: 2
+  searchBetterTargetInterval: 0.5
 --- !u!114 &6757195939308535499
 MonoBehaviour:
   m_ObjectHideFlags: 0
