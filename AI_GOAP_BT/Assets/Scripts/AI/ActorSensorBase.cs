@@ -202,6 +202,7 @@ namespace Sensor
                 Transform candidate = sightBuffer[i]?.transform;
                 if (candidate == null) continue;
 
+                if (!IsInSightAngle(candidate, myEyes.position)) continue;
                 if (!candidate.TryGetComponent<Animator>(out var anim)) continue;
                 if (!TryFindVisibleAimPoint(anim, out var aimPoint)) continue;
 
@@ -230,14 +231,13 @@ namespace Sensor
 
         private float CalculateTargetScore(Transform target, Vector3 origin)
         {
-            Vector3 flat = target.position - origin;
-            flat.y = 0f;
+            Vector3 fullDir = target.position - origin;
+            float sqrDist = fullDir.sqrMagnitude;
 
-            float sqrDist = flat.sqrMagnitude; 
             float distScore = 1000f / (10f + sqrDist);
 
-            Vector3 dir = flat.normalized;
-            float dot = Vector3.Dot(transform.forward, dir);
+            Vector3 dirNormalized = fullDir.normalized;
+            float dot = Vector3.Dot(transform.forward, dirNormalized);
             float angleScore = dot * 5f;
 
             return distScore + angleScore;
@@ -284,11 +284,10 @@ namespace Sensor
                 return;
             }
             
-            float sqrSightRange = sightRange * sightRange;
-            Vector3 flat = CurrentTarget.position - myEyes.position;
-            flat.y = 0f;
+            float sqrSightRange = sightRange * sightRange; 
+            Vector3 fullDir = CurrentTarget.position - myEyes.position;
 
-            if(flat.sqrMagnitude > sqrSightRange * 1.44f || !IsInSightAngle(CurrentTarget, transform.position))
+            if (fullDir.sqrMagnitude > sqrSightRange * 1.44f || !IsInSightAngle(CurrentTarget, transform.position))
             {
                 TargetVisible = false;
                 return;
@@ -298,7 +297,6 @@ namespace Sensor
         private bool IsInSightAngle(Transform target, Vector3 origin)
         {
             Vector3 dir = target.position - origin;
-            dir.y = 0f;
 
             float sqrDist = dir.sqrMagnitude;
             if (sqrDist > sightRange * sightRange)
@@ -311,7 +309,12 @@ namespace Sensor
 
         private bool TryFindVisibleAimPoint(Animator targetAnim, out Transform visiblePoint)
         {
-            visiblePoint = null;
+            visiblePoint = null; 
+            bool isBlue = WorldManager.Instance.IsBlueTeam(gameObject.layer);
+            LayerMask obstacleMask = WorldManager.Instance.GetLevelLayers();
+            LayerMask myTeamMask = isBlue ? WorldManager.Instance.GetBlueTeamLayers() : WorldManager.Instance.GetRedTeamLayers();
+            
+            LayerMask combinedMask = obstacleMask | myTeamMask;
 
             foreach (var bone in AimBones)
             {
@@ -324,9 +327,22 @@ namespace Sensor
 
                 dir /= dist;
 
-                int hit = Physics.SphereCastNonAlloc(myEyes.position, 0.05f, dir, rayHits, dist, WorldManager.Instance.GetLevelLayers());
+                int hitCount = Physics.SphereCastNonAlloc(myEyes.position, 0.05f, dir, rayHits, dist, combinedMask);
+                
+                bool isBlocked = false;
+                for (int i = 0; i < hitCount; i++)
+                {
+                    if (rayHits[i].transform != transform && rayHits[i].transform != targetAnim.transform)
+                    {
+                        if (rayHits[i].distance < dist - 0.1f)
+                        {
+                            isBlocked = true;
+                            break;
+                        }
+                    }
+                }
 
-                if (hit == 0)
+                if (!isBlocked)
                 {
                     visiblePoint = t;
                     return true;

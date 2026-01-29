@@ -28,6 +28,7 @@ public class CorpseEditor : Editor
 
 public class Corpse : MonoBehaviour
 {
+    [SerializeField] private float totalMass = 40f;
     [SerializeField] private Transform root;
     public Transform Hip => root;
     [SerializeField] private List<Transform> bones = new List<Transform>();
@@ -57,7 +58,20 @@ public class Corpse : MonoBehaviour
 
         foreach (Rigidbody rb in tempRigids)
         {
-            rb.maxDepenetrationVelocity = 3.0f;
+            float massRate = 0.05f; // 기본값 (기타 부위 5%)
+            string name = rb.name.ToLower();
+
+            if (name.Contains("pelvis") || name.Contains("hips")) massRate = 0.25f;
+            else if (name.Contains("spine") || name.Contains("chest")) massRate = 0.20f;
+            else if (name.Contains("head")) massRate = 0.10f;
+            else if (name.Contains("thigh") || name.Contains("upperleg")) massRate = 0.12f;
+            else if (name.Contains("calf") || name.Contains("leg") || name.Contains("knee")) massRate = 0.08f;
+            else if (name.Contains("arm") || name.Contains("hand")) massRate = 0.025f;
+
+            rb.mass = totalMass * massRate;
+
+            rb.maxDepenetrationVelocity = 3.5f;
+            rb.maxAngularVelocity = 90f;
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             rb.interpolation = RigidbodyInterpolation.Interpolate; 
             rb.solverIterations = 20;
@@ -72,9 +86,10 @@ public class Corpse : MonoBehaviour
         {
             joint.enableProjection = true;
             joint.projectionDistance = 0.05f;
-            joint.projectionAngle = 0.1f;
+            joint.projectionAngle = 2.0f;
             joint.enablePreprocessing = false; 
             joint.enableCollision = false;
+            joint.twistLimitSpring = new SoftJointLimitSpring { spring = 0f, damper = 0f };
         }
     }
 #endif

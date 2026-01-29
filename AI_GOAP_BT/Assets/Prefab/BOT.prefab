@@ -1926,7 +1926,7 @@ MonoBehaviour:
   captureOffsetRadius: 4
   sightCheckInterval: 0.25
   sightRange: 50
-  sightAngle: 160
+  sightAngle: 120
   targetLoyaltyBonus: 2
   searchBetterTargetInterval: 0.5
 --- !u!114 &6757195939308535499
@@ -1968,7 +1968,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.01
   attackCooldown: 1.25
-  reactionTime: 0.5
+  reactionTime: 1.5
   baseSpread: 1
   spreadPerShot: 0.25
   maxSpread: 2

@@ -77,54 +77,63 @@ namespace AnimControl.Assault
             if (targetDir.sqrMagnitude < 0.001f)
                 return;
 
-            if (MathUtility.IsRightDirectionXZ(ctx.transform.forward, targetDir, 75))
+            if (MathUtility.IsRightDirectionXZ(ctx.transform.forward, targetDir, 60))
             {
-                turnHandle = Timing.RunCoroutine(DoTurn(false, targetDir), Segment.FixedUpdate);
+                turnHandle = Timing.RunCoroutine(DoTurn(false), Segment.FixedUpdate);
             }
-            else if (MathUtility.IsLeftDirectionXZ(ctx.transform.forward, targetDir, 75))
+            else if (MathUtility.IsLeftDirectionXZ(ctx.transform.forward, targetDir, 60))
             {
-                turnHandle = Timing.RunCoroutine(DoTurn(true, targetDir), Segment.FixedUpdate);
+                turnHandle = Timing.RunCoroutine(DoTurn(true), Segment.FixedUpdate);
             }
         }
 
-        private IEnumerator<float> DoTurn(bool leftTurn, Vector3 targetDir)
+        private IEnumerator<float> DoTurn(bool leftTurn)
         {
             float animTime;
+            float step = Time.deltaTime * 5f;
 
             turning = true;
-            Quaternion startRot = ctx.transform.rotation;
-            Quaternion endRot = Quaternion.LookRotation(targetDir);
 
             int turnHash;
             if (ctx.IsAimable)
             {
-                animTime = 0.66f;
+                animTime = 0.5f;
                 turnHash = leftTurn ? AnimHash.AimTurn_L : AnimHash.AimTurn_R;
             }
             else
             {
-                animTime = 0.86f;
+                animTime = 0.6f;
                 turnHash = leftTurn ? AnimHash.Turn_L : AnimHash.Turn_R;
             }
 
-            ctx.Anim.CrossFade(turnHash, 0.25f);
+            ctx.Anim.applyRootMotion = false;
+            ctx.Anim.CrossFadeInFixedTime(turnHash, 0.25f);
 
             float time = 0;
             while (time <= animTime)
             {
                 if (ctx.MyBrain.Sensor.MyStat.IsDead) yield break;
 
-                float t = time / animTime;
-                Quaternion newRot = Quaternion.Slerp(startRot, endRot, t);
-                ctx.MyRigid.MoveRotation(newRot);
+                Vector3 direction = ctx.MyBrain.Sensor.LastSeenPosition - ctx.transform.position;
+                direction.y = 0;
+                direction.Normalize();
+
+                float yRotation = Vector3.SignedAngle(Vector3.forward, direction, Vector3.up);
+                ctx.transform.rotation =
+                    Quaternion.Slerp
+                    (
+                        ctx.transform.rotation,
+                        Quaternion.Euler(0, yRotation, 0),
+                        step
+                    );
 
                 time += Timing.DeltaTime;
                 yield return Timing.WaitForOneFrame;
             }
 
-            ctx.MyRigid.MoveRotation(endRot);
-            ctx.Anim.CrossFade(AnimHash.Strafe, 0.25f);
             turning = false;
+            ctx.Anim.applyRootMotion = true;
+            ctx.Anim.CrossFadeInFixedTime(AnimHash.Strafe, 0.25f);
         }
     }
 }
