@@ -227,7 +227,6 @@ namespace AnimControl.Assault
             hitDir.Normalize();
 
             AttackedDirection = hitDir;
-            Debug.Log($"Attacked!! {name}, {AttackedDirection}");
         }
 
         void HandleAttackedDirection()
