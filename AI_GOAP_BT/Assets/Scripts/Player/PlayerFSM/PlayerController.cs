@@ -18,6 +18,8 @@ namespace Player.FSM
 
     public class PlayerController : StateManager<PlayerState>
     {
+        public static System.Action<PlayerController> OnPlayerSpawned;
+
         public float StateTime { get; set; }
         public PlayerState State { get { return CurrentState.StateKey; } }
 
@@ -76,13 +78,6 @@ namespace Player.FSM
             CalculateJumpVelocity();
         }
 
-        public override void OnStartServer()
-        {
-            //GunController.LoadGun("MPX");
-            //LoadGun("AK-12");
-            return;
-        }
-
         public override void OnStartClient()
         {
             MyStat.OnDead += CorpseSpawner.SpawnCorpse;
@@ -91,6 +86,7 @@ namespace Player.FSM
                 IsOnJumping = false;
             };
             MyStat.OnRevive += CorpseSpawner.DespawnCorpse;
+            OnPlayerSpawned?.Invoke(this);
         }
 
         public override void OnStopClient()

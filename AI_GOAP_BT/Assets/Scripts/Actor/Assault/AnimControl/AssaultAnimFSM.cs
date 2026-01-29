@@ -52,23 +52,54 @@ namespace AnimControl.Assault
 
         private void Start()
         {
-            /// 플레이어와 충돌 무시
-            foreach (var player in FindObjectsByType<PlayerController>(sortMode: FindObjectsSortMode.None))
-            {
-                Physics.IgnoreCollision(
-                    MyCol,
-                    player.GetComponent<Collider>(),
-                    true
-                );
-            }
+            IgnoreExistingPlayers();
+            PlayerController.OnPlayerSpawned += IgnorePlayer;
+        }
+
+        private void OnDestroy()
+        {
+            PlayerController.OnPlayerSpawned -= IgnorePlayer;
         }
 
         public override void OnStartServer()
         {
             base.OnStartServer();
+
             MyBrain.Sensor.MyStat.OnUnderAttack += SetAttackedDirection;
             MyBrain.Sensor.MyStat.OnDead += OnDead;
             MyBrain.Navigator.OnSetDestination += DecideAccelByDistance;
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient(); 
+
+            if (isServer) return;
+        }
+
+        public override void OnStopClient()
+        {
+            base.OnStopClient();
+        }
+
+        private void IgnoreExistingPlayers()
+        {
+            var players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+            foreach (var player in players)
+            {
+                IgnorePlayer(player);
+            }
+        }
+
+        private void IgnorePlayer(PlayerController player)
+        {
+            if (player == null) return;
+
+            Collider playerCol = player.GetComponent<Collider>();
+            if (playerCol != null && MyCol != null)
+            {
+                Physics.IgnoreCollision(MyCol, playerCol, true);
+            }
         }
 
         public override void OnStopServer()
@@ -80,9 +111,7 @@ namespace AnimControl.Assault
 
         void OnAnimatorMove()
         {
-            if (!isServer) return;
-            if (MyBrain.Sensor.MyStat.IsDead) return;
-            if (Time.deltaTime <= 0) return;
+            if (!isServer || MyBrain.Sensor.MyStat.IsDead || Time.deltaTime <= 0) return;
 
             Vector3 nextPosition;
             Quaternion nextRotation;
@@ -90,13 +119,19 @@ namespace AnimControl.Assault
 
             Vector3 rootPosition = new Vector3(Anim.rootPosition.x, nextPosition.y, Anim.rootPosition.z);
 
-            if (!MyBrain.Navigator.AI.enableRotation && RootRotation)
+            if (!MyBrain.Navigator.AI.enableRotation)
             {
-                MyBrain.Navigator.AI.FinalizeMovement(rootPosition, nextRotation);
-                this.transform.rotation *= Anim.deltaRotation;
+                MyBrain.Navigator.AI.FinalizeMovement(rootPosition, MyRigid.rotation);
+
+                if (RootRotation)
+                {
+                    MyRigid.MoveRotation(MyRigid.rotation * Anim.deltaRotation);
+                }
             }
             else
+            {
                 MyBrain.Navigator.AI.FinalizeMovement(rootPosition, nextRotation);
+            }
         }
 
         protected override void Update()
@@ -198,7 +233,7 @@ namespace AnimControl.Assault
         {
             if (AttackedDirection == Vector3.zero) return;
 
-            AttackedDirection = MathUtility.IsSameDirectionXZ(transform.forward, AttackedDirection, 45f)
+            AttackedDirection = MathUtility.IsSameDirectionXZ(transform.forward, AttackedDirection, 30f)
                 ? Vector3.zero : AttackedDirection;
         }
 

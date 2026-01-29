@@ -25,11 +25,12 @@ namespace AnimControl.Assault
         public override void UpdateState()
         {
             base.UpdateState();
+            LookAtTarget();
         }
 
         public override void PhysicsUpdateState()
         {
-            LookAtTarget();
+
         }
 
         public override AnimState GetNextState()
@@ -59,30 +60,32 @@ namespace AnimControl.Assault
         void LookAtTarget()
         {
             Vector3 targetDir = Vector3.zero;
-            Quaternion targetRot = ctx.MyRigid.rotation;
             bool hasValidDir = false;
 
-            if(ctx.AttackedDirection.sqrMagnitude > 0.001f)
+            if (ctx.AttackedDirection.sqrMagnitude > 0.001f)
             {
                 targetDir = ctx.AttackedDirection;
                 hasValidDir = true;
             }
-            else if(ctx.MyBrain.Sensor.IsAlert || ctx.MyBrain.Sensor.LastSeenPosition != Vector3.negativeInfinity)
+            else if (ctx.MyBrain.Sensor.IsAlert || ctx.MyBrain.Sensor.LastSeenPosition != Vector3.negativeInfinity)
             {
                 targetDir = ctx.MyBrain.Sensor.LastSeenPosition - ctx.transform.position;
                 targetDir.y = 0;
-                targetDir.Normalize();
-
-                if(targetDir.sqrMagnitude > 0.001f) hasValidDir = true;
+                if (targetDir.sqrMagnitude > 0.001f)
+                {
+                    targetDir.Normalize();
+                    hasValidDir = true;
+                }
             }
 
             if (!hasValidDir) return;
 
-            targetRot = Quaternion.LookRotation(targetDir, Vector3.up);
-            float maxStep = ctx.MyBrain.Sensor.MyStat.RotateSpeedToTarget * Time.fixedDeltaTime;
+            float step = Time.deltaTime * 5f;
 
-            Quaternion newRot = Quaternion.RotateTowards(ctx.MyRigid.rotation, targetRot, maxStep);
-            ctx.MyRigid.MoveRotation(newRot);
+            float yRotation = Vector3.SignedAngle(Vector3.forward, targetDir, Vector3.up);
+            Quaternion targetRot = Quaternion.Euler(0, yRotation, 0);
+
+            ctx.MyRigid.MoveRotation(Quaternion.Slerp(ctx.MyRigid.rotation, targetRot, step));
         }
     }
 }

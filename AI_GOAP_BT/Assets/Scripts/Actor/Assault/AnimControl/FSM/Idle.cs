@@ -114,7 +114,9 @@ namespace AnimControl.Assault
             {
                 if (ctx.MyBrain.Sensor.MyStat.IsDead) yield break;
 
-                Vector3 direction = ctx.MyBrain.Sensor.LastSeenPosition - ctx.transform.position;
+                Vector3 direction = ctx.MyBrain.Sensor.HasTarget 
+                    ? ctx.MyBrain.Sensor.CurrentTargetAimPoint.position - ctx.transform.position
+                    : ctx.MyBrain.Navigator.AI.steeringTarget;
                 direction.y = 0;
                 direction.Normalize();
 

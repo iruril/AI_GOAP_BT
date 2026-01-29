@@ -49,8 +49,6 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
     [SerializeField] private float maxHP = 100f;
     public float MaxHP => maxHP;
-    [SerializeField] private float rotateSpeedToTarget = 90f;
-    public float RotateSpeedToTarget => rotateSpeedToTarget;
 
     [SyncVar(hook = nameof(OnHPChanged))] public float CurrentHP;
     [SyncVar(hook = nameof(OnDeathStateChanged))] public bool IsDead = false;
