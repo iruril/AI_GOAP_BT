@@ -121,6 +121,11 @@ namespace Player.FSM
             GameManager.GetInstance().InputMap.LockCursor(false);
         }
 
+        public override void OnStartServer()
+        {
+
+        }
+
         protected override void Update()
         {
             if (!CanProcess()) return;

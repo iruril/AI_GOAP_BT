@@ -70,11 +70,16 @@ namespace AnimControl.Assault
             MyBrain.Navigator.OnSetDestination += DecideAccelByDistance;
         }
 
+        public override void OnStopServer()
+        {
+            MyBrain.Sensor.MyStat.OnUnderAttack -= SetAttackedDirection;
+            MyBrain.Sensor.MyStat.OnDead -= OnDead;
+            MyBrain.Navigator.OnSetDestination -= DecideAccelByDistance;
+        }
+
         public override void OnStartClient()
         {
-            base.OnStartClient(); 
-
-            if (isServer) return;
+            base.OnStartClient();
         }
 
         public override void OnStopClient()
@@ -100,13 +105,6 @@ namespace AnimControl.Assault
             {
                 Physics.IgnoreCollision(MyCol, playerCol, true);
             }
-        }
-
-        public override void OnStopServer()
-        {
-            MyBrain.Sensor.MyStat.OnUnderAttack -= SetAttackedDirection;
-            MyBrain.Sensor.MyStat.OnDead -= OnDead;
-            MyBrain.Navigator.OnSetDestination -= DecideAccelByDistance;
         }
 
         void OnAnimatorMove()
@@ -222,11 +220,14 @@ namespace AnimControl.Assault
 
         public void SetAttackedDirection(Vector3 shotOrigin)
         {
+            if(MyBrain.Sensor.HasTarget) return;
+
             Vector3 hitDir = shotOrigin - transform.position;
             hitDir.y = 0;
             hitDir.Normalize();
 
-            AttackedDirection = MyBrain.Sensor.HasTarget ? Vector3.zero : hitDir;
+            AttackedDirection = hitDir;
+            Debug.Log($"Attacked!! {name}, {AttackedDirection}");
         }
 
         void HandleAttackedDirection()
