@@ -44,7 +44,8 @@ namespace Player
 
             recoil.SetRecoilValue(
                 player.GunController.CurrentGun.GunInfo.RecoilPitch,
-                player.GunController.CurrentGun.GunInfo.RecoilYaw,
+                player.GunController.CurrentGun.GunInfo.RecoilYawLeft,
+                player.GunController.CurrentGun.GunInfo.RecoilYawRight,
                 player.GunController.CurrentGun.GunInfo.RecoilRoll
             );
         }

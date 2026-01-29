@@ -9,16 +9,30 @@ namespace GOAP.Assualt
     {
         AssaultBrain myBrain;
 
-        [Header("공격 주기")]
+        [Header("Shoot Interval")]
         [SerializeField] private float attackCooldown = 2.5f;
-        private int burstCount = 3;
+        private int burstCount = 3; 
+        
+        [Header("Reaction Settings")]
+        [SerializeField] private float reactionTime = 0.5f;
+        private float recognitionTimer = 0f;
+
+        [Header("Accuracy Settings")]
+        [SerializeField] private float baseSpread = 0.5f;
+        [SerializeField] private float spreadPerShot = 0.2f;
+        [SerializeField] private float maxSpread = 1.5f;
+        [SerializeField] private float aimTrackingLag = 0.1f;
+
+        private float currentSpread = 0f;
+        private Vector3 visualAimOffset;
 
         private float cooldownTimer = 0f;
         private bool isBursting = false;
         private CoroutineHandle burstHandle;
 
-        [SyncVar] private Vector3 syncedAimTarget;
-        [SyncVar] private float syncedAimWeight;
+        [Header("SyncVar")]
+        [SyncVar] public Vector3 SyncedAimTarget;
+        [SyncVar] public float SyncedAimWeight;
 
         private void Awake()
         {
@@ -27,7 +41,7 @@ namespace GOAP.Assualt
 
         private void OnDisable()
         {
-            syncedAimWeight = 0f;
+            if (isServer) SyncedAimWeight = 0f;
             myBrain.MotionController.AimIK.solver.IKPositionWeight = 0f;
         }
 
@@ -70,54 +84,71 @@ namespace GOAP.Assualt
             if (isServer)
             {
                 cooldownTimer += Time.deltaTime;
-                ServerUpdateAimValues();
+                ServerUpdateAimValues(); 
+                
+                if (myBrain.Sensor.TargetVisible && myBrain.Sensor.HasTarget)
+                {
+                    recognitionTimer += Time.deltaTime;
+                }
+                else
+                {
+                    recognitionTimer = 0f;
+                }
             }
 
             ClientUpdateIK();
         }
 
+        private Vector3 serverAimVel;
+        float serverAimWeightVel;
         private void ServerUpdateAimValues()
         {
-            syncedAimTarget = myBrain.Sensor.IsAlert && myBrain.Sensor.LastSeenPosition != Vector3.negativeInfinity
+            bool hasValidLastSeen = myBrain.Sensor.LastSeenPosition != Vector3.negativeInfinity;
+
+            Vector3 realTargetPos = (myBrain.Sensor.IsAlert && hasValidLastSeen)
                 ? myBrain.Sensor.LastSeenPosition
                 : transform.position + transform.forward * 20f + Vector3.up * 1.2f;
 
-            syncedAimWeight = (myBrain.MotionController.IsAimable &&
-                               !myBrain.GunController.OnReload)
-                               ? 1f : 0f;
+            if (float.IsNaN(realTargetPos.x) || float.IsInfinity(realTargetPos.x))
+            {
+                realTargetPos = transform.position + transform.forward * 5f;
+            }
+
+            if (float.IsNaN(SyncedAimTarget.x) || float.IsInfinity(SyncedAimTarget.x))
+            {
+                SyncedAimTarget = realTargetPos;
+                serverAimVel = Vector3.zero;
+            }
+            float safeLag = Mathf.Max(0.01f, aimTrackingLag);
+            SyncedAimTarget = Vector3.SmoothDamp(
+                    SyncedAimTarget,
+                    realTargetPos + visualAimOffset,
+                    ref serverAimVel,
+                    safeLag
+                );
+
+            if (float.IsNaN(SyncedAimWeight)) SyncedAimWeight = 0f;
+
+            float targetWeight = (myBrain.MotionController.IsAimable && myBrain.Sensor.IsAlert && !myBrain.GunController.OnReload) ? 1f : 0f;
+
+            SyncedAimWeight = Mathf.SmoothDamp(
+                    SyncedAimWeight,
+                    targetWeight,
+                    ref serverAimWeightVel,
+                    Mathf.Max(0.01f, myBrain.GunController.CurrentGun.GunInfo.TimeToADS)
+                );
         }
 
-        Vector3 aimPosVel;
-        float aimWeightVel;
         private void ClientUpdateIK()
         {
-            bool isPosValid = !float.IsInfinity(syncedAimTarget.x) && !float.IsNaN(syncedAimTarget.x);
+            bool isPosValid = !float.IsInfinity(SyncedAimTarget.x) && !float.IsNaN(SyncedAimTarget.x);
             if (isPosValid)
             {
-                myBrain.GunController.AimIKTarget.position =
-                Vector3.SmoothDamp(
-                    myBrain.GunController.AimIKTarget.position,
-                    syncedAimTarget,
-                    ref aimPosVel,
-                    0.25f,
-                    Mathf.Infinity,
-                    Time.deltaTime
-                );
-            }
-            else
-            {
-                aimPosVel = Vector3.zero;
+                myBrain.GunController.AimIKTarget.position = SyncedAimTarget;
             }
 
-            float targetWeight = isPosValid ? syncedAimWeight : 0f;
-
-            myBrain.MotionController.AimIK.solver.IKPositionWeight =
-                Mathf.SmoothDamp(
-                    myBrain.MotionController.AimIK.solver.IKPositionWeight,
-                    targetWeight,
-                    ref aimWeightVel,
-                    0.1f
-                );
+            float targetWeight = isPosValid ? SyncedAimWeight : 0f;
+            myBrain.MotionController.AimIK.solver.IKPositionWeight = targetWeight;
         }
 
         public void TryAttack()
@@ -125,7 +156,8 @@ namespace GOAP.Assualt
             if (!isServer) return;
             if (!myBrain.MotionController.Shootable()) return;
             if (cooldownTimer < attackCooldown) return;
-            if (isBursting) return;
+            if (isBursting) return; 
+            if (recognitionTimer < reactionTime) return;
 
             burstHandle = Timing.RunCoroutine(BurstRoutine());
         }
@@ -134,6 +166,7 @@ namespace GOAP.Assualt
         {
             isBursting = true;
             cooldownTimer = 0f;
+            currentSpread = baseSpread;
 
             var gunStat = myBrain.GunController;
             int fireCount = burstCount;
@@ -141,29 +174,39 @@ namespace GOAP.Assualt
             while (fireCount > 0)
             {
                 if (!myBrain.MotionController.Shootable()) break;
-                if (gunStat.CurrentRounds <= 0) break;
+                if (gunStat.CurrentRounds <= 0) break; 
+                
+                float distance = Vector3.Distance(transform.position, SyncedAimTarget);
+                float distanceMultiplier = distance / 10f;
+
+                visualAimOffset = Random.insideUnitSphere * (currentSpread * distanceMultiplier);
 
                 myBrain.GunController.Fire();
                 fireCount--;
 
+                currentSpread = Mathf.Min(currentSpread + spreadPerShot, maxSpread);
+
                 yield return Timing.WaitForSeconds(myBrain.GunController.CurrentGun.GunInfo.ShotInterval);
             }
-
+            visualAimOffset = Vector3.zero;
             isBursting = false;
+            currentSpread = baseSpread;
         }
 
         private void OnDead()
         {
             cooldownTimer = 0f;
+            visualAimOffset = Vector3.zero;
             isBursting = false;
+            currentSpread = baseSpread;
             Timing.KillCoroutines(burstHandle);
         }
 
         private void OnGunChanged()
         {
             // 다 맞아도 죽지 않을 정도로만 격발
-            burstCount = Mathf.CeilToInt(myBrain.Sensor.MyStat.MaxHP /
-                                (float)myBrain.GunController.CurrentGun.GunInfo.RoundDamage) - 1;
+            int rounds = Mathf.CeilToInt(myBrain.Sensor.MyStat.MaxHP / (float)myBrain.GunController.CurrentGun.GunInfo.RoundDamage);
+            burstCount = Mathf.Max(1, rounds - 1);
         }
     }
 }

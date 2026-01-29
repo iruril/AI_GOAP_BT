@@ -5,11 +5,12 @@
       "GunName": "AK-12",
       "GunInfo": {
         "TimeToADS": 0.25,
-        "RoundDamage": 32,
+        "RoundDamage": 30,
         "Stability": 20,
         "Spread": 0.5,
         "RecoilPitch": -1.2,
-        "RecoilYaw": 0.8,
+        "RecoilYawLeft": 0.2,
+        "RecoilYawRight": 0.8,
         "RecoilRoll": 0.35,
         "MagazineCapacity": 30,
         "RPM": 650,
@@ -18,7 +19,7 @@
           0,
           2
         ],
-        "HeadDamageMultiplier": 1.5
+        "HeadDamageMultiplier": 1.75
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
@@ -35,7 +36,8 @@
         "Stability": 25,
         "Spread": 0.3,
         "RecoilPitch": -0.6,
-        "RecoilYaw": 0.3,
+        "RecoilYawLeft": 0.1,
+        "RecoilYawRight": 0.3,
         "RecoilRoll": 0.25,
         "MagazineCapacity": 35,
         "RPM": 850,
@@ -44,7 +46,7 @@
           0,
           2
         ],
-        "HeadDamageMultiplier": 1.75
+        "HeadDamageMultiplier": 1.5
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.472, 0.017, 0.086 ],

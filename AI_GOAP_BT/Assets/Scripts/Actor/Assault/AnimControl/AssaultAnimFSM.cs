@@ -34,7 +34,6 @@ namespace AnimControl.Assault
         public bool RootRotation = false;
 
         [SyncVar] public bool IsAimable;
-        private float aimWeight;
 
         public Vector3 AttackedDirection { get; set; } = Vector3.zero;
 
@@ -69,10 +68,6 @@ namespace AnimControl.Assault
             base.OnStartServer();
             MyBrain.Sensor.MyStat.OnUnderAttack += SetAttackedDirection;
             MyBrain.Sensor.MyStat.OnDead += OnDead;
-            MyBrain.Sensor.MyStat.OnDead += () =>
-            {
-                aimWeight = 0f;
-            };
             MyBrain.Navigator.OnSetDestination += DecideAccelByDistance;
         }
 
@@ -155,17 +150,9 @@ namespace AnimControl.Assault
             Anim.SetFloat(AnimHash.Accelation, Accel);
         }
 
-        float _refAimValue;
         void UpdateAimWeight()
         {
-            float _targetVaule = MyBrain.Sensor.IsAlert ? 1f : 0f;
-            aimWeight = Mathf.SmoothDamp(
-                aimWeight,
-                _targetVaule,
-                ref _refAimValue,
-                MyBrain.GunController.CurrentGun.GunInfo.TimeToADS
-            );
-            Anim.SetFloat(AnimHash.AimWeight, aimWeight);
+            Anim.SetFloat(AnimHash.AimWeight, MyBrain.AttackController.SyncedAimWeight);
         }
 
         public void SetTargetAccel(float v)
@@ -218,14 +205,14 @@ namespace AnimControl.Assault
         private bool Aimable()
         {
             var StateInfo = Anim.GetCurrentAnimatorStateInfo(0);
-            return StateInfo.shortNameHash == AnimHash.Strafe && aimWeight >= 0.99f;
+            return StateInfo.shortNameHash == AnimHash.Strafe;
         }
 
         public bool Shootable()
         {
             return AimIK.solver.IKPositionWeight >= 0.99f 
                 && MyBrain.Sensor.TargetVisible
-                && (MyBrain.Sensor.CurrentTargetAimPoint.position - MyBrain.GunController.AimIKTarget.position).sqrMagnitude <= 1;
+                && (MyBrain.Sensor.CurrentTargetAimPoint.position - MyBrain.GunController.AimIKTarget.position).sqrMagnitude <= 4;
         }
 
         private void OnDead()

@@ -10,7 +10,7 @@ public class GunHandler : NetworkBehaviour
 {
     public event Action<int> OnRoundChanged;
     public event Action OnFired;
-    public event Action<float, float, float> OnGunRecoilChanged;
+    public event Action<float, float, float, float> OnGunRecoilChanged;
 
     [Header("Gun 트랜스폼 세팅")]
     [SerializeField] Transform gunPos;
@@ -111,7 +111,8 @@ public class GunHandler : NetworkBehaviour
             );
             OnGunRecoilChanged?.Invoke(
                 currentGun.GunInfo.RecoilPitch,
-                currentGun.GunInfo.RecoilYaw,
+                currentGun.GunInfo.RecoilYawLeft,
+                currentGun.GunInfo.RecoilYawRight,
                 currentGun.GunInfo.RecoilRoll
             );
         }
@@ -235,7 +236,9 @@ public class GunHandler : NetworkBehaviour
     [Server]
     private void ServerExecuteFire(Vector3 muzzlePos, Vector3 muzzleDir, float lagTime)
     {
+        if ((Muzzle.position - muzzlePos).sqrMagnitude > 2f) return;
         if (CurrentRounds == 0) return;
+
         CurrentRounds = Mathf.Clamp(CurrentRounds - 1, 0, int.MaxValue);
 
         float spreadRad = currentSpread * Mathf.Deg2Rad;
@@ -397,7 +400,8 @@ public class GunHandler : NetworkBehaviour
         double now = NetworkTime.time;
         float elapsed = (float)(now - serverStartTime);
 
-        Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.25f, elapsed));
+        Timing.KillCoroutines(layerIkHandle);
+        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.25f, elapsed));
     }
 
     [ClientRpc]
@@ -410,7 +414,8 @@ public class GunHandler : NetworkBehaviour
         double now = NetworkTime.time;
         float elapsed = (float)(now - serverCompleteTime);
 
-        Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.25f, elapsed));
+        Timing.KillCoroutines(layerIkHandle);
+        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.25f, elapsed));
     }
 
     private IEnumerator<float> LerpIKAndLayer(Animator anim, IKEffector leftHand,

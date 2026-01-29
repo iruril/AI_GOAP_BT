@@ -79,9 +79,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!144 &7944862211294223937
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -102,30 +102,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -40
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.1
+    contactDistance: 0.5
   m_HighTwistLimit:
     limit: 25
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.1
+    contactDistance: 0.5
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 25
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.1
+    contactDistance: 0.5
   m_Swing2Limit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.1
+    contactDistance: 0.5
   m_EnableProjection: 0
   m_ProjectionDistance: 0.1
   m_ProjectionAngle: 180
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &124542052177447766
@@ -211,9 +211,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!144 &2927565682808203422
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -234,30 +234,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -30
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_HighTwistLimit:
     limit: 30
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 30
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_Swing2Limit:
     limit: 30
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_EnableProjection: 0
   m_ProjectionDistance: 0.1
   m_ProjectionAngle: 180
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &128733551774196011
@@ -719,9 +719,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!1 &2080795315408959814
 GameObject:
   m_ObjectHideFlags: 0
@@ -963,9 +963,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!144 &7069494796696137563
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -986,30 +986,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -30
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_HighTwistLimit:
     limit: 30
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 30
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_Swing2Limit:
     limit: 30
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_EnableProjection: 0
   m_ProjectionDistance: 0.1
   m_ProjectionAngle: 180
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &2596521622901559669
@@ -1417,9 +1417,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!144 &1703713669737118965
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -1440,30 +1440,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -20
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_HighTwistLimit:
     limit: 70
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 30
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_Swing2Limit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_EnableProjection: 0
   m_ProjectionDistance: 0.1
   m_ProjectionAngle: 180
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &3578243484028070011
@@ -1707,9 +1707,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!144 &5507975521020815101
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -1730,30 +1730,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -40
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_HighTwistLimit:
     limit: 40
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 10
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_Swing2Limit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_EnableProjection: 0
   m_ProjectionDistance: 0.1
   m_ProjectionAngle: 180
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &4008136620508325931
@@ -2137,9 +2137,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!144 &1330708167122506356
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2160,30 +2160,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -100
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_HighTwistLimit:
     limit: -20
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_Swing2Limit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_EnableProjection: 0
   m_ProjectionDistance: 0.1
   m_ProjectionAngle: 180
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &4960849685393291460
@@ -2552,9 +2552,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!144 &12820014402559488
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2575,30 +2575,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -100
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_HighTwistLimit:
     limit: -20
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_Swing2Limit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_EnableProjection: 0
   m_ProjectionDistance: 0.1
   m_ProjectionAngle: 180
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &7175679667356167856
@@ -2785,9 +2785,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!144 &1677775093817273107
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2808,30 +2808,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -100
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_HighTwistLimit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_Swing2Limit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_EnableProjection: 0
   m_ProjectionDistance: 0.1
   m_ProjectionAngle: 180
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &7951663125725685287
@@ -3108,9 +3108,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!144 &5157996713185758291
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -3131,30 +3131,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -20
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_HighTwistLimit:
     limit: 70
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 30
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_Swing2Limit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_EnableProjection: 0
   m_ProjectionDistance: 0.1
   m_ProjectionAngle: 180
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &8471168501022193841
@@ -3334,9 +3334,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!144 &8403381791758556572
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -3357,30 +3357,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -100
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_HighTwistLimit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_Swing2Limit:
     limit: 0
-    bounciness: 0
-    contactDistance: 0
+    bounciness: 0.5
+    contactDistance: 0.5
   m_EnableProjection: 0
   m_ProjectionDistance: 0.1
   m_ProjectionAngle: 180
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &8777259848938659993

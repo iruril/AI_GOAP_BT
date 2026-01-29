@@ -9,7 +9,8 @@ public class RecoilController : MonoBehaviour
     private Vector3 targetRotation;
 
     private float recoilPitch;
-    private float recoilYaw;
+    private float recoilYawLeft;
+    private float recoilYawRight;
     private float recoilRoll;
 
     [Header("Visual Recoil")]
@@ -100,16 +101,17 @@ public class RecoilController : MonoBehaviour
         impulseSource.GenerateImpulseWithForce(visualRecoilForce);
 
         targetRotation.x = Mathf.Clamp(targetRotation.x + recoilPitch, -maxPitch, maxPitch);
-        targetRotation.y += Random.Range(-recoilYaw * 0.5f, recoilYaw);
+        targetRotation.y += Random.Range(-recoilYawLeft, recoilYawRight);
         targetRotation.z = Mathf.Clamp(targetRotation.z + Random.Range(-recoilRoll, recoilRoll), -maxRoll, maxRoll);
 
         lastApplyTime = Time.time;
     }
 
-    public void SetRecoilValue(float pitch, float yaw, float roll)
+    public void SetRecoilValue(float pitch, float yawLeft, float yawRight, float roll)
     {
         recoilPitch = pitch;
-        recoilYaw = yaw;
+        recoilYawLeft = yawLeft;
+        recoilYawRight = yawRight;
         recoilRoll = roll;
     }
 

@@ -17,7 +17,8 @@ public class GunInfo
     public float Stability { get; }
     public float Spread { get; }
     public float RecoilPitch { get; }
-    public float RecoilYaw { get; }
+    public float RecoilYawLeft { get; }
+    public float RecoilYawRight { get; }
     public float RecoilRoll { get; }
     public int MagazineCapacity { get; }
     public int RPM { get; }
@@ -32,7 +33,8 @@ public class GunInfo
         float Stability,
         float Spread,
         float RecoilPitch,
-        float RecoilYaw,
+        float RecoilYawLeft,
+        float RecoilYawRight,
         float RecoilRoll,
         int MagazineCapacity,
         int RPM,
@@ -45,7 +47,8 @@ public class GunInfo
         this.Stability = Stability;
         this.Spread = Spread;
         this.RecoilPitch = RecoilPitch;
-        this.RecoilYaw = RecoilYaw;
+        this.RecoilYawLeft = RecoilYawLeft;
+        this.RecoilYawRight = RecoilYawRight;
         this.RecoilRoll = RecoilRoll;
         this.MagazineCapacity = MagazineCapacity;
         this.RPM = RPM;

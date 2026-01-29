@@ -117,6 +117,7 @@ namespace Sensor
         private void UpdateLastSeenPosition()
         {
             if (!TargetVisible) return;
+
             LastSeenPosition = CurrentTargetAimPoint.position;
         }
 
@@ -289,7 +290,6 @@ namespace Sensor
 
             if(flat.sqrMagnitude > sqrSightRange * 1.44f || !IsInSightAngle(CurrentTarget, transform.position))
             {
-                //ResetTarget();
                 TargetVisible = false;
                 return;
             }

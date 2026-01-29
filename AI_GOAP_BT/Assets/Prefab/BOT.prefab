@@ -1968,6 +1968,13 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.01
   attackCooldown: 1.25
+  reactionTime: 0.5
+  baseSpread: 1
+  spreadPerShot: 0.25
+  maxSpread: 2
+  aimTrackingLag: 0.15
+  SyncedAimTarget: {x: 0, y: 0, z: 0}
+  SyncedAimWeight: 0
 --- !u!114 &1464119152950905832
 MonoBehaviour:
   m_ObjectHideFlags: 0
