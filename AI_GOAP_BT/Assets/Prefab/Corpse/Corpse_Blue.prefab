@@ -328,10 +328,10 @@ Rigidbody:
   m_GameObject: {fileID: 1342437103114398152}
   serializedVersion: 4
   m_Mass: 2
-  m_Drag: 0
-  m_AngularDrag: 10
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaTensor: {x: 2, y: 2, z: 2}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
@@ -343,9 +343,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!144 &5682616287995125277
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -366,30 +366,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -20
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_HighTwistLimit:
     limit: 70
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 30
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_Swing2Limit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
-  m_EnableProjection: 0
-  m_ProjectionDistance: 0.1
-  m_ProjectionAngle: 180
+    bounciness: 0
+    contactDistance: 0.02
+  m_EnableProjection: 1
+  m_ProjectionDistance: 0.05
+  m_ProjectionAngle: 0.1
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &1554404100497847440
@@ -649,11 +649,11 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2096983611521717198}
   serializedVersion: 4
-  m_Mass: 2
-  m_Drag: 0
-  m_AngularDrag: 10
+  m_Mass: 1.5
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaTensor: {x: 2, y: 2, z: 2}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
@@ -665,9 +665,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!144 &1744351579048810078
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -688,30 +688,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -100
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_HighTwistLimit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_Swing2Limit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
-  m_EnableProjection: 0
-  m_ProjectionDistance: 0.1
-  m_ProjectionAngle: 180
+    bounciness: 0
+    contactDistance: 0.02
+  m_EnableProjection: 1
+  m_ProjectionDistance: 0.05
+  m_ProjectionAngle: 0.1
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &2126646157544410998
@@ -938,11 +938,11 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2312727756875426572}
   serializedVersion: 4
-  m_Mass: 2
-  m_Drag: 0
-  m_AngularDrag: 10
+  m_Mass: 1.5
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaTensor: {x: 2, y: 2, z: 2}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
@@ -954,9 +954,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!144 &7542952650134044036
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -977,30 +977,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -100
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_HighTwistLimit:
-    limit: -20
-    bounciness: 0.5
-    contactDistance: 0.5
+    limit: 10
+    bounciness: 0
+    contactDistance: 0.02
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_Swing2Limit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
-  m_EnableProjection: 0
-  m_ProjectionDistance: 0.1
-  m_ProjectionAngle: 180
+    bounciness: 0
+    contactDistance: 0.02
+  m_EnableProjection: 1
+  m_ProjectionDistance: 0.05
+  m_ProjectionAngle: 0.1
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &2426832115768037962
@@ -1070,7 +1070,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 10
   m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaTensor: {x: 2, y: 2, z: 2}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
@@ -1082,9 +1082,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!144 &6998355478009830964
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -1106,29 +1106,29 @@ CharacterJoint:
   m_LowTwistLimit:
     limit: -40
     bounciness: 0.5
-    contactDistance: 0.5
+    contactDistance: 2
   m_HighTwistLimit:
     limit: 25
     bounciness: 0.5
-    contactDistance: 0.5
+    contactDistance: 2
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 25
     bounciness: 0.5
-    contactDistance: 0.5
+    contactDistance: 2
   m_Swing2Limit:
     limit: 0
     bounciness: 0.5
-    contactDistance: 0.5
-  m_EnableProjection: 0
-  m_ProjectionDistance: 0.1
-  m_ProjectionAngle: 180
+    contactDistance: 2
+  m_EnableProjection: 1
+  m_ProjectionDistance: 0.05
+  m_ProjectionAngle: 0.1
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &2718664852331838101
@@ -1717,11 +1717,11 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4182100411543883514}
   serializedVersion: 4
-  m_Mass: 2
-  m_Drag: 0
-  m_AngularDrag: 10
+  m_Mass: 1.5
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaTensor: {x: 2, y: 2, z: 2}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
@@ -1733,9 +1733,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!144 &2019488948037899967
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -1756,30 +1756,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -30
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_HighTwistLimit:
     limit: 30
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 30
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_Swing2Limit:
     limit: 30
-    bounciness: 0.5
-    contactDistance: 0.5
-  m_EnableProjection: 0
-  m_ProjectionDistance: 0.1
-  m_ProjectionAngle: 180
+    bounciness: 0
+    contactDistance: 0.02
+  m_EnableProjection: 1
+  m_ProjectionDistance: 0.05
+  m_ProjectionAngle: 0.1
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &4299626269789224879
@@ -1881,11 +1881,11 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4350320809803187689}
   serializedVersion: 4
-  m_Mass: 2
-  m_Drag: 0
-  m_AngularDrag: 10
+  m_Mass: 1.5
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaTensor: {x: 2, y: 2, z: 2}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
@@ -1897,9 +1897,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!144 &2148195729552276705
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -1920,30 +1920,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -30
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_HighTwistLimit:
     limit: 30
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 30
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_Swing2Limit:
     limit: 30
-    bounciness: 0.5
-    contactDistance: 0.5
-  m_EnableProjection: 0
-  m_ProjectionDistance: 0.1
-  m_ProjectionAngle: 180
+    bounciness: 0
+    contactDistance: 0.02
+  m_EnableProjection: 1
+  m_ProjectionDistance: 0.05
+  m_ProjectionAngle: 0.1
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &4534276489872932360
@@ -2108,10 +2108,10 @@ Rigidbody:
   m_GameObject: {fileID: 4909004572362727912}
   serializedVersion: 4
   m_Mass: 2
-  m_Drag: 0
-  m_AngularDrag: 10
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaTensor: {x: 2, y: 2, z: 2}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
@@ -2123,9 +2123,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!144 &426043755719090118
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2146,30 +2146,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -20
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_HighTwistLimit:
     limit: 70
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 30
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_Swing2Limit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
-  m_EnableProjection: 0
-  m_ProjectionDistance: 0.1
-  m_ProjectionAngle: 180
+    bounciness: 0
+    contactDistance: 0.02
+  m_EnableProjection: 1
+  m_ProjectionDistance: 0.05
+  m_ProjectionAngle: 0.1
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &4924889474187410045
@@ -2270,11 +2270,11 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5243598068677833508}
   serializedVersion: 4
-  m_Mass: 2
-  m_Drag: 0
-  m_AngularDrag: 10
+  m_Mass: 1.5
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaTensor: {x: 2, y: 2, z: 2}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
@@ -2286,9 +2286,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!144 &2245611361063423616
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2309,30 +2309,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -100
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_HighTwistLimit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_Swing2Limit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
-  m_EnableProjection: 0
-  m_ProjectionDistance: 0.1
-  m_ProjectionAngle: 180
+    bounciness: 0
+    contactDistance: 0.02
+  m_EnableProjection: 1
+  m_ProjectionDistance: 0.05
+  m_ProjectionAngle: 0.1
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &5253525534011896003
@@ -3136,11 +3136,11 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8614711746952949096}
   serializedVersion: 4
-  m_Mass: 2
-  m_Drag: 0
-  m_AngularDrag: 10
+  m_Mass: 1.5
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaTensor: {x: 2, y: 2, z: 2}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
@@ -3152,9 +3152,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!144 &5916189053311194260
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -3175,30 +3175,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -100
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_HighTwistLimit:
-    limit: -20
-    bounciness: 0.5
-    contactDistance: 0.5
+    limit: 10
+    bounciness: 0
+    contactDistance: 0.02
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_Swing2Limit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
-  m_EnableProjection: 0
-  m_ProjectionDistance: 0.1
-  m_ProjectionAngle: 180
+    bounciness: 0
+    contactDistance: 0.02
+  m_EnableProjection: 1
+  m_ProjectionDistance: 0.05
+  m_ProjectionAngle: 0.1
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &9043332091218010397
@@ -3266,11 +3266,11 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9043332091218010397}
   serializedVersion: 4
-  m_Mass: 2
-  m_Drag: 0
-  m_AngularDrag: 10
+  m_Mass: 3
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaTensor: {x: 2, y: 2, z: 2}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
@@ -3282,9 +3282,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!1 &9152811072555199062
 GameObject:
   m_ObjectHideFlags: 0
@@ -3381,11 +3381,11 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9172947851912932175}
   serializedVersion: 4
-  m_Mass: 2
-  m_Drag: 0
-  m_AngularDrag: 10
+  m_Mass: 4
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaTensor: {x: 2, y: 2, z: 2}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
@@ -3397,9 +3397,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!144 &73069819912032162
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -3420,30 +3420,30 @@ CharacterJoint:
     damper: 0
   m_LowTwistLimit:
     limit: -40
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_HighTwistLimit:
     limit: 40
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_SwingLimitSpring:
     spring: 0
     damper: 0
   m_Swing1Limit:
     limit: 10
-    bounciness: 0.5
-    contactDistance: 0.5
+    bounciness: 0
+    contactDistance: 0.02
   m_Swing2Limit:
     limit: 0
-    bounciness: 0.5
-    contactDistance: 0.5
-  m_EnableProjection: 0
-  m_ProjectionDistance: 0.1
-  m_ProjectionAngle: 180
+    bounciness: 0
+    contactDistance: 0.02
+  m_EnableProjection: 1
+  m_ProjectionDistance: 0.05
+  m_ProjectionAngle: 0.1
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 1
+  m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &9215274588705664868

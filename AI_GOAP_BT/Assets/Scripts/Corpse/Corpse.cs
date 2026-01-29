@@ -51,11 +51,30 @@ public class Corpse : MonoBehaviour
         bones = root.gameObject.GetComponentsInChildren<Transform>().Where(x => !x.CompareTag("Gun")).ToList();
 
         PhysicsBones.Clear();
+        PhysicsBones.Clear();
         Rigidbody[] tempRigids = root.GetComponentsInChildren<Rigidbody>();
-        foreach (Rigidbody item in tempRigids)
+        CharacterJoint[] tempJoints = root.GetComponentsInChildren<CharacterJoint>();
+
+        foreach (Rigidbody rb in tempRigids)
         {
-            item.interpolation = RigidbodyInterpolation.Interpolate;
-            PhysicsBones.Add(item.name, item);
+            rb.maxDepenetrationVelocity = 3.0f;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            rb.interpolation = RigidbodyInterpolation.Interpolate; 
+            rb.solverIterations = 20;
+            rb.solverVelocityIterations = 10;
+            rb.ResetInertiaTensor();
+
+            if (!PhysicsBones.ContainsKey(rb.name))
+                PhysicsBones.Add(rb.name, rb);
+        }
+
+        foreach (CharacterJoint joint in tempJoints)
+        {
+            joint.enableProjection = true;
+            joint.projectionDistance = 0.05f;
+            joint.projectionAngle = 0.1f;
+            joint.enablePreprocessing = false; 
+            joint.enableCollision = false;
         }
     }
 #endif
@@ -81,7 +100,8 @@ public class Corpse : MonoBehaviour
         Vector3 forceDir = (this.transform.position - shotOrigin).normalized;
         foreach (var item in PhysicsBones)
         {
-            item.Value.linearVelocity = velocity;
+            item.Value.linearVelocity = velocity; 
+            item.Value.angularVelocity = Vector3.zero;
         }
         PhysicsBones[latestHittedPart].AddForce(forceDir * 10f, ForceMode.Impulse);
     }
