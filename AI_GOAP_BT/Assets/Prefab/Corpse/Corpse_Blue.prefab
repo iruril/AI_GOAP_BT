@@ -327,7 +327,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1342437103114398152}
   serializedVersion: 4
-  m_Mass: 5.4
+  m_Mass: 4.95
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -362,8 +362,8 @@ CharacterJoint:
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_SwingAxis: {x: 0, y: 1, z: 0}
   m_TwistLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_LowTwistLimit:
     limit: -20
     bounciness: 0
@@ -373,8 +373,8 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_SwingLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_Swing1Limit:
     limit: 30
     bounciness: 0
@@ -650,7 +650,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2096983611521717198}
   serializedVersion: 4
-  m_Mass: 1.125
+  m_Mass: 2.925
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -685,8 +685,8 @@ CharacterJoint:
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_SwingAxis: {x: 0, y: -1, z: 0}
   m_TwistLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_LowTwistLimit:
     limit: -100
     bounciness: 0
@@ -696,8 +696,8 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_SwingLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_Swing1Limit:
     limit: 0
     bounciness: 0
@@ -939,7 +939,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2312727756875426572}
   serializedVersion: 4
-  m_Mass: 3.6
+  m_Mass: 4.5
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -974,8 +974,8 @@ CharacterJoint:
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_SwingAxis: {x: 0, y: 1, z: 0}
   m_TwistLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_LowTwistLimit:
     limit: -100
     bounciness: 0
@@ -985,8 +985,8 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_SwingLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_Swing1Limit:
     limit: 0
     bounciness: 0
@@ -1102,8 +1102,8 @@ CharacterJoint:
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_SwingAxis: {x: 0, y: 1, z: 0}
   m_TwistLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_LowTwistLimit:
     limit: -40
     bounciness: 0.5
@@ -1113,8 +1113,8 @@ CharacterJoint:
     bounciness: 0.5
     contactDistance: 2
   m_SwingLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_Swing1Limit:
     limit: 25
     bounciness: 0.5
@@ -1718,7 +1718,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4182100411543883514}
   serializedVersion: 4
-  m_Mass: 1.125
+  m_Mass: 2.925
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1753,8 +1753,8 @@ CharacterJoint:
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_SwingAxis: {x: 0, y: 1, z: 0}
   m_TwistLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_LowTwistLimit:
     limit: -30
     bounciness: 0
@@ -1764,8 +1764,8 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_SwingLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_Swing1Limit:
     limit: 30
     bounciness: 0
@@ -1882,7 +1882,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4350320809803187689}
   serializedVersion: 4
-  m_Mass: 1.125
+  m_Mass: 2.925
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1917,8 +1917,8 @@ CharacterJoint:
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_SwingAxis: {x: 0, y: 1, z: 0}
   m_TwistLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_LowTwistLimit:
     limit: -30
     bounciness: 0
@@ -1928,8 +1928,8 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_SwingLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_Swing1Limit:
     limit: 30
     bounciness: 0
@@ -2108,7 +2108,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4909004572362727912}
   serializedVersion: 4
-  m_Mass: 5.4
+  m_Mass: 4.95
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -2143,8 +2143,8 @@ CharacterJoint:
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_SwingAxis: {x: 0, y: 1, z: 0}
   m_TwistLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_LowTwistLimit:
     limit: -20
     bounciness: 0
@@ -2154,8 +2154,8 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_SwingLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_Swing1Limit:
     limit: 30
     bounciness: 0
@@ -2271,7 +2271,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5243598068677833508}
   serializedVersion: 4
-  m_Mass: 1.125
+  m_Mass: 2.925
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -2306,8 +2306,8 @@ CharacterJoint:
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_SwingAxis: {x: 0, y: -1, z: 0}
   m_TwistLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_LowTwistLimit:
     limit: -100
     bounciness: 0
@@ -2317,8 +2317,8 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_SwingLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_Swing1Limit:
     limit: 0
     bounciness: 0
@@ -3137,7 +3137,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8614711746952949096}
   serializedVersion: 4
-  m_Mass: 3.6
+  m_Mass: 4.5
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -3172,8 +3172,8 @@ CharacterJoint:
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_SwingAxis: {x: 0, y: 1, z: 0}
   m_TwistLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_LowTwistLimit:
     limit: -100
     bounciness: 0
@@ -3183,8 +3183,8 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_SwingLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_Swing1Limit:
     limit: 0
     bounciness: 0
@@ -3267,7 +3267,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9043332091218010397}
   serializedVersion: 4
-  m_Mass: 11.25
+  m_Mass: 9
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -3417,8 +3417,8 @@ CharacterJoint:
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_SwingAxis: {x: 0, y: 1, z: 0}
   m_TwistLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_LowTwistLimit:
     limit: -40
     bounciness: 0
@@ -3428,8 +3428,8 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_SwingLimitSpring:
-    spring: 0
-    damper: 0
+    spring: 1000
+    damper: 100
   m_Swing1Limit:
     limit: 10
     bounciness: 0

@@ -48,9 +48,6 @@ public class Corpse : MonoBehaviour
 
     private List<JointData> _jointDataList = new();
 
-    private bool _isOnBulletTime = false;
-    private CoroutineHandle onBulletTimeHandle;
-
 #if UNITY_EDITOR
     public void GetBones()
     {
@@ -70,15 +67,15 @@ public class Corpse : MonoBehaviour
 
         foreach (Rigidbody rb in tempRigids)
         {
-            float massRate = 0.05f; // 기본값 (기타 부위 5%)
+            float massRate = 0.05f;
             string name = rb.name.ToLower();
 
-            if (name.Contains("pelvis") || name.Contains("hips")) massRate = 0.25f;
-            else if (name.Contains("spine") || name.Contains("chest")) massRate = 0.20f;
-            else if (name.Contains("head")) massRate = 0.075f;
-            else if (name.Contains("thigh") || name.Contains("upperleg")) massRate = 0.12f;
-            else if (name.Contains("calf") || name.Contains("leg") || name.Contains("knee")) massRate = 0.08f;
-            else if (name.Contains("arm") || name.Contains("hand")) massRate = 0.05f;
+            if (name.Contains("pelvis") || name.Contains("hips")) massRate = 0.2f;
+            else if (name.Contains("spine") || name.Contains("chest")) massRate = 0.2f;
+            else if (name.Contains("head")) massRate = 0.1f;
+            else if (name.Contains("thigh") || name.Contains("upperleg")) massRate = 0.11f;
+            else if (name.Contains("calf") || name.Contains("leg") || name.Contains("knee")) massRate = 0.1f;
+            else if (name.Contains("arm") || name.Contains("hand")) massRate = 0.065f;
 
             rb.mass = totalMass * massRate;
 
@@ -93,13 +90,19 @@ public class Corpse : MonoBehaviour
                 PhysicsBones.Add(rb.name, rb);
         }
 
+        SoftJointLimitSpring swinglimit = new SoftJointLimitSpring { spring = 1000, damper = 100 };
+        SoftJointLimitSpring twistlimit = new SoftJointLimitSpring { spring = 1000, damper = 100 };
+
         foreach (CharacterJoint joint in tempJoints)
         {
             joint.enableProjection = true;
             joint.projectionDistance = 0.01f;
             joint.projectionAngle = 2.0f;
             joint.enablePreprocessing = false; 
-            joint.enableCollision = false;
+            joint.enableCollision = false; 
+            
+            joint.swingLimitSpring = swinglimit;
+            joint.twistLimitSpring = twistlimit;
         }
 
         IgnoreInternalCollisions();
@@ -135,6 +138,16 @@ public class Corpse : MonoBehaviour
     }
 #endif
 
+    private void OnDisable()
+    {
+        foreach (var pair in PhysicsBones)
+        {
+            Rigidbody rb = pair.Value;
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
+    }
+
     public void PasteBoneTransforms(List<Transform> skeletons, string latestHittedPart, Vector3 shotOrigin, Vector3 velocity)
     {
         root.gameObject.SetActive(false);
@@ -166,14 +179,16 @@ public class Corpse : MonoBehaviour
         if (PhysicsBones.TryGetValue(latestHittedPart, out Rigidbody hitRb))
         {
             Vector3 forceDir = (hitRb.worldCenterOfMass - shotOrigin).normalized;
-            hitRb.AddForce(forceDir * hitRb.mass * 10f, ForceMode.Impulse);
+            Vector3 addVelocity = forceDir * 10f;
+            hitRb.linearVelocity += addVelocity;
         }
         else
         {
             if (PhysicsBones.TryGetValue(root.name, out Rigidbody rootRb))
             {
                 Vector3 forceDir = (rootRb.worldCenterOfMass - shotOrigin).normalized;
-                rootRb.AddForce(forceDir * rootRb.mass * 10f, ForceMode.Impulse);
+                Vector3 addVelocity = forceDir * 10f;
+                hitRb.linearVelocity += addVelocity;
             }
         }
     }
