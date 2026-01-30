@@ -22,13 +22,11 @@ namespace Player.FSM
         private Vector3 rayOrigin;
         private Vector3 rayEndPos;
 
-        private const float STEP_HEIGHT_ERROR = 0.2f;
-
         private void Start()
         {
             player = GetComponent<PlayerController>();
             stepOffset = player.PlayerCC.stepOffset;
-            stepMaxHeight = stepOffset + STEP_HEIGHT_ERROR;
+            stepMaxHeight = stepOffset;
         }
 
         private void OnDrawGizmos()

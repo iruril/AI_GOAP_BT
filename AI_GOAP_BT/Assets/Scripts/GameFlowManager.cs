@@ -6,6 +6,7 @@ public class GameFlowManager : NetworkBehaviour
 {
     public static GameFlowManager Instance = null;
 
+    [SyncVar]
     public bool GameReady = false;
 
     [SerializeField][Range(10f, 9999f)] private float totalTeamScore = 1000f;
@@ -55,8 +56,8 @@ public class GameFlowManager : NetworkBehaviour
     [Server]
     private void ApplyScoreByCap()
     {
-        int totalCapScore = WorldManager.Instance.GetTotalCaptureScore();
-        float delta = Mathf.Abs(totalCapScore) * captureWeightPerSec * Time.fixedDeltaTime;
+        int totalCapScore = WorldManager.Instance.GetTotalCaptureScore(); 
+        float delta = Mathf.Abs(totalCapScore) * captureWeightPerSec * Time.deltaTime;
 
         if (totalCapScore > 0)
             CurrentRedScore -= delta;

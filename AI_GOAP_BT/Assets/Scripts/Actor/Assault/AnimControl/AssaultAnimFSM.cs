@@ -3,7 +3,6 @@ using FSM;
 using RootMotion.FinalIK;
 using Mirror;
 using Player.FSM;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace AnimControl.Assault
 {
