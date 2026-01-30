@@ -18,7 +18,6 @@ namespace AnimControl
         [SerializeField] private float maxSnapDistance = 0.5f;
 
         public bool IsGrounded { get; private set; }
-        private RaycastHit[] groundHits = new RaycastHit[1];
 
         private void Awake()
         {
@@ -40,46 +39,52 @@ namespace AnimControl
         private void Update()
         {
             if (!isServer) return;
-            IsGrounded = CheckGround();
-            if (IsGrounded)
+
+            if (CheckGround(out float dist))
             {
-                ApplyGroundSnapping();
+                ApplyGroundSnapping(dist);
+                IsGrounded = true;
+            }
+            else
+            {
+                IsGrounded = false;
             }
         }
 
         private void FixedUpdate()
         {
-            if (!isServer) return;
         }
 
-        private bool CheckGround()
+        private bool CheckGround(out float groundDist)
         {
             Vector3 origin = transform.position + Vector3.up * shellOffset;
 
-            int count = Physics.BoxCastNonAlloc(
+            if (Physics.BoxCast(
                 origin,
                 boxHalfExtent,
                 Vector3.down,
-                groundHits,
+                out RaycastHit hit,
                 transform.rotation,
                 detectionRange + shellOffset,
                 WorldManager.Instance.GetLevelLayers()
-            );
+            ))
+            {
+                groundDist = hit.distance - shellOffset;
+                return true;
+            }
 
-            return count > 0;
+            groundDist = 0f;
+            return false;
         }
 
-        private void ApplyGroundSnapping()
+        private void ApplyGroundSnapping(float dist)
         {
             if (ai.traversingOffMeshLink) return;
 
-            float dist = groundHits[0].distance - shellOffset;
-
             if (dist > 0.01f && dist < maxSnapDistance)
             {
-                Vector3 currentPos = ctx.MyRigid.position;
-                Vector3 snapDelta = Vector3.down * dist;
-                ctx.MyRigid.MovePosition(currentPos + snapDelta);
+                Vector3 pos = ctx.MyRigid.position;
+                ctx.MyRigid.MovePosition(pos + Vector3.down * dist);
 
                 Vector3 vel = ctx.MyRigid.linearVelocity;
                 if (vel.y < 0)
@@ -88,15 +93,6 @@ namespace AnimControl
                     ctx.MyRigid.linearVelocity = vel;
                 }
             }
-        }
-
-        private void OnDrawGizmos()
-        {
-            if (!Application.isPlaying) return;
-
-            Gizmos.color = IsGrounded ? Color.cyan : Color.red;
-            Vector3 center = transform.position + Vector3.up * shellOffset + Vector3.down * groundHits[0].distance;
-            Gizmos.DrawWireCube(center, boxHalfExtent * 2);
         }
     }
 }

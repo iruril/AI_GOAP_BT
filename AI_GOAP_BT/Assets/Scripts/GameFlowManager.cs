@@ -36,7 +36,6 @@ public class GameFlowManager : NetworkBehaviour
     private IEnumerator Initialize()
     {
         RoomManager rm = NetworkManager.singleton as RoomManager;
-        yield return new WaitUntil(() => GameManager.GetInstance().MyPlayer != null);
         yield return new WaitUntil(() => rm.BotSpawned);
         //추후에 플래그 넣을 것들 여기에 추가할 것.
         //로딩 후 시작 대기 타이머 (네트워크 객체)
@@ -44,7 +43,7 @@ public class GameFlowManager : NetworkBehaviour
         GameReady = true;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (!isServer) return;
         if (!GameReady) return;

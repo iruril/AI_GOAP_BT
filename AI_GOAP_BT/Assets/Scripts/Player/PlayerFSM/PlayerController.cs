@@ -52,7 +52,6 @@ namespace Player.FSM
         public bool IsOnJumping { get; set; }
         public bool IsSnapGround => GroundChecker.IsSnapGround;
         public bool IsGrounded => GroundChecker.IsGrounded;
-
         public float OnAirSpeed { get; private set; }
 
         void Awake()

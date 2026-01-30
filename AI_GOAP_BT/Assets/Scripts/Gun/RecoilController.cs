@@ -1,9 +1,11 @@
+using Player.FSM;
 using Unity.Cinemachine;
 using UnityEngine;
 
 public class RecoilController : MonoBehaviour
 {
     private CinemachineImpulseSource impulseSource;
+    private PlayerController player;
 
     private Vector3 currentRotation;
     private Vector3 targetRotation;
@@ -19,7 +21,10 @@ public class RecoilController : MonoBehaviour
     [Header("Procedural Recoil")]
     [SerializeField] private float returnDamping = 12f;
     [SerializeField, Range(0f, 1f)] private float firingRecoveryScale = 0.1f;
-    [SerializeField, Range(0f, 0.5f)] private float recoilLifeTime = 0.15f;
+    [SerializeField, Range(0f, 0.5f)] private float recoilLifeTime = 0.15f; 
+    
+    [SerializeField, Range(0f, 1f)]
+    private float crouchRecoilMultiplier = 0.5f;
 
     [SerializeField] float snapSharpness = 20f;
     [SerializeField] private float maxPitch = 45f;
@@ -98,12 +103,25 @@ public class RecoilController : MonoBehaviour
 
     public void ApplyRecoil()
     {
+        float recoilMultWeight = GetRecoilMultiplier();
         impulseSource.GenerateImpulseWithForce(visualRecoilForce);
 
-        targetRotation.x = Mathf.Clamp(targetRotation.x + recoilPitch, -maxPitch, maxPitch);
-        targetRotation.y += Random.Range(-recoilYawLeft, recoilYawRight);
-        targetRotation.z = Mathf.Clamp(targetRotation.z + Random.Range(-recoilRoll, recoilRoll), -maxRoll, maxRoll);
+        targetRotation.x = Mathf.Clamp(
+            targetRotation.x + recoilPitch * recoilMultWeight,
+            -maxPitch,
+            maxPitch
+        );
 
+        targetRotation.y += Random.Range(
+            -recoilYawLeft * recoilMultWeight,
+            recoilYawRight * recoilMultWeight
+        );
+
+        targetRotation.z = Mathf.Clamp(
+            targetRotation.z + Random.Range(-recoilRoll, recoilRoll),
+            -maxRoll,
+            maxRoll
+        );
         lastApplyTime = Time.time;
     }
 
@@ -113,6 +131,23 @@ public class RecoilController : MonoBehaviour
         recoilYawLeft = yawLeft;
         recoilYawRight = yawRight;
         recoilRoll = roll;
+    }
+
+    public void SetPlayer(PlayerController player)
+    {
+        this.player = player;
+    }
+
+    private float GetRecoilMultiplier()
+    {
+        float multiplier = 1f;
+
+        if (player.State == PlayerState.Crouch || player.State == PlayerState.CrouchIdle)
+        {
+            multiplier *= crouchRecoilMultiplier;
+        }
+
+        return multiplier;
     }
 
     public void ResetRecoil()

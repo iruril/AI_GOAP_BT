@@ -48,6 +48,7 @@ namespace Player
                 player.GunController.CurrentGun.GunInfo.RecoilYawRight,
                 player.GunController.CurrentGun.GunInfo.RecoilRoll
             );
+            recoil.SetPlayer(player);
         }
 
         public void Update()
