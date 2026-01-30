@@ -935,6 +935,7 @@ GameObject:
   - component: {fileID: 5166279310173355729}
   - component: {fileID: 2621712713207012491}
   - component: {fileID: 6883628252706435882}
+  - component: {fileID: 1714992559634179897}
   - component: {fileID: -2168579121952372337}
   - component: {fileID: 6757195939308535499}
   - component: {fileID: 1856504431268464514}
@@ -1905,6 +1906,26 @@ MonoBehaviour:
   CurrentStateKey: 0
   RootRotation: 0
   IsAimable: 0
+--- !u!114 &1714992559634179897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2531024411289186008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6145630ad104164cb7908e4965480b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  detectionRange: 0.5
+  shellOffset: 0.5
+  boxHalfExtent: {x: 0.1, y: 0.08, z: 0.1}
+  snapForce: 50
+  maxSnapDistance: 0.5
 --- !u!114 &-2168579121952372337
 MonoBehaviour:
   m_ObjectHideFlags: 0

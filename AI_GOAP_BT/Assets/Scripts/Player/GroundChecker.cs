@@ -22,6 +22,8 @@ namespace Player.FSM
         private Vector3 rayOrigin;
         private Vector3 rayEndPos;
 
+        private RaycastHit[] groundHits = new RaycastHit[1];
+
         private const float STEP_HEIGHT_ERROR = 0.2f;
 
         private void Start()
@@ -56,18 +58,19 @@ namespace Player.FSM
 
         private bool CheckGround()
         {
-            bool result = Physics.BoxCast(
+            int count = Physics.BoxCastNonAlloc(
                 transform.position + transform.up * 0.5f,
                 boxHalfExtent,
                 -transform.up,
+                groundHits,
                 transform.rotation,
                 detectionMaxDist,
                 WorldManager.Instance.GetLevelLayers());
-            if (!result)
+            if (count < 1)
             {
-                result = player.PlayerCC.isGrounded;
+                return player.PlayerCC.isGrounded;
             }
-            return result;
+            return count > 0;
         }
 
         private bool CheckSnapGround()
