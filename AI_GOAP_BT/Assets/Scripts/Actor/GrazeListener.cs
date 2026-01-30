@@ -5,19 +5,18 @@ using System.Collections.Generic;
 public class GrazeListener : MonoBehaviour
 {
     [SerializeField] private Transform owner;
-    public Transform Owner => owner;
 
     [SerializeField] private float setCooldown = 2f;
     bool cooldown = false;
 
-    public void OnGraze(Vector3 shotOrigin)
+    public void OnGraze(Vector3 shotOrigin, LayerMask bulletOwnerLayer)
     {
         if (!cooldown)
         {
-            if (owner.TryGetComponent<Stat>(out Stat stat))
+            if (owner.TryGetComponent<Stat>(out var stat))
             {
                 Timing.RunCoroutine(ProhibitSet());
-                stat.OnGraze(shotOrigin);
+                stat.OnGraze(shotOrigin, bulletOwnerLayer);
             }
         }
     }

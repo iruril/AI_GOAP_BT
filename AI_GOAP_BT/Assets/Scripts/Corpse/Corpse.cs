@@ -28,13 +28,25 @@ public class CorpseEditor : Editor
 
 public class Corpse : MonoBehaviour
 {
+    [Header("Settings")]
     [SerializeField] private float totalMass = 40f;
     [SerializeField] private Transform root;
     public Transform Hip => root;
     [SerializeField] private List<Transform> bones = new List<Transform>();
 
+    [Header("Physics Data")]
     [SerializedDictionary("Bone Name", "RigidBody")]
     public SerializedDictionary<string, Rigidbody> PhysicsBones = new();
+
+    private struct JointData
+    {
+        public CharacterJoint joint;
+        public Rigidbody connectedBody;
+        public Rigidbody rb;
+        public Transform transform;
+    }
+
+    private List<JointData> _jointDataList = new();
 
     private bool _isOnBulletTime = false;
     private CoroutineHandle onBulletTimeHandle;
@@ -63,20 +75,19 @@ public class Corpse : MonoBehaviour
 
             if (name.Contains("pelvis") || name.Contains("hips")) massRate = 0.25f;
             else if (name.Contains("spine") || name.Contains("chest")) massRate = 0.20f;
-            else if (name.Contains("head")) massRate = 0.10f;
+            else if (name.Contains("head")) massRate = 0.075f;
             else if (name.Contains("thigh") || name.Contains("upperleg")) massRate = 0.12f;
             else if (name.Contains("calf") || name.Contains("leg") || name.Contains("knee")) massRate = 0.08f;
-            else if (name.Contains("arm") || name.Contains("hand")) massRate = 0.025f;
+            else if (name.Contains("arm") || name.Contains("hand")) massRate = 0.05f;
 
             rb.mass = totalMass * massRate;
 
             rb.maxDepenetrationVelocity = 3.5f;
-            rb.maxAngularVelocity = 90f;
+            rb.maxAngularVelocity = 15f;
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             rb.interpolation = RigidbodyInterpolation.Interpolate; 
-            rb.solverIterations = 20;
-            rb.solverVelocityIterations = 10;
-            rb.ResetInertiaTensor();
+            rb.solverIterations = 25;
+            rb.solverVelocityIterations = 15;
 
             if (!PhysicsBones.ContainsKey(rb.name))
                 PhysicsBones.Add(rb.name, rb);
@@ -85,11 +96,41 @@ public class Corpse : MonoBehaviour
         foreach (CharacterJoint joint in tempJoints)
         {
             joint.enableProjection = true;
-            joint.projectionDistance = 0.05f;
+            joint.projectionDistance = 0.01f;
             joint.projectionAngle = 2.0f;
             joint.enablePreprocessing = false; 
             joint.enableCollision = false;
-            joint.twistLimitSpring = new SoftJointLimitSpring { spring = 0f, damper = 0f };
+        }
+
+        IgnoreInternalCollisions();
+        CacheJointData();
+    }
+
+    private void IgnoreInternalCollisions()
+    {
+        var colliders = root.GetComponentsInChildren<Collider>();
+        for (int i = 0; i < colliders.Length; i++)
+            for (int j = i + 1; j < colliders.Length; j++)
+                Physics.IgnoreCollision(colliders[i], colliders[j]);
+    }
+
+    private void CacheJointData()
+    {
+        _jointDataList.Clear();
+        foreach (var pair in PhysicsBones)
+        {
+            Rigidbody rb = pair.Value;
+            CharacterJoint joint = rb.GetComponent<CharacterJoint>();
+            if (joint != null && joint.connectedBody != null)
+            {
+                _jointDataList.Add(new JointData
+                {
+                    joint = joint,
+                    connectedBody = joint.connectedBody,
+                    rb = rb,
+                    transform = rb.transform
+                });
+            }
         }
     }
 #endif
@@ -97,63 +138,43 @@ public class Corpse : MonoBehaviour
     public void PasteBoneTransforms(List<Transform> skeletons, string latestHittedPart, Vector3 shotOrigin, Vector3 velocity)
     {
         root.gameObject.SetActive(false);
+
         for (int i = 0; i < bones.Count; i++)
         {
-            bones[i].localPosition = skeletons[i].transform.localPosition;
-            bones[i].localRotation = skeletons[i].transform.localRotation;
+            if (i >= skeletons.Count) break;
+            bones[i].position = skeletons[i].position;
+            bones[i].rotation = skeletons[i].rotation;
+        }
+
+        foreach (var data in _jointDataList)
+        {
+            data.joint.connectedAnchor = data.transform.InverseTransformPoint(data.connectedBody.position);
+        }
+
+        foreach (var pair in PhysicsBones)
+        {
+            Rigidbody rb = pair.Value;
+            rb.isKinematic = false;
+            rb.useGravity = true;
+
+            rb.linearVelocity = velocity;
+            rb.angularVelocity = Vector3.zero;
         }
 
         root.gameObject.SetActive(true);
 
-        foreach (var item in PhysicsBones)
+        if (PhysicsBones.TryGetValue(latestHittedPart, out Rigidbody hitRb))
         {
-            item.Value.detectCollisions = true;
-            item.Value.useGravity = true;
-            item.Value.isKinematic = false;
+            Vector3 forceDir = (hitRb.worldCenterOfMass - shotOrigin).normalized;
+            hitRb.AddForce(forceDir * hitRb.mass * 10f, ForceMode.Impulse);
         }
-
-        Vector3 forceDir = (this.transform.position - shotOrigin).normalized;
-        foreach (var item in PhysicsBones)
+        else
         {
-            item.Value.linearVelocity = velocity; 
-            item.Value.angularVelocity = Vector3.zero;
-        }
-        PhysicsBones[latestHittedPart].AddForce(forceDir * 10f, ForceMode.Impulse);
-    }
-
-    void Update()
-    {
-        RigidCompensation();
-    }
-
-    private void RigidCompensation()
-    {
-        switch (Time.timeScale)
-        {
-            case < 1.0f when !onBulletTimeHandle.IsValid:
-                onBulletTimeHandle = Timing.RunCoroutine(compensateRigidOnBulletTime());
-                break;
-            case >= 1.0f when onBulletTimeHandle.IsValid:
-                Timing.KillCoroutines(onBulletTimeHandle);
-                break;
-        }
-    }
-
-    private IEnumerator<float> compensateRigidOnBulletTime()
-    {
-        while (_isOnBulletTime)
-        {
-            foreach (var rigid in PhysicsBones)
+            if (PhysicsBones.TryGetValue(root.name, out Rigidbody rootRb))
             {
-                rigid.Value.linearVelocity = rigid.Value.linearVelocity * Time.timeScale;
-                rigid.Value.linearVelocity += Physics.gravity * (1 - Time.timeScale) * Time.deltaTime;
-
-                if (rigid.Value.linearVelocity.sqrMagnitude < 0.001f)
-                {
-                    rigid.Value.linearVelocity = Vector3.zero;
-                }
+                Vector3 forceDir = (rootRb.worldCenterOfMass - shotOrigin).normalized;
+                rootRb.AddForce(forceDir * rootRb.mass * 10f, ForceMode.Impulse);
             }
-            yield return Timing.DeltaTime;
         }
     }
 }

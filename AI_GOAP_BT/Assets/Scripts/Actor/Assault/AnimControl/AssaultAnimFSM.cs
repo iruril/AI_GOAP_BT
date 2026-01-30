@@ -3,6 +3,7 @@ using FSM;
 using RootMotion.FinalIK;
 using Mirror;
 using Player.FSM;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace AnimControl.Assault
 {
@@ -65,14 +66,14 @@ namespace AnimControl.Assault
         {
             base.OnStartServer();
 
-            MyBrain.Sensor.MyStat.OnUnderAttack += SetAttackedDirection;
+            MyBrain.Sensor.MyStat.OnGrazeBullet += SetAttackedDirection;
             MyBrain.Sensor.MyStat.OnDead += OnDead;
             MyBrain.Navigator.OnSetDestination += DecideAccelByDistance;
         }
 
         public override void OnStopServer()
         {
-            MyBrain.Sensor.MyStat.OnUnderAttack -= SetAttackedDirection;
+            MyBrain.Sensor.MyStat.OnGrazeBullet -= SetAttackedDirection;
             MyBrain.Sensor.MyStat.OnDead -= OnDead;
             MyBrain.Navigator.OnSetDestination -= DecideAccelByDistance;
         }
@@ -218,9 +219,10 @@ namespace AnimControl.Assault
             }
         }
 
-        public void SetAttackedDirection(Vector3 shotOrigin)
+        public void SetAttackedDirection(Vector3 shotOrigin, LayerMask bulletOwnerLayer)
         {
-            if(MyBrain.Sensor.HasTarget) return;
+            if ((bulletOwnerLayer.value & (1 << gameObject.layer)) != 0) return;
+            if (MyBrain.Sensor.HasTarget) return;
 
             Vector3 hitDir = shotOrigin - transform.position;
             hitDir.y = 0;

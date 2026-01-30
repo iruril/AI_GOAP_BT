@@ -29,7 +29,7 @@ namespace GOAP.Assualt
 
         public override bool IsUsefulForGoal(AssaultGoal goal)
         {
-            return true; // 탄약이 부족하면 언제든 재장전
+            return goal == AssaultGoal.SURVIVE || goal == AssaultGoal.ENGAGE_ENEMY;
         }
 
         public override void OnStart()
@@ -37,7 +37,7 @@ namespace GOAP.Assualt
             timer = 0f;
             reloadStarted = false;
 
-            brain.Sensor.MyStat.OnUnderAttack += RecalcCoverPosition;
+            brain.Sensor.MyStat.OnGrazeBullet += RecalcCoverPosition;
             if (brain.Sensor.LastSeenPosition != Vector3.negativeInfinity)
             {
                 brain.EQS.LoadContext("Cover");
@@ -52,40 +52,54 @@ namespace GOAP.Assualt
             {
                 timer += Time.fixedDeltaTime;
 
-                if (timer >= RELOAD_EXECUTE_TIME || brain.GunController.CurrentRounds == 0 || !brain.Sensor.HasTarget)
+                bool shouldStartNow = (brain.GunController.CurrentRounds <= 0) || (timer >= RELOAD_EXECUTE_TIME);
+
+                if (shouldStartNow)
                 {
                     reloadStarted = true;
                     brain.GunController.Reload();
                 }
+            }
 
-                if (brain.GunController.CurrentRounds >= brain.GunController.CurrentGun.GunInfo.MagazineCapacity)
-                    Complete();
+            if (brain.GunController.CurrentRounds >= brain.GunController.CurrentGun.GunInfo.MagazineCapacity)
+            {
+                Complete();
             }
         }
 
         public override void OnExit()
         {
             Timing.KillCoroutines(recalcHandle);
-            brain.Sensor.MyStat.OnUnderAttack -= RecalcCoverPosition;
+            brain.Sensor.MyStat.OnGrazeBullet -= RecalcCoverPosition;
+
             if (brain.Sensor.LastSeenPosition != Vector3.negativeInfinity)
             {
                 brain.EQS.LoadContext("Peek");
                 brain.EQS.TickEQS();
-                brain.Navigator.SetDestination(brain.EQS.BestItem.GetWorldPosition());
+
+                if (brain.EQS.BestItem != null)
+                    brain.Navigator.SetDestination(brain.EQS.BestItem.GetWorldPosition());
             }
         }
 
-        private void RecalcCoverPosition(Vector3 shotOrigin)
+        private void RecalcCoverPosition(Vector3 shotOrigin, LayerMask bulletOwnerLayer)
         {
+            if ((bulletOwnerLayer.value & (1 << brain.gameObject.layer)) != 0) return;
             if (coverRecalcPending || brain.CurrentAction.Type != Type) return;
             coverRecalcPending = true;
 
             Vector3 aimIKOrigin = brain.GunController.AimIKTarget.position;
-            brain.GunController.AimIKTarget.position = shotOrigin;
-            brain.EQS.LoadContext("Cover");
-            brain.EQS.TickEQS();
-            brain.Navigator.SetDestination(brain.EQS.BestItem.GetWorldPosition());
-            brain.GunController.AimIKTarget.position = aimIKOrigin;
+            try
+            {
+                brain.GunController.AimIKTarget.position = shotOrigin;
+                brain.EQS.LoadContext("Cover");
+                brain.EQS.TickEQS();
+                brain.Navigator.SetDestination(brain.EQS.BestItem.GetWorldPosition());
+            }
+            finally
+            {
+                brain.GunController.AimIKTarget.position = aimIKOrigin;
+            }
 
             recalcHandle = Timing.RunCoroutine(ResetFlagNextFrame());
         }

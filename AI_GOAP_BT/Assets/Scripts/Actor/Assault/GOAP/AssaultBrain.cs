@@ -105,7 +105,10 @@ namespace GOAP.Assualt
                 Priority = 100,
                 IsSatisfied = () =>
                 {
-                    return true;
+                    bool hpSafe = Sensor.MyStat.CurrentHP > Sensor.MyStat.MaxHP * 0.3f;
+                    bool ammoSafe = GunController.CurrentRounds > 0;
+
+                    return hpSafe && ammoSafe;
                 },
                 Repeatable = true
             });
@@ -125,10 +128,7 @@ namespace GOAP.Assualt
             {
                 Type = AssaultGoal.ENGAGE_ENEMY,
                 Priority = 50,
-                IsSatisfied = () =>
-                {
-                    return !Sensor.HasTarget;
-                },
+                IsSatisfied = () => !Sensor.HasTarget,
                 Repeatable = true
             });
 

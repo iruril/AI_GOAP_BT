@@ -384,7 +384,7 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_EnableProjection: 1
-  m_ProjectionDistance: 0.05
+  m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
@@ -638,7 +638,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.04
+  m_Radius: 0.05
   m_Height: 0.3
   m_Direction: 0
   m_Center: {x: -0.15, y: 0, z: 0}
@@ -707,7 +707,7 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_EnableProjection: 1
-  m_ProjectionDistance: 0.05
+  m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
@@ -927,7 +927,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.06
+  m_Radius: 0.08
   m_Height: 0.5272807
   m_Direction: 0
   m_Center: {x: -0.26364034, y: 0, z: 0}
@@ -996,7 +996,7 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_EnableProjection: 1
-  m_ProjectionDistance: 0.05
+  m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
@@ -1124,7 +1124,7 @@ CharacterJoint:
     bounciness: 0.5
     contactDistance: 2
   m_EnableProjection: 1
-  m_ProjectionDistance: 0.05
+  m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
@@ -1775,7 +1775,7 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_EnableProjection: 1
-  m_ProjectionDistance: 0.05
+  m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
@@ -1939,7 +1939,7 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_EnableProjection: 1
-  m_ProjectionDistance: 0.05
+  m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
@@ -2165,7 +2165,7 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_EnableProjection: 1
-  m_ProjectionDistance: 0.05
+  m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
@@ -2259,7 +2259,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.04
+  m_Radius: 0.05
   m_Height: 0.3
   m_Direction: 0
   m_Center: {x: -0.15, y: 0, z: 0}
@@ -2328,7 +2328,7 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_EnableProjection: 1
-  m_ProjectionDistance: 0.05
+  m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
@@ -3125,7 +3125,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.06
+  m_Radius: 0.08
   m_Height: 0.52796566
   m_Direction: 0
   m_Center: {x: -0.26398283, y: 0, z: 0}
@@ -3194,7 +3194,7 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_EnableProjection: 1
-  m_ProjectionDistance: 0.05
+  m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
@@ -3439,7 +3439,7 @@ CharacterJoint:
     bounciness: 0
     contactDistance: 0.02
   m_EnableProjection: 1
-  m_ProjectionDistance: 0.05
+  m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
   m_BreakTorque: Infinity

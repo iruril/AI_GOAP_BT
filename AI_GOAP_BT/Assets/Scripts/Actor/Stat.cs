@@ -33,7 +33,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 {
     public event Action OnDead;
     public event Action OnRevive;
-    public event Action<Vector3> OnUnderAttack;
+    public event Action<Vector3, LayerMask> OnGrazeBullet;
 
     [SyncVar(hook = nameof(OnTeamChanged))]
     public Team MyTeam = Team.Blue;
@@ -179,8 +179,6 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         CurrentHP -= dmg;
         lastDamageTime = Time.time;
 
-        OnUnderAttack?.Invoke(shotOrigin);
-
         if (CurrentHP <= 0f && !IsDead)
         {
             Die();
@@ -188,10 +186,16 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         }
     }
 
-    [Server]
-    public void OnGraze(Vector3 shotOrigin)
+    public void OnGraze(Vector3 shotOrigin, LayerMask bulletOwnerLayer)
     {
-        OnUnderAttack?.Invoke(shotOrigin);
+        if (isServer)
+        {
+            if(authority) OnGrazeBullet?.Invoke(shotOrigin, bulletOwnerLayer);
+        }
+        else if (isLocalPlayer)
+        {
+            OnGrazeBullet?.Invoke(shotOrigin, bulletOwnerLayer);
+        }
     }
 
     [Server]

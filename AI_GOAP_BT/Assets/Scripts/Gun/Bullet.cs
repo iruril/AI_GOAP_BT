@@ -149,10 +149,11 @@ public class Bullet : MonoBehaviour
             int layer = col.gameObject.layer;
 
             if ((grazeMask & (1 << layer)) == 0) continue;
-            if (IsFriendly(layer)) continue;
 
             if (col.TryGetComponent<GrazeListener>(out var listener))
-                listener.OnGraze(shotOrigin);
+            {
+                listener.OnGraze(shotOrigin, friendLayers);
+            }
         }
     }
 
@@ -202,7 +203,7 @@ public class Bullet : MonoBehaviour
         Deactivate();
     }
 
-    private bool IsFriendly(int layer) => ((1 << layer) & friendLayers) != 0;
+    private bool IsFriendly(int layer) => (friendLayers.value & (1 << layer)) != 0;
     private void Deactivate() { initialized = false; gameObject.SetActive(false); }
     public void SetBulletPool(BulletPool pool) => myPool = pool; 
     IEnumerator<float> LifeTimer() { yield return Timing.WaitForSeconds(lifeTime); gameObject.SetActive(false); }

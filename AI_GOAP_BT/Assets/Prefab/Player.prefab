@@ -271,7 +271,7 @@ CapsuleCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.08
@@ -505,7 +505,7 @@ CapsuleCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.05
@@ -579,7 +579,7 @@ BoxCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.289474, y: 0.18577091, z: 0.22}
@@ -650,7 +650,7 @@ CapsuleCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.09
@@ -726,7 +726,7 @@ BoxCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.15283665, y: 0.1816056, z: 0.24799538}
@@ -914,10 +914,10 @@ CapsuleCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.06
+  m_Radius: 0.08
   m_Height: 0.52796566
   m_Direction: 0
   m_Center: {x: -0.26398283, y: 0, z: 0}
@@ -1281,8 +1281,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IKComponents:
   - {fileID: 1195883400668731909}
-  - {fileID: 4981464254991424263}
   - {fileID: 9168033542482783614}
+  - {fileID: 4981464254991424263}
   animator: {fileID: 4460953585574970759}
 --- !u!114 &1195883400668731909
 MonoBehaviour:
@@ -2001,7 +2001,6 @@ MonoBehaviour:
   MyTeam: 2
   Nickname: Player
   maxHP: 100
-  rotateSpeedToTarget: 300
   CurrentHP: 0
   IsDead: 0
   CurrentKDA:
@@ -3312,10 +3311,10 @@ CapsuleCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.06
+  m_Radius: 0.08
   m_Height: 0.5272807
   m_Direction: 0
   m_Center: {x: -0.26364034, y: 0, z: 0}
@@ -3450,10 +3449,10 @@ CapsuleCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.04
+  m_Radius: 0.05
   m_Height: 0.3
   m_Direction: 0
   m_Center: {x: -0.15, y: 0, z: 0}
@@ -4050,10 +4049,10 @@ CapsuleCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.04
+  m_Radius: 0.05
   m_Height: 0.3
   m_Direction: 0
   m_Center: {x: -0.15, y: 0, z: 0}
@@ -4316,7 +4315,7 @@ CapsuleCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.05
@@ -4738,7 +4737,7 @@ MonoBehaviour:
   recoilLifeTime: 0.2
   snapSharpness: 20
   maxPitch: 30
-  maxRoll: 5
+  maxRoll: 15
 --- !u!114 &1476015136222432055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5046,7 +5045,7 @@ CapsuleCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.08
