@@ -1,4 +1,5 @@
 using Steamworks;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,13 +24,18 @@ public class InviteMessageItem : MonoBehaviour
 
     private void OnEnable()
     {
-        SteamAvatarManager.Instance.OnTextureLoaded += OnSteamTextureLoaded;
+        if (SteamAvatarManager.Instance != null)
+        {
+            SteamAvatarManager.Instance.OnTextureLoaded += OnSteamTextureLoaded;
+        }
     }
 
     private void OnDisable()
     {
         if (SteamAvatarManager.Instance != null)
-            SteamAvatarManager.Instance.OnTextureLoaded -= OnSteamTextureLoaded;
+        {
+            SteamAvatarManager.Instance.OnTextureLoaded += OnSteamTextureLoaded;
+        }
         Clear();
     }
 
