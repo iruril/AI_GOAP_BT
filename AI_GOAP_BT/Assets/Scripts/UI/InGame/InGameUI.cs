@@ -12,6 +12,18 @@ public class InGameUI : MonoBehaviour
     [SerializeField] private RectTransform gameWinHUD;
     [SerializeField] private RectTransform gameLoseHUD;
 
+    [Header("Blood Screen")]
+    public CanvasGroup bloodScreenCG;
+
+    [Header("Damage Indicator")]
+    public RectTransform[] indicatorPool;
+    private CanvasGroup[] indicatorCGs;
+    private int poolIndex = 0;
+    private CoroutineHandle[] indicatorHandles;
+    [SerializeField] private float stayTime = 1.0f;
+    [SerializeField] private float fadeTime = 0.5f;
+
+
     [Header("Hit Mark")]
     [SerializeField] private Image hitMark;
     [SerializeField] private Image killMark;
@@ -40,6 +52,16 @@ public class InGameUI : MonoBehaviour
         pos_R = crossHair_R.rectTransform.anchoredPosition;
         pos_U = crossHair_U.rectTransform.anchoredPosition;
         pos_D = crossHair_D.rectTransform.anchoredPosition;
+
+        indicatorCGs = new CanvasGroup[indicatorPool.Length];
+        indicatorHandles = new CoroutineHandle[indicatorPool.Length];
+        for (int i = 0; i < indicatorPool.Length; i++)
+        {
+            indicatorCGs[i] = indicatorPool[i].GetComponent<CanvasGroup>();
+            indicatorCGs[i].alpha = 0;
+            indicatorPool[i].gameObject.SetActive(false);
+        }
+        bloodScreenCG.alpha = 0f;
     }
 
     private void Start()
@@ -59,6 +81,9 @@ public class InGameUI : MonoBehaviour
     private void OnDestroy()
     {
         Timing.KillCoroutines(hitmarkHandle);
+        Timing.KillCoroutines(killmarkHandle);
+        for (int i = 0; i < indicatorHandles.Length; i++) 
+            Timing.KillCoroutines(indicatorHandles[i]);
         Instance = null;
     }
 
@@ -121,6 +146,54 @@ public class InGameUI : MonoBehaviour
         fadeColor.a = 0f;
         image.color = fadeColor;
         target.localScale = endScale;
+    }
+
+    public void ShowDamageIndicator(Vector3 attackerPos)
+    {
+        int idx = poolIndex;
+        poolIndex = (poolIndex + 1) % indicatorPool.Length;
+
+        indicatorPool[idx].gameObject.SetActive(true);
+
+        Timing.KillCoroutines(indicatorHandles[idx]);
+        indicatorHandles[idx] = Timing.RunCoroutine(FadeIndicator(idx, attackerPos));
+    }
+
+    public void UpdateBloodScreenBase(float hpRatio)
+    {
+        bloodScreenCG.alpha = Mathf.InverseLerp(0.7f, 0.3f, hpRatio);
+    }
+
+    private IEnumerator<float> FadeIndicator(int idx, Vector3 attackerPos)
+    {
+        CanvasGroup cg = indicatorCGs[idx];
+        RectTransform rect = indicatorPool[idx];
+        Transform camT = CameraManager.Instance.MainCam.transform;
+
+        cg.alpha = 1f;
+
+        float elapsed = 0f;
+        float totalTime = stayTime + fadeTime;
+
+        while (elapsed < totalTime)
+        {
+            elapsed += Time.deltaTime;
+
+            Vector3 localDir = camT.InverseTransformPoint(attackerPos);
+            float angle = Mathf.Atan2(localDir.x, localDir.z) * Mathf.Rad2Deg;
+            rect.localRotation = Quaternion.Euler(0, 0, -angle);
+
+            if (elapsed > stayTime)
+            {
+                float t = (elapsed - stayTime) / fadeTime;
+                cg.alpha = 1f - t;
+            }
+
+            yield return Timing.WaitForOneFrame;
+        }
+
+        cg.alpha = 0f;
+        indicatorPool[idx].gameObject.SetActive(false);
     }
 
     public void ShowRealTimeHUDs()

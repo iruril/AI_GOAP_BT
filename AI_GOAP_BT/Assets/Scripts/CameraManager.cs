@@ -15,7 +15,8 @@ public class CameraManager : MonoBehaviour
 
     [SerializeField] CinemachineCamera defaultCam;
     [SerializeField] CinemachineCamera aimCam;
-    [SerializeField] CinemachineCamera deadCam;
+    [SerializeField] CinemachineCamera deadCam; 
+    [SerializeField] private CinemachineImpulseSource impulseSource;
 
     CinemachineThirdPersonFollow defaultCamFollow;
     CinemachineThirdPersonFollow aimCamFollow;
@@ -148,5 +149,11 @@ public class CameraManager : MonoBehaviour
 
         virtualCamera.OnTargetObjectWarped(target, delta);
         virtualCamera.PreviousStateIsValid = false;
+    }
+
+    public void PlayImpulse()
+    {
+        if (impulseSource == null) return;
+        impulseSource.GenerateImpulseWithForce(1.0f);
     }
 }

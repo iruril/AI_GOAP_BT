@@ -179,6 +179,9 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         CurrentHP -= dmg;
         lastDamageTime = Time.time;
 
+        if (connectionToClient != null)
+            TargetNotifyDamage(connectionToClient, shotOrigin);
+
         if (CurrentHP <= 0f && !IsDead)
         {
             Die();
@@ -225,6 +228,14 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     {
         InGameUI.Instance?.PlayHitMark(isKilled);
         DamageStackUI.Instance?.PopDamageStack(victimNetId, damage, isKilled);
+    }
+
+    [TargetRpc]
+    private void TargetNotifyDamage(NetworkConnection target, Vector3 attackerPos)
+    {
+        if (!isLocalPlayer) return;
+        InGameUI.Instance?.ShowDamageIndicator(attackerPos);
+        CameraManager.Instance?.PlayImpulse();
     }
     #endregion
 
@@ -408,7 +419,8 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     {
         if (isLocalPlayer)
         {
-            HealthGuageHUD.Instance.UpdateHP(newHp, MaxHP);
+            HealthGuageHUD.Instance.UpdateHP(newHp, MaxHP); 
+            InGameUI.Instance?.UpdateBloodScreenBase(newHp / MaxHP);
         }
     }
 
