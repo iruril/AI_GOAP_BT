@@ -237,6 +237,23 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         InGameUI.Instance?.ShowDamageIndicator(attackerPos);
         CameraManager.Instance?.PlayImpulse();
     }
+
+    [TargetRpc]
+    private void TargetShowDeathRecap(NetworkConnection target, DamageRecord[] records, KDA myKDA, string killerName, KDA killerKDA)
+    {
+        if (!isLocalPlayer) return;
+
+        InGameUI.Instance?.HideRealTimeHUDs();
+
+        // DeathScreenUI.Instance?.Open(records, myKDA, killerName, killerKDA);
+    }
+
+    [TargetRpc]
+    private void TargetPreRespawnFlash(NetworkConnection target)
+    {
+        if (!isLocalPlayer) return;
+        InGameUI.Instance?.PlayRespawnFlash();
+    }
     #endregion
 
     private IEnumerator<float> HPRegenHandle()
@@ -268,7 +285,6 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         IsDead = true;
 
         AddDeath();
-
         ProcessKillAndAssist();
 
         CurrentCapture?.RemoveIntruder(this);
@@ -345,7 +361,12 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
     private IEnumerator<float> Respawn()
     {
-        yield return Timing.WaitForSeconds(roomManager.RespawnDelay);
+        yield return Timing.WaitForSeconds(Mathf.Max(0, roomManager.RespawnDelay - 0.5f));
+
+        if (connectionToClient != null)
+            TargetPreRespawnFlash(connectionToClient);
+
+        yield return Timing.WaitForSeconds(0.5f);
         Revive();
     }
 

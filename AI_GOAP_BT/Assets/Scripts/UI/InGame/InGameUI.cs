@@ -23,6 +23,8 @@ public class InGameUI : MonoBehaviour
     [SerializeField] private float stayTime = 1.0f;
     [SerializeField] private float fadeTime = 0.5f;
 
+    [Header("Respawn Effect")]
+    [SerializeField] private CanvasGroup respawnFlashCG;
 
     [Header("Hit Mark")]
     [SerializeField] private Image hitMark;
@@ -76,6 +78,9 @@ public class InGameUI : MonoBehaviour
         startColor = killMark.color;
         startColor.a = 0f;
         killMark.color = startColor;
+
+        respawnFlashCG.alpha = 0f;
+        respawnFlashCG.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -194,6 +199,40 @@ public class InGameUI : MonoBehaviour
 
         cg.alpha = 0f;
         indicatorPool[idx].gameObject.SetActive(false);
+    }
+
+    public void PlayRespawnFlash()
+    {
+        Timing.RunCoroutine(RespawnFlashHandle());
+    }
+
+    private IEnumerator<float> RespawnFlashHandle()
+    {
+        respawnFlashCG.gameObject.SetActive(true);
+        respawnFlashCG.alpha = 0f;
+
+        float elapsed = 0f;
+        while (elapsed < 0.5f)
+        {
+            elapsed += Time.deltaTime;
+            respawnFlashCG.alpha = elapsed / 0.5f;
+            yield return Timing.WaitForOneFrame;
+        }
+
+        yield return Timing.WaitForSeconds(0.1f);
+
+        elapsed = 0f;
+        while (elapsed < 0.5f)
+        {
+            elapsed += Time.deltaTime;
+            respawnFlashCG.alpha = 1f - (elapsed / 0.5f);
+            yield return Timing.WaitForOneFrame;
+        }
+
+        respawnFlashCG.alpha = 0f;
+        respawnFlashCG.gameObject.SetActive(false);
+
+        ShowRealTimeHUDs();
     }
 
     public void ShowRealTimeHUDs()
