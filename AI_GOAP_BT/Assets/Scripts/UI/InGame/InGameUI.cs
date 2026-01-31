@@ -238,6 +238,8 @@ public class InGameUI : MonoBehaviour
 
     public void ShowRealTimeHUDs()
     {
+        if (DeathScreenUI.Instance.gameObject.activeSelf) return;
+
         foreach (var hud in realTimeHUDGroup)
         {
             hud.gameObject.SetActive(true);
@@ -260,7 +262,7 @@ public class InGameUI : MonoBehaviour
 
     public void HideScoreboardHUD()
     {
-        scoreBoardHUD.gameObject.SetActive(false); 
+        scoreBoardHUD.gameObject.SetActive(false);
         ShowRealTimeHUDs();
     }
 
