@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Mirror;
-using Unity.VisualScripting;
 
 public class ActorUIMarker : MonoBehaviour
 {

@@ -15,19 +15,17 @@ public class FriendListPanel : MonoBehaviour
 
     private Dictionary<ulong, FriendListItem> items = new();
 
-    protected Callback<AvatarImageLoaded_t> ImageLoaded;
-
     private void Start()
     {
-        ImageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
         CloseButton.onClick.AddListener(DisablePanel);
+        SteamAvatarManager.Instance.OnTextureLoaded += OnSteamTextureLoaded;
         DisablePanel();
     }
 
     private void OnDestroy()
     {
-        ImageLoaded?.Dispose();
-        ImageLoaded = null;
+        if (SteamAvatarManager.Instance != null)
+            SteamAvatarManager.Instance.OnTextureLoaded -= OnSteamTextureLoaded;
     }
 
     private void OnEnable()
@@ -36,12 +34,11 @@ public class FriendListPanel : MonoBehaviour
         GetFriendList();
     }
 
-    private void OnImageLoaded(AvatarImageLoaded_t callback)
+    private void OnSteamTextureLoaded(ulong steamID, Texture2D tex)
     {
-        if (items.TryGetValue(callback.m_steamID.m_SteamID, out var friend))
+        if (items.TryGetValue(steamID, out var friendItem))
         {
-            Texture2D texture2D = GetAvatarAsTexture2D(callback.m_iImage);
-            friend.SetAvatar(texture2D);
+            friendItem.SetAvatar(tex);
         }
     }
 
@@ -63,11 +60,12 @@ public class FriendListPanel : MonoBehaviour
         FriendListItem item = go.GetComponent<FriendListItem>();
 
         string friendName = SteamFriends.GetFriendPersonaName(steamId);
-        int avatarInt = SteamFriends.GetLargeFriendAvatar(steamId);
-        Texture2D avatarTexture = GetAvatarAsTexture2D(avatarInt);
+
+        Texture2D avatarTexture = SteamAvatarManager.Instance.GetAvatarTexture(steamId.m_SteamID);
 
         item.SetName(friendName);
         item.SetAvatar(avatarTexture);
+
         item.InviteButton.onClick.AddListener(() =>
         {
             SteamMatchmaking.InviteUserToLobby((CSteamID)SteamLobby.Instance.CurrentLobbyID, steamId);
@@ -136,26 +134,5 @@ public class FriendListPanel : MonoBehaviour
             if (item != null) Destroy(item.gameObject);
         }
         items.Clear();
-    }
-
-    private Texture2D GetAvatarAsTexture2D(int avatarInt)
-    {
-        uint width, height;
-
-        bool isVaild = SteamUtils.GetImageSize(avatarInt, out width, out height);
-
-        if (!isVaild || width == 0 || height == 0)
-            return null;
-
-        byte[] avatarRaw = new byte[width * height * 4];
-
-        isVaild = SteamUtils.GetImageRGBA(avatarInt, avatarRaw, (int)(width * height * 4));
-        if (!isVaild) return null;
-
-        Texture2D avatarTex = new Texture2D((int)width, (int)height, TextureFormat.RGBA32, false, true);
-        avatarTex.LoadRawTextureData(avatarRaw);
-        avatarTex.Apply();
-
-        return avatarTex;
     }
 }

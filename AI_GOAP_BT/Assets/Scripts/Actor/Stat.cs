@@ -41,7 +41,9 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     [SyncVar(hook = nameof(OnNicknameChanged))]
     public string Nickname;
 
-    ActorUIMarker marker;
+    [SyncVar] public ulong SteamID = 0;
+
+    private ActorUIMarker marker;
 
     string IChatSender.Nickname => Nickname;
     Team IChatSender.MyTeam => MyTeam;
@@ -239,16 +241,6 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     }
 
     [TargetRpc]
-    private void TargetShowDeathRecap(NetworkConnection target, DamageRecord[] records, KDA myKDA, string killerName, KDA killerKDA)
-    {
-        if (!isLocalPlayer) return;
-
-        InGameUI.Instance?.HideRealTimeHUDs();
-
-        // DeathScreenUI.Instance?.Open(records, myKDA, killerName, killerKDA);
-    }
-
-    [TargetRpc]
     private void TargetPreRespawnFlash(NetworkConnection target)
     {
         if (!isLocalPlayer) return;
@@ -297,13 +289,20 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
         DamageRecord killRecord = damageRecords[^1];
         uint killerNetId = killRecord.attackerNetId;
-        bool isHeadshotKill = killRecord.hitBoxType == HitBox.HitBoxType.Head;
+
+        string kName = "Unknown";
+        KDA kKDA = new KDA();
+        ulong kSteamID = 0;
 
         if (NetworkServer.spawned.TryGetValue(killerNetId, out var killerIdentity))
         {
             var killerStat = killerIdentity.GetComponent<Stat>();
             if (killerStat != null)
             {
+                kName = killerStat.Nickname;
+                kKDA = killerStat.CurrentKDA;
+                kSteamID = killerStat.SteamID;
+
                 bool isEnemy = IsEnemy(killerStat);
                 if (isEnemy)
                 {
@@ -311,15 +310,15 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
                     GameFlowManager.Instance.ApplyKillScore(killerStat.MyTeam, MyTeam);
                 }
 
-                LogManager.Instance.ReportKill(
-                    killerNetId,
-                    netId,
-                    killerStat.MyTeam == Team.Blue,
-                    MyTeam == Team.Blue,
-                    killRecord.hitBoxType == HitBox.HitBoxType.Head,
-                    killRecord.gunName
-                );
+                // 킬 로그 리포트
+                LogManager.Instance.ReportKill(killerNetId, netId, killerStat.MyTeam == Team.Blue,
+                    MyTeam == Team.Blue, killRecord.hitBoxType == HitBox.HitBoxType.Head, killRecord.gunName);
             }
+        }
+
+        if (connectionToClient != null)
+        {
+            TargetShowDeathRecap(connectionToClient, damageRecords.ToArray(), CurrentKDA, kName, kKDA, kSteamID);
         }
 
         ProcessAssistByDamageLog(killerNetId);
@@ -353,6 +352,15 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         }
     }
 
+    [TargetRpc]
+    private void TargetShowDeathRecap(NetworkConnection target, DamageRecord[] records, KDA myKDA, string killerName, KDA killerKDA, ulong killerSteamID)
+    {
+        if (!isLocalPlayer) return;
+
+        InGameUI.Instance?.HideRealTimeHUDs();
+        DeathScreenUI.Instance?.Open(records, myKDA, killerName, killerKDA, killerSteamID);
+    }
+
     private void Revive()
     {
         IsDead = false;
@@ -364,7 +372,9 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         yield return Timing.WaitForSeconds(Mathf.Max(0, roomManager.RespawnDelay - 0.5f));
 
         if (connectionToClient != null)
+        {
             TargetPreRespawnFlash(connectionToClient);
+        }
 
         yield return Timing.WaitForSeconds(0.5f);
         Revive();

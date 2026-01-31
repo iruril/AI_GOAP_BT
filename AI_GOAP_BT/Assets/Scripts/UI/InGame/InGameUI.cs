@@ -219,6 +219,7 @@ public class InGameUI : MonoBehaviour
             yield return Timing.WaitForOneFrame;
         }
 
+        DeathScreenUI.Instance?.Close();
         yield return Timing.WaitForSeconds(0.1f);
 
         elapsed = 0f;

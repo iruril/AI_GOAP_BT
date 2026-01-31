@@ -13,8 +13,6 @@ public class InviteMessageItem : MonoBehaviour
     private ulong inviterId;
     public ulong InviterId => inviterId;
 
-    protected Callback<AvatarImageLoaded_t> ImageLoaded;
-
     private void Start()
     {
         DeclineButton.onClick.AddListener(() =>
@@ -25,21 +23,22 @@ public class InviteMessageItem : MonoBehaviour
 
     private void OnEnable()
     {
-        ImageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
+        SteamAvatarManager.Instance.OnTextureLoaded += OnSteamTextureLoaded;
     }
 
     private void OnDisable()
     {
-        ImageLoaded?.Dispose();
-        ImageLoaded = null;
-
+        if (SteamAvatarManager.Instance != null)
+            SteamAvatarManager.Instance.OnTextureLoaded -= OnSteamTextureLoaded;
         Clear();
     }
 
-    private void OnImageLoaded(AvatarImageLoaded_t callback)
+    private void OnSteamTextureLoaded(ulong steamID, Texture2D tex)
     {
-        if (inviterId != callback.m_steamID.m_SteamID) return;
-        InviterAvatar.texture = GetAvatarAsTexture2D(callback.m_iImage);
+        if (inviterId == steamID)
+        {
+            InviterAvatar.texture = tex;
+        }
     }
 
     public void OnInviteRecived(ulong lobbyId, ulong userId)
@@ -47,9 +46,9 @@ public class InviteMessageItem : MonoBehaviour
         if (GameManager.GetInstance().IsGameplayScene) return;
 
         inviterId = userId;
-
         SetName(userId);
-        SetAvatar(userId);
+
+        InviterAvatar.texture = SteamAvatarManager.Instance.GetAvatarTexture(userId);
 
         AcceptButton.onClick.AddListener(() => AcceptInvite(lobbyId));
     }
@@ -84,39 +83,5 @@ public class InviteMessageItem : MonoBehaviour
     {
         string userName = SteamFriends.GetFriendPersonaName(new CSteamID(id));
         InviterName.text = userName;
-    }
-
-    private void SetAvatar(ulong id)
-    {
-        int avatarInt = SteamFriends.GetLargeFriendAvatar(new CSteamID(id));
-
-        if (avatarInt == -1) return;
-        Texture2D avatarTex = GetAvatarAsTexture2D(avatarInt);
-
-        if (avatarTex != null)
-        {
-            InviterAvatar.texture = avatarTex;
-        }
-    }
-
-    private Texture2D GetAvatarAsTexture2D(int avatarInt)
-    {
-        uint width, height;
-
-        bool isVaild = SteamUtils.GetImageSize(avatarInt, out width, out height);
-
-        if (!isVaild || width == 0 || height == 0)
-            return null;
-
-        byte[] avatarRaw = new byte[width * height * 4];
-
-        isVaild = SteamUtils.GetImageRGBA(avatarInt, avatarRaw, (int)(width * height * 4));
-        if (!isVaild) return null;
-
-        Texture2D avatarTex = new Texture2D((int)width, (int)height, TextureFormat.RGBA32, false, true);
-        avatarTex.LoadRawTextureData(avatarRaw);
-        avatarTex.Apply();
-
-        return avatarTex;
     }
 }
