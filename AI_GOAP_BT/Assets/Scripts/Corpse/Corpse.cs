@@ -29,7 +29,10 @@ public class CorpseEditor : Editor
 public class Corpse : MonoBehaviour
 {
     [Header("Settings")]
+
+#if UNITY_EDITOR
     [SerializeField] private float totalMass = 40f;
+#endif
     [SerializeField] private Transform root;
     public Transform Hip => root;
     [SerializeField] private List<Transform> bones = new List<Transform>();
