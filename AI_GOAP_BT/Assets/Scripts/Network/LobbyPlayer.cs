@@ -169,6 +169,7 @@ public class LobbyPlayer : NetworkRoomPlayer, IChatSender
         if (isLocalPlayer)
         {
             LobbyUI.Instance.SelectGunInDropdown(SelectedGunID);
+
             string teamStr = MyTeam == Team.Blue ? "Blue" : "Red";
             PreviewActor.Instance?.UpdatePreview(teamStr, SelectedGunID);
         }

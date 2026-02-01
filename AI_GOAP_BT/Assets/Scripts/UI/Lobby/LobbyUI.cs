@@ -16,7 +16,11 @@ public class LobbyUI : MonoBehaviour
     public Button ReadyButton, ExitButton, ManageButton, StartButton, InviteButton, UpdateLobbyButton;
 
     [Header("Gun Selection")]
-    public TMP_Dropdown GunSelector;
+    public TMP_Dropdown GunSelector; 
+    public TextMeshProUGUI DamageText;
+    public TextMeshProUGUI RPMText;
+    public TextMeshProUGUI AmmoText;
+    public TextMeshProUGUI MobilityText;
 
     private bool isUpdatingUI = false;
 
@@ -165,6 +169,9 @@ public class LobbyUI : MonoBehaviour
         if (NetworkClient.localPlayer != null)
         {
             string selectedGunID = GunSelector.options[index].text;
+
+            UpdateWeaponInfo(selectedGunID);
+
             var localPlayer = NetworkClient.localPlayer.GetComponent<LobbyPlayer>();
 
             if (localPlayer != null)
@@ -191,8 +198,21 @@ public class LobbyUI : MonoBehaviour
         if (index != -1)
         {
             isUpdatingUI = true;
-            GunSelector.value = index;
+            GunSelector.value = index; 
+            UpdateWeaponInfo(gunID);
             isUpdatingUI = false;
         }
+    }
+
+    public void UpdateWeaponInfo(string gunID)
+    {
+        if (!GameManager.GetInstance().GunTable.TryGetValue(gunID, out var gunData)) return;
+
+        var info = gunData.gun.GunInfo;
+
+        DamageText.text = $"Damage: {info.RoundDamage}";
+        RPMText.text = $"RPM: {info.RPM}";
+        AmmoText.text = $"Magazine: {info.MagazineCapacity}";
+        MobilityText.text = $"ADS: {info.TimeToADS}s";
     }
 }
