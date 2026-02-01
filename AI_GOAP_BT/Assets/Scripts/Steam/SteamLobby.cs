@@ -202,6 +202,8 @@ public class SteamLobby : MonoBehaviour
         SteamMatchmaking.SetLobbyData(lobbyId, "friendlyFire", currentLobbyOptions.FriendlyFire ? "true" : "false");
         SteamMatchmaking.SetLobbyData(lobbyId, "respawnDelay", currentLobbyOptions.RespawnDelay.ToString());
 
+        SteamMatchmaking.SetLobbyMemberLimit(lobbyId, currentLobbyOptions.MaxPlayers);
+
         var manager = Manager;
         if (manager == null)
         {
@@ -533,5 +535,52 @@ public class SteamLobby : MonoBehaviour
             Debug.LogWarning("Steam Lobby Join Timeout");
             CancelJoining(JoinResult.Timeout);
         }
+    }
+
+    public void UpdateLobbySettings(LobbyCreateOptions options)
+    {
+        if (CurrentLobbyID == 0 || !NetworkServer.active)
+            return;
+
+        var lobbyId = new CSteamID(CurrentLobbyID);
+
+        if (CurrentLobbyOptions.lobbyVisibility != LobbyVisibility.Private &&
+            options.lobbyVisibility == LobbyVisibility.Private)
+        {
+            Debug.LogWarning("이미 공개된 로비는 비공개로 전환할 수 없습니다. FriendsOnly로 설정합니다.");
+            options.lobbyVisibility = LobbyVisibility.FriendsOnly;
+        }
+
+        CurrentLobbyOptions = options;
+
+        SteamMatchmaking.SetLobbyData(lobbyId, "hasPassword", CurrentLobbyOptions.UsePassword ? "true" : "false");
+        SteamMatchmaking.SetLobbyData(lobbyId, "Password", CurrentLobbyOptions.Password);
+        SteamMatchmaking.SetLobbyData(lobbyId, "maxPlayers", CurrentLobbyOptions.MaxPlayers.ToString());
+        SteamMatchmaking.SetLobbyData(lobbyId, "spawnBots", CurrentLobbyOptions.SpawnBots ? "true" : "false");
+        SteamMatchmaking.SetLobbyData(lobbyId, "friendlyFire", CurrentLobbyOptions.FriendlyFire ? "true" : "false");
+        SteamMatchmaking.SetLobbyData(lobbyId, "respawnDelay", CurrentLobbyOptions.RespawnDelay.ToString());
+
+        SteamMatchmaking.SetLobbyMemberLimit(lobbyId, CurrentLobbyOptions.MaxPlayers);
+
+        ELobbyType lobbyType = ELobbyType.k_ELobbyTypePublic;
+        switch (CurrentLobbyOptions.lobbyVisibility)
+        {
+            case LobbyVisibility.Public:
+                lobbyType = ELobbyType.k_ELobbyTypePublic;
+                break;
+            case LobbyVisibility.FriendsOnly:
+                lobbyType = ELobbyType.k_ELobbyTypeFriendsOnly;
+                break;
+            case LobbyVisibility.Private:
+                lobbyType = ELobbyType.k_ELobbyTypePrivate;
+                break;
+        }
+
+        SteamMatchmaking.SetLobbyType(lobbyId, lobbyType);
+
+        bool joinable = (CurrentLobbyOptions.lobbyVisibility != LobbyVisibility.Private);
+        SteamMatchmaking.SetLobbyJoinable(lobbyId, joinable);
+
+        Debug.Log("[SteamLobby] Settings Updated.");
     }
 }

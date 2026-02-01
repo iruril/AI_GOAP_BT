@@ -4223,6 +4223,7 @@ MonoBehaviour:
   MaxPlayers: {fileID: 8200255845452759845}
   LobbyType: {fileID: 5322873568995218247}
   RespawnDelay: {fileID: 766074521287437237}
+  CreateButtonText: {fileID: 5434455170638989367}
 --- !u!1 &5164779841151194402
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,7 +10,7 @@ public class LobbyUI : MonoBehaviour
     public TeamListPanel BlueTeamList, RedTeamList;
     public ManageListPanel ManageList;
     public FriendListPanel FriendListPanel;
-    public Button ReadyButton, ExitButton, ManageButton, StartButton, InviteButton;
+    public Button ReadyButton, ExitButton, ManageButton, StartButton, InviteButton, UpdateLobbyButton;
 
     private void Awake()
     {
@@ -56,14 +56,15 @@ public class LobbyUI : MonoBehaviour
                 rm?.StartGame();
             });
             StartButton.interactable = false;
+            UpdateLobbyButton.onClick.AddListener(UpdateLobby);
         }
         else
         {
             ManageButton.gameObject.SetActive(false);
             InviteButton.gameObject.SetActive(false);
             StartButton.gameObject.SetActive(false);
+            UpdateLobbyButton.gameObject.SetActive(false);
         }
-
 
         BlueTeamList?.JoinButton.onClick.AddListener(() =>
         {
@@ -104,5 +105,29 @@ public class LobbyUI : MonoBehaviour
         BlueTeamList?.ModifyNickname(netId, newName);
         RedTeamList?.ModifyNickname(netId, newName);
         ManageList?.ModifyNickname(netId, newName);
+    }
+
+    public void UpdateLobby()
+    {
+        if (SteamManager.Initialized)
+        {
+            if (SteamLobby.Instance == null)
+            {
+                Debug.LogError("SteamLobby not found!");
+                return;
+            }
+
+            if (LobbySettingHandler.Instance == null)
+            {
+                Debug.LogError("LobbySettingHandler not found!");
+                return;
+            }
+
+            if (LobbySettingHandler.Instance.gameObject.activeSelf) 
+                LobbySettingHandler.Instance?.gameObject.SetActive(false);
+            else
+                LobbySettingHandler.Instance?.gameObject.SetActive(true);
+            return;
+        }
     }
 }

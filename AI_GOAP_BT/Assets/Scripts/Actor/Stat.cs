@@ -18,14 +18,16 @@ public struct DamageRecord
     public uint attackerNetId;
     public HitBox.HitBoxType hitBoxType;
     public float damage;
-    public string gunName;
+    public string gunName; 
+    public float timestamp;
 
     public DamageRecord(uint attackerNetId, HitBox.HitBoxType hitBoxType, float damage, string gunName)
     {
         this.attackerNetId = attackerNetId;
         this.hitBoxType = hitBoxType;
         this.damage = damage;
-        this.gunName = gunName;
+        this.gunName = gunName; 
+        this.timestamp = Time.time;
     }
 }
 
@@ -83,8 +85,9 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     private const float NO_DAMAGE_DURATION = 5f;
     private const float REGEN_RATE = 0.1f; 
     private const int MAX_DAMAGE_RECORDS = 10;
+    private const float DAMAGE_RECORD_EXPIRATION = 10f;
 
-    private RoomManager roomManager;
+    private RoomManager roomManager; 
 
     private void Awake()
     {
@@ -208,6 +211,8 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     {
         if (IsDead) return;
 
+        CleanupExpiredDamageRecords();
+
         if (NetworkServer.spawned.TryGetValue(attackerNetId, out NetworkIdentity attackerIdentity))
         {
             if (damageRecords.Count >= MAX_DAMAGE_RECORDS)
@@ -247,6 +252,15 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         InGameUI.Instance?.PlayRespawnFlash();
     }
     #endregion
+
+    [Server]
+    private void CleanupExpiredDamageRecords()
+    {
+        if (damageRecords.Count == 0) return;
+
+        float currentTime = Time.time;
+        damageRecords.RemoveAll(record => (currentTime - record.timestamp) > DAMAGE_RECORD_EXPIRATION);
+    }
 
     private IEnumerator<float> HPRegenHandle()
     {
