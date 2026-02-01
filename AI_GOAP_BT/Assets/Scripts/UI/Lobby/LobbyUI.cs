@@ -59,6 +59,9 @@ public class LobbyUI : MonoBehaviour
             SteamLobby.Instance?.LeaveLobby();
         });
 
+        UpdateLobbyButton.onClick.AddListener(OpenLobbySetting);
+        UpdateLobbyButton.gameObject.SetActive(true);
+
         if (isHost)
         {
             ManageButton.onClick.AddListener(ToggleManagePanel);
@@ -69,7 +72,6 @@ public class LobbyUI : MonoBehaviour
                 rm?.StartGame();
             });
             StartButton.interactable = false;
-            UpdateLobbyButton.onClick.AddListener(OpenLobbySetting);
         }
         else
         {
