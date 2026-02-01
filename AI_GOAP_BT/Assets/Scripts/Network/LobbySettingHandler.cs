@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using Mirror;
 
 public class LobbySettingHandler : MonoBehaviour
 {
@@ -13,7 +14,8 @@ public class LobbySettingHandler : MonoBehaviour
     public TMP_Dropdown MaxPlayers, LobbyType, RespawnDelay;
     public TextMeshProUGUI CreateButtonText;
 
-    private bool isEditMode = false;
+    public enum Mode { Create, Update, ReadOnly }
+    private Mode currentMode = Mode.Create;
 
     private void Awake()
     {
@@ -45,17 +47,90 @@ public class LobbySettingHandler : MonoBehaviour
 
     private void OnEnable()
     {
-        if (SteamLobby.Instance != null && SteamLobby.Instance.CurrentLobbyID != 0)
+        if (SteamLobby.Instance == null)
         {
-            isEditMode = true;
-            if (CreateButtonText) CreateButtonText.text = "Update Lobby";
-            InitializeUIFromCurrentSettings();
+            currentMode = Mode.Create;
+            UpdateUIForMode();
+            ResetToDefaultUI();
+            return;
+        }
+
+        bool isInLobby = (SteamLobby.Instance.CurrentLobbyID != 0);
+
+        if (!isInLobby)
+        {
+            currentMode = Mode.Create;
+
+            UpdateUIForMode();
+            ResetToDefaultUI();
         }
         else
         {
-            isEditMode = false;
+            if (NetworkServer.active)
+            {
+                currentMode = Mode.Update;
+            }
+            else
+            {
+                currentMode = Mode.ReadOnly;
+            }
+
+            UpdateUIForMode(); 
+            
+            if (SteamLobby.Instance != null && SteamLobby.Instance.CurrentLobbyID != 0)
+            {
+                InitializeUIFromCurrentSettings();
+                SteamLobby.Instance.OnLobbyOptionChanged += OnLobbySettingsChanged;
+            }
+            else
+            {
+                ResetToDefaultUI();
+            }
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (SteamLobby.Instance != null)
+        {
+            SteamLobby.Instance.OnLobbyOptionChanged -= OnLobbySettingsChanged;
+        }
+    }
+
+    private void OnLobbySettingsChanged(SteamLobby.LobbyCreateOptions newOptions)
+    {
+        if (currentMode == Mode.ReadOnly)
+        {
+            InitializeUIFromCurrentSettings();
+        }
+    }
+
+    private void UpdateUIForMode()
+    {
+        bool isEditable = (currentMode != Mode.ReadOnly);
+
+        UsePassword.interactable = isEditable;
+        Password.interactable = isEditable && UsePassword.isOn;
+
+        MaxPlayers.interactable = isEditable;
+        LobbyType.interactable = isEditable;
+        SpawnBots.interactable = isEditable;
+        FriendlyFire.interactable = isEditable;
+        RespawnDelay.interactable = isEditable;
+
+        if (currentMode == Mode.Create)
+        {
+            CreateLobbyButton.gameObject.SetActive(true);
             if (CreateButtonText) CreateButtonText.text = "Create Lobby";
-            ResetToDefaultUI();
+        }
+        else if (currentMode == Mode.Update)
+        {
+            CreateLobbyButton.gameObject.SetActive(true);
+            if (CreateButtonText) CreateButtonText.text = "Update Lobby";
+        }
+        else
+        {
+            CreateLobbyButton.gameObject.SetActive(false);
         }
     }
 
@@ -63,7 +138,7 @@ public class LobbySettingHandler : MonoBehaviour
     {
         var options = GetLobbyOptions();
 
-        if (isEditMode)
+        if (currentMode == Mode.Update)
         {
             SteamLobby.Instance.UpdateLobbySettings(options);
             gameObject.SetActive(false);

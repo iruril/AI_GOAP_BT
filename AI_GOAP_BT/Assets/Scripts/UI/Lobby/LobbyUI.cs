@@ -56,14 +56,13 @@ public class LobbyUI : MonoBehaviour
                 rm?.StartGame();
             });
             StartButton.interactable = false;
-            UpdateLobbyButton.onClick.AddListener(UpdateLobby);
+            UpdateLobbyButton.onClick.AddListener(OpenLobbySetting);
         }
         else
         {
             ManageButton.gameObject.SetActive(false);
             InviteButton.gameObject.SetActive(false);
             StartButton.gameObject.SetActive(false);
-            UpdateLobbyButton.gameObject.SetActive(false);
         }
 
         BlueTeamList?.JoinButton.onClick.AddListener(() =>
@@ -107,7 +106,7 @@ public class LobbyUI : MonoBehaviour
         ManageList?.ModifyNickname(netId, newName);
     }
 
-    public void UpdateLobby()
+    public void OpenLobbySetting()
     {
         if (SteamManager.Initialized)
         {

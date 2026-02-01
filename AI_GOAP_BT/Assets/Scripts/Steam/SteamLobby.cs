@@ -78,7 +78,8 @@ public class SteamLobby : MonoBehaviour
     protected Callback<GameLobbyJoinRequested_t> JoinRequest;
     protected Callback<LobbyEnter_t> LobbyEntered; 
     protected Callback<LobbyMatchList_t> LobbyMatchList;
-    protected Callback<LobbyInvite_t> InviteRecieved;
+    protected Callback<LobbyInvite_t> InviteRecieved; 
+    protected Callback<LobbyDataUpdate_t> LobbyDataUpdate;
 
     public ulong CurrentLobbyID;
     private const string HostAddressKey = "CustomHostAddress";
@@ -124,7 +125,8 @@ public class SteamLobby : MonoBehaviour
         JoinRequest?.Dispose();
         LobbyEntered?.Dispose();
         LobbyMatchList?.Dispose();
-        InviteRecieved?.Dispose();
+        InviteRecieved?.Dispose(); 
+        LobbyDataUpdate?.Dispose();
 
         LobbyCreated = null;
         JoinRequest = null;
@@ -145,6 +147,7 @@ public class SteamLobby : MonoBehaviour
         LobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
         LobbyMatchList = Callback<LobbyMatchList_t>.Create(OnLobbyMatchList);
         InviteRecieved = Callback<LobbyInvite_t>.Create(OnLobbyInvite);
+        LobbyDataUpdate = Callback<LobbyDataUpdate_t>.Create(OnLobbyDataUpdate);
     }
 
     #region Steam Callbacks
@@ -271,7 +274,8 @@ public class SteamLobby : MonoBehaviour
         manager.networkAddress = hostAddress; 
         manager.StartClient();
 
-        Debug.Log("[Network] Join Success");
+        Debug.Log("[Network] Join Success"); 
+        UpdateLobbyInformation();
         OnJoinResult?.Invoke(JoinResult.Success);
         IsJoining = false;
     }
@@ -582,5 +586,45 @@ public class SteamLobby : MonoBehaviour
         SteamMatchmaking.SetLobbyJoinable(lobbyId, joinable);
 
         Debug.Log("[SteamLobby] Settings Updated.");
+    }
+
+    private void OnLobbyDataUpdate(LobbyDataUpdate_t callback)
+    {
+        if (callback.m_ulSteamIDLobby != CurrentLobbyID) return;
+
+        if (NetworkServer.active) return;
+
+        Debug.Log("[SteamLobby] Lobby Data Updated from Steam.");
+        UpdateLobbyInformation();
+    }
+
+    public void UpdateLobbyInformation()
+    {
+        CSteamID lobbyId = new CSteamID(CurrentLobbyID);
+        var options = new LobbyCreateOptions();
+
+        options.UsePassword = SteamMatchmaking.GetLobbyData(lobbyId, "hasPassword") == "true";
+        options.Password = SteamMatchmaking.GetLobbyData(lobbyId, "Password");
+
+        string maxPlr = SteamMatchmaking.GetLobbyData(lobbyId, "maxPlayers");
+        if (int.TryParse(maxPlr, out int max)) options.MaxPlayers = max;
+        else options.MaxPlayers = 16;
+
+        options.SpawnBots = SteamMatchmaking.GetLobbyData(lobbyId, "spawnBots") == "true";
+        options.FriendlyFire = SteamMatchmaking.GetLobbyData(lobbyId, "friendlyFire") == "true";
+
+        string delayStr = SteamMatchmaking.GetLobbyData(lobbyId, "respawnDelay");
+        if (float.TryParse(delayStr, out float delay)) options.RespawnDelay = delay;
+        else options.RespawnDelay = 5f;
+
+        string visStr = SteamMatchmaking.GetLobbyData(lobbyId, "visibility");
+        options.lobbyVisibility = visStr switch
+        {
+            "friends" => LobbyVisibility.FriendsOnly,
+            "private" => LobbyVisibility.Private,
+            _ => LobbyVisibility.Public
+        };
+
+        CurrentLobbyOptions = options;
     }
 }
