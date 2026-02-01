@@ -109,7 +109,8 @@ public class RoomManager : NetworkRoomManager
         else
             population.RedPlayers++;
         stat.Nickname = rp.Nickname;
-        stat.SteamID = rp.SteamID;
+        stat.SteamID = rp.SteamID; 
+        stat.StartingGunID = rp.SelectedGunID;
 
         if (!OnRoomServerSceneLoadedForPlayer(conn, roomPlayer, gamePlayer))
             return;

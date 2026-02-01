@@ -2,6 +2,9 @@ using Mirror;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System.Collections.Generic;
+using System.Linq;
 
 public class LobbyUI : MonoBehaviour
 {
@@ -11,6 +14,11 @@ public class LobbyUI : MonoBehaviour
     public ManageListPanel ManageList;
     public FriendListPanel FriendListPanel;
     public Button ReadyButton, ExitButton, ManageButton, StartButton, InviteButton, UpdateLobbyButton;
+
+    [Header("Gun Selection")]
+    public TMP_Dropdown GunSelector;
+
+    private bool isUpdatingUI = false;
 
     private void Awake()
     {
@@ -25,7 +33,8 @@ public class LobbyUI : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(Init());
+        StartCoroutine(Init()); 
+        StartCoroutine(InitGunDropdown());
     }
 
     private IEnumerator Init()
@@ -83,6 +92,25 @@ public class LobbyUI : MonoBehaviour
         });
     }
 
+    private IEnumerator InitGunDropdown()
+    {
+        yield return new WaitUntil(() => GameManager.GetInstance() != null && GameManager.GetInstance().GunListReady);
+
+        GunSelector.ClearOptions();
+        List<string> gunNames = GameManager.GetInstance().GunTable.Keys.ToList();
+        GunSelector.AddOptions(gunNames);
+        GunSelector.onValueChanged.AddListener(OnGunSelected);
+
+        if (NetworkClient.localPlayer != null)
+        {
+            var localPlayer = NetworkClient.localPlayer.GetComponent<LobbyPlayer>();
+            if (localPlayer != null)
+            {
+                SelectGunInDropdown(localPlayer.SelectedGunID);
+            }
+        }
+    }
+
     private void ToggleFriendListPanel()
     {
         if (FriendListPanel.gameObject.activeSelf)
@@ -127,6 +155,44 @@ public class LobbyUI : MonoBehaviour
             else
                 LobbySettingHandler.Instance?.gameObject.SetActive(true);
             return;
+        }
+    }
+
+    private void OnGunSelected(int index)
+    {
+        if (isUpdatingUI) return;
+
+        if (NetworkClient.localPlayer != null)
+        {
+            string selectedGunID = GunSelector.options[index].text;
+            var localPlayer = NetworkClient.localPlayer.GetComponent<LobbyPlayer>();
+
+            if (localPlayer != null)
+            {
+                localPlayer.CmdSelectGun(selectedGunID);
+            }
+        }
+    }
+
+    public void SelectGunInDropdown(string gunID)
+    {
+        if (GunSelector.options.Count == 0 || string.IsNullOrEmpty(gunID)) return;
+
+        int index = -1;
+        for (int i = 0; i < GunSelector.options.Count; i++)
+        {
+            if (GunSelector.options[i].text == gunID)
+            {
+                index = i;
+                break;
+            }
+        }
+
+        if (index != -1)
+        {
+            isUpdatingUI = true;
+            GunSelector.value = index;
+            isUpdatingUI = false;
         }
     }
 }

@@ -45,6 +45,9 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
 
     [SyncVar] public ulong SteamID = 0;
 
+    [SyncVar]
+    public string StartingGunID = "";
+
     private ActorUIMarker marker;
 
     string IChatSender.Nickname => Nickname;
@@ -104,15 +107,24 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
         nextPosition = transform.position;
         ServerVelocity = Vector3.zero;
 
-        SetTeam(MyTeam);
-        if (MyTeam == Team.Blue)
+        SetTeam(MyTeam); 
+        
+        string gunToLoad = StartingGunID;
+        if (string.IsNullOrEmpty(gunToLoad))
         {
-            GetComponent<GunHandler>().LoadGun("MPX");
+            var gunKeys = new List<string>(GameManager.GetInstance().GunTable.Keys);
+            if (gunKeys.Count > 0)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, gunKeys.Count);
+                gunToLoad = gunKeys[randomIndex];
+            }
+            else
+            {
+                gunToLoad = "MPX";
+            }
         }
-        else
-        {
-            GetComponent<GunHandler>().LoadGun("AK-12");
-        }
+
+        GetComponent<GunHandler>().LoadGun(gunToLoad);
     }
 
     public override void OnStartClient()

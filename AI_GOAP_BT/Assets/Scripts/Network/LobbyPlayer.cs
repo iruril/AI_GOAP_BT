@@ -1,6 +1,7 @@
 using Mirror;
 using System.Collections;
 using Steamworks;
+using UnityEngine;
 
 public class LobbyPlayer : NetworkRoomPlayer, IChatSender
 {
@@ -13,8 +14,11 @@ public class LobbyPlayer : NetworkRoomPlayer, IChatSender
     [SyncVar(hook = nameof(OnNicknameChanged))]
     public string Nickname = "Nickname";
 
-    [SyncVar(hook = nameof(OnSteamIDChanged))]
-    public ulong SteamID;
+    [SyncVar]
+    public ulong SteamID; 
+    
+    [SyncVar(hook = nameof(OnGunChanged))]
+    public string SelectedGunID = "MPX";
 
     string IChatSender.Nickname => Nickname;
     Team IChatSender.MyTeam => MyTeam;
@@ -43,6 +47,7 @@ public class LobbyPlayer : NetworkRoomPlayer, IChatSender
             {
                 CmdSetNickname("Player" + UnityEngine.Random.Range(0, 999).ToString("D3"));
             }
+            CmdSelectGun(MyTeam == Team.Blue ? "MPX" : "AK-12");
             TeamChanged(MyTeam, MyTeam);
         }
 
@@ -81,6 +86,15 @@ public class LobbyPlayer : NetworkRoomPlayer, IChatSender
         }
     }
 
+    [Command]
+    public void CmdSelectGun(string gunID)
+    {
+        if (GameManager.GetInstance().GunTable.ContainsKey(gunID))
+        {
+            SelectedGunID = gunID;
+        }
+    }
+
     public void OnNicknameChanged(string _, string newName)
     {
         if (!IsLobbyUIAlive()) return;
@@ -96,11 +110,11 @@ public class LobbyPlayer : NetworkRoomPlayer, IChatSender
         {
             if (newTeam == Team.Blue)
             {
-                PreviewActor.Instance?.UpdatePreview("Blue", "MPX");
+                PreviewActor.Instance?.UpdatePreview("Blue", SelectedGunID);
             }
             else
             {
-                PreviewActor.Instance?.UpdatePreview("Red", "AK-12");
+                PreviewActor.Instance?.UpdatePreview("Red", SelectedGunID);
             }
         }
 
@@ -115,6 +129,16 @@ public class LobbyPlayer : NetworkRoomPlayer, IChatSender
             LobbyUI.Instance?.RedTeamList?.RemoveUser(netId);
             LobbyUI.Instance?.BlueTeamList?.AddUser(Nickname, netId);
             LobbyUI.Instance?.BlueTeamList?.SetReady(netId, readyToBegin);
+        }
+    }
+
+    private void OnGunChanged(string oldGun, string newGun)
+    {
+        if (isLocalPlayer)
+        {
+            string teamStr = MyTeam == Team.Blue ? "Blue" : "Red";
+            PreviewActor.Instance?.UpdatePreview(teamStr, newGun);
+            LobbyUI.Instance?.SelectGunInDropdown(newGun);
         }
     }
 
@@ -137,15 +161,17 @@ public class LobbyPlayer : NetworkRoomPlayer, IChatSender
         }
     }
 
-    public void OnSteamIDChanged(ulong oldReadyState, ulong newReadyState)
-    {
-
-    }
-
     IEnumerator Refresh()
     {
-        yield return null;
+        yield return new WaitUntil(() => LobbyUI.Instance != null && LobbyUI.Instance.GunSelector.options.Count > 0);
         RefreshPanels();
+
+        if (isLocalPlayer)
+        {
+            LobbyUI.Instance.SelectGunInDropdown(SelectedGunID);
+            string teamStr = MyTeam == Team.Blue ? "Blue" : "Red";
+            PreviewActor.Instance?.UpdatePreview(teamStr, SelectedGunID);
+        }
     }
 
     private void RefreshPanels()
