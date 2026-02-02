@@ -57,7 +57,7 @@ public class Bullet : MonoBehaviour
         initialized = false;
         owner = null;
         Timing.KillCoroutines(lifeHandle);
-        myPool?.ReturnToPool(gameObject);
+        BulletPool.ReturnToPool(gameObject);
     }
 
     public void Init(LayerMask teamLayer, Vector3 shotOrigin, float projectileSpeed, float damage, float headMultiplier, float lagTime)

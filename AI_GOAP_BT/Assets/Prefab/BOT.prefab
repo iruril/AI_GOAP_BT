@@ -939,7 +939,6 @@ GameObject:
   - component: {fileID: -2168579121952372337}
   - component: {fileID: 6757195939308535499}
   - component: {fileID: 1856504431268464514}
-  - component: {fileID: 1464119152950905832}
   - component: {fileID: 1094640755330070470}
   - component: {fileID: 5157146277386418988}
   - component: {fileID: 1286322669042044507}
@@ -1849,6 +1848,8 @@ MonoBehaviour:
   syncInterval: 0.01
   MyTeam: 2
   Nickname: 
+  SteamID: 0
+  StartingGunID: 
   maxHP: 100
   CurrentHP: 0
   IsDead: 0
@@ -1924,7 +1925,6 @@ MonoBehaviour:
   detectionRange: 0.5
   shellOffset: 0.5
   boxHalfExtent: {x: 0.1, y: 0.08, z: 0.1}
-  snapForce: 50
   maxSnapDistance: 0.5
 --- !u!114 &-2168579121952372337
 MonoBehaviour:
@@ -1995,21 +1995,6 @@ MonoBehaviour:
   aimTrackingLag: 0.15
   SyncedAimTarget: {x: 0, y: 0, z: 0}
   SyncedAimWeight: 0
---- !u!114 &1464119152950905832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2531024411289186008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b954a728e5c4554c8e1dffb8af5ef43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bulletPool:
-    Bullet: {fileID: 1648555099801315958, guid: 36ba956664d8c524483e29bd15b0527d, type: 3}
-    Size: 8
 --- !u!114 &1094640755330070470
 MonoBehaviour:
   m_ObjectHideFlags: 0

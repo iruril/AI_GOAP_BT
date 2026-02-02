@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BulletPool : MonoBehaviour
 {
+    private static BulletPool _instance;
+
     [Serializable]
     public class Pool
     {
@@ -14,14 +16,19 @@ public class BulletPool : MonoBehaviour
     [SerializeField]
     private Pool _bulletPool;
     private Queue<GameObject> _bulletQueue;
-    private GameObject _bulletContainer;
 
     private void Awake()
     {
-        _bulletContainer = new GameObject($"{name}_Bullets");
+        _instance = this;
+        InitPool();
     }
 
-    private void Start()
+    private void OnDestroy()
+    {
+        if (_instance == this) _instance = null;
+    }
+
+    private void InitPool()
     {
         _bulletQueue = new Queue<GameObject>();
         for (int i = 0; i < _bulletPool.Size; i++)
@@ -30,41 +37,24 @@ public class BulletPool : MonoBehaviour
         }
     }
 
-    public GameObject SpawnBullet(GunHandler owner, Vector3 position, Quaternion rotation, LayerMask myTeamLayer, Vector3 origin, float projectileSpeed, float damage, float headMultiplier, float lagTime)
+    public static BulletPool GetInstance()
     {
-        GameObject obj = _SpawnBullet(position, rotation);
-
-        if (obj.TryGetComponent<Bullet>(out var bullet))
-        {
-            bullet.SetOwner(owner);
-            bullet.Init(myTeamLayer, origin, projectileSpeed, damage, headMultiplier, lagTime);
-        }
-
-        return obj;
+        return _instance;
     }
-
-    public GameObject SpawnBullet(Vector3 position, Quaternion rotation, LayerMask myTeamLayer, Vector3 origin, float projectileSpeed, float damage, float headMultiplier, float lagTime)
-    {
-        GameObject obj = _SpawnBullet(position, rotation);
-
-        if (obj.TryGetComponent<Bullet>(out var bullet))
-        {
-            bullet.Init(myTeamLayer, origin, projectileSpeed, damage, headMultiplier, lagTime);
-        }
-
-        return obj;
-    }
-
     private GameObject _SpawnBullet(Vector3 position, Quaternion rotation)
     {
-        if (_bulletQueue.Count <= 0)
+        GameObject objectToSpawn;
+
+        if (_bulletQueue.Count > 0)
         {
-            CreateNewObject(_bulletPool.Bullet);
+            objectToSpawn = _bulletQueue.Dequeue();
+        }
+        else
+        {
+            objectToSpawn = CreateNewObject(_bulletPool.Bullet);
         }
 
-        GameObject objectToSpawn = _bulletQueue.Dequeue();
-        objectToSpawn.transform.position = position;
-        objectToSpawn.transform.rotation = rotation;
+        objectToSpawn.transform.SetPositionAndRotation(position, rotation);
         objectToSpawn.SetActive(true);
         return objectToSpawn;
     }
@@ -73,7 +63,6 @@ public class BulletPool : MonoBehaviour
     {
         var obj = Instantiate(prefab, transform);
         obj.name = "Bullet";
-        obj.transform.parent = _bulletContainer.transform;
 
         if (obj.TryGetComponent<Bullet>(out var bullet))
         {
@@ -84,8 +73,23 @@ public class BulletPool : MonoBehaviour
         return obj;
     }
 
-    public void ReturnToPool(GameObject obj)
+    public static void ReturnToPool(GameObject obj)
     {
-        _bulletQueue.Enqueue(obj);
+        if (_instance == null) return;
+
+        _instance._bulletQueue.Enqueue(obj);
+    }
+
+    public static GameObject SpawnBullet(Vector3 position, Quaternion rotation, LayerMask myTeamLayer, Vector3 origin, float projectileSpeed, float damage, float headMultiplier, float lagTime, GunHandler owner = null)
+    {
+        if (_instance == null) return null;
+
+        GameObject obj = _instance._SpawnBullet(position, rotation);
+        if (obj.TryGetComponent<Bullet>(out var bullet))
+        {
+            if (owner != null) bullet.SetOwner(owner);
+            bullet.Init(myTeamLayer, origin, projectileSpeed, damage, headMultiplier, lagTime);
+        }
+        return obj;
     }
 }

@@ -31,8 +31,6 @@ public class GunHandler : NetworkBehaviour
     public Gun CurrentGun { get { return currentGun; } }
     private GameObject currentGunModel;
 
-    private BulletPool bulletPool;
-
     private Dictionary<string, (Gun gun, GameObject instance)> gunHistory = new();
     private Dictionary<string, int> roundHistory = new();
 
@@ -49,11 +47,6 @@ public class GunHandler : NetworkBehaviour
     CoroutineHandle reloadHandle;
 
     RoomManager rm;
-
-    void Awake()
-    {
-        bulletPool = GetComponent<BulletPool>();
-    }
 
     public override void OnStartServer()
     {
@@ -256,8 +249,7 @@ public class GunHandler : NetworkBehaviour
         float damage = currentGun.GunInfo.RoundDamage;
         float headMultiplier = currentGun.GunInfo.HeadDamageMultiplier;
 
-        bulletPool.SpawnBullet(
-            this,
+        BulletPool.SpawnBullet(
             muzzlePos,
             bulletRotation,
             ignoreLayerMask,
@@ -265,7 +257,8 @@ public class GunHandler : NetworkBehaviour
             speed,          // ÃÑ¾Ë ¼Óµµ
             damage,
             headMultiplier,
-            lagTime
+            lagTime,
+            this
         );
 
         RpcSpawnBullet(
@@ -297,7 +290,7 @@ public class GunHandler : NetworkBehaviour
     {
         if (isServer) return;
 
-        bulletPool.SpawnBullet(
+        BulletPool.SpawnBullet(
             position,
             rotation,
             myTeamLayer,

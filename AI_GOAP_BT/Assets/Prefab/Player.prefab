@@ -1126,7 +1126,6 @@ GameObject:
   - component: {fileID: 3658632373033495448}
   - component: {fileID: 7274447826131305023}
   - component: {fileID: 4766842133617169138}
-  - component: {fileID: 2940715734856470731}
   - component: {fileID: 1903201351979385258}
   - component: {fileID: 4921243044782832703}
   - component: {fileID: 2491643124357154010}
@@ -2000,6 +1999,8 @@ MonoBehaviour:
   syncInterval: 0.01
   MyTeam: 2
   Nickname: Player
+  SteamID: 0
+  StartingGunID: 
   maxHP: 100
   CurrentHP: 0
   IsDead: 0
@@ -2045,21 +2046,6 @@ MonoBehaviour:
   syncedGunName: 
   CurrentRounds: 0
   OnReload: 0
---- !u!114 &2940715734856470731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3633421393629289014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b954a728e5c4554c8e1dffb8af5ef43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bulletPool:
-    Bullet: {fileID: 1648555099801315958, guid: 36ba956664d8c524483e29bd15b0527d, type: 3}
-    Size: 8
 --- !u!114 &1903201351979385258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4735,6 +4721,7 @@ MonoBehaviour:
   returnDamping: 12
   firingRecoveryScale: 0.02
   recoilLifeTime: 0.2
+  crouchRecoilMultiplier: 0.5
   snapSharpness: 20
   maxPitch: 30
   maxRoll: 15
