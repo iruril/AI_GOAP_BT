@@ -11,7 +11,6 @@ public class RaycastHitDistanceComparer : IComparer<RaycastHit>
 
 public class Bullet : MonoBehaviour
 {
-    private BulletPool myPool;
     private GunHandler owner;
     public void SetOwner(GunHandler gun)
     {
@@ -205,6 +204,5 @@ public class Bullet : MonoBehaviour
 
     private bool IsFriendly(int layer) => (friendLayers.value & (1 << layer)) != 0;
     private void Deactivate() { initialized = false; gameObject.SetActive(false); }
-    public void SetBulletPool(BulletPool pool) => myPool = pool; 
     IEnumerator<float> LifeTimer() { yield return Timing.WaitForSeconds(lifeTime); gameObject.SetActive(false); }
 }

@@ -63,12 +63,6 @@ public class BulletPool : MonoBehaviour
     {
         var obj = Instantiate(prefab, transform);
         obj.name = "Bullet";
-
-        if (obj.TryGetComponent<Bullet>(out var bullet))
-        {
-            bullet.SetBulletPool(this);
-        }
-
         obj.SetActive(false); // 비활성화시 ReturnToPool을 하므로 Enqueue가 됨
         return obj;
     }
