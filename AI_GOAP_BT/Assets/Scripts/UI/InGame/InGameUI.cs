@@ -42,6 +42,7 @@ public class InGameUI : MonoBehaviour
 
     private CoroutineHandle hitmarkHandle;
     private CoroutineHandle killmarkHandle;
+    private CoroutineHandle respawnFlashHandle;
 
     public RectTransform GameWinHUD { get => gameWinHUD;}
     public RectTransform GameLoseHUD { get => gameLoseHUD;}
@@ -87,6 +88,7 @@ public class InGameUI : MonoBehaviour
     {
         Timing.KillCoroutines(hitmarkHandle);
         Timing.KillCoroutines(killmarkHandle);
+        Timing.KillCoroutines(respawnFlashHandle);
         for (int i = 0; i < indicatorHandles.Length; i++) 
             Timing.KillCoroutines(indicatorHandles[i]);
         Instance = null;
@@ -203,7 +205,7 @@ public class InGameUI : MonoBehaviour
 
     public void PlayRespawnFlash()
     {
-        Timing.RunCoroutine(RespawnFlashHandle());
+        respawnFlashHandle = Timing.RunCoroutine(RespawnFlashHandle());
     }
 
     private IEnumerator<float> RespawnFlashHandle()

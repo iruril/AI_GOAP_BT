@@ -36,22 +36,22 @@ public class LobbyPlayer : NetworkRoomPlayer, IChatSender
 
     public override void OnClientEnterRoom()
     {
-        if (isLocalPlayer)
-        {
-            if (SteamManager.Initialized)
-            {
-                CmdSetNickname(SteamFriends.GetPersonaName());
-                CmdSetSteamID(SteamUser.GetSteamID().m_SteamID);
-            }
-            else
-            {
-                CmdSetNickname("Player" + UnityEngine.Random.Range(0, 999).ToString("D3"));
-            }
-            CmdSelectGun(MyTeam == Team.Blue ? "MPX" : "AK-12");
-            TeamChanged(MyTeam, MyTeam);
-        }
-
         StartCoroutine(Refresh());
+    }
+
+    public override void OnStartLocalPlayer()
+    {
+        if (SteamManager.Initialized)
+        {
+            CmdSetNickname(SteamFriends.GetPersonaName());
+            CmdSetSteamID(SteamUser.GetSteamID().m_SteamID);
+        }
+        else
+        {
+            CmdSetNickname("Player" + Random.Range(0, 999).ToString("D3"));
+        }
+        CmdSelectGun(MyTeam == Team.Blue ? "MPX" : "AK-12");
+        TeamChanged(MyTeam, MyTeam);
     }
 
     public override void OnClientExitRoom()

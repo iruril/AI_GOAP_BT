@@ -1,177 +1,148 @@
-using MEC;
 using Mirror;
-using System.Collections.Generic;
 using UnityEngine;
-
-public class RaycastHitDistanceComparer : IComparer<RaycastHit>
-{
-    public static readonly RaycastHitDistanceComparer Instance = new RaycastHitDistanceComparer();
-    public int Compare(RaycastHit x, RaycastHit y) => x.distance.CompareTo(y.distance);
-}
 
 public class Bullet : MonoBehaviour
 {
     private GunHandler owner;
+    private string gunName;
+    private int _simulationIndex = -1; // 시뮬레이터에서의 인덱스
+
+    [SerializeField] private float lifeTime = 5f;
+
+    [Header("Ballistics")]
+    [SerializeField] private float gravity = 9.81f; // 기본값 예시
+    [SerializeField] private float drag = 0.1f;
+
+    private float damage = 1f;
+    private float headMultiplier = 1.0f;
+    private LayerMask friendLayers;
+    private Vector3 shotOrigin;
+
+    // 보간을 위한 변수
+    private Vector3 visualPrevPos;
+    private Vector3 logicPos;
+    private bool initialized = false;
+
     public void SetOwner(GunHandler gun)
     {
         owner = gun;
         gunName = owner.CurrentGun.GunName;
     }
 
-    private string gunName;
-
-    [SerializeField]
-    private float lifeTime = 5f;
-    private CoroutineHandle lifeHandle;
-
-    [Header("Ballistics")]
-    [SerializeField] private float gravity = 0f;
-    [SerializeField] private float drag = 0f;
-
-    private float damage = 1f;
-    private float headMultiplier = 1.0f;
-    private LayerMask friendLayers;
-    [SerializeField] private LayerMask hitMask;
-    [SerializeField] private LayerMask grazeMask;
-
-    private Vector3 velocity;
-
-    private Vector3 visualPrevPos;
-    private Vector3 logicPos;
-
-    private Vector3 shotOrigin;
-
-    private bool initialized = false; 
-    
-    private RaycastHit[] hitBuffer = new RaycastHit[4];
-
     private void OnEnable()
     {
         initialized = false;
-        Timing.KillCoroutines(lifeHandle);
+        _simulationIndex = -1;
     }
 
     private void OnDisable()
     {
+        if (_simulationIndex != -1 && BulletSimulator.Instance != null)
+        {
+            BulletSimulator.Instance.UnregisterBullet(_simulationIndex);
+            _simulationIndex = -1;
+        }
+
         initialized = false;
         owner = null;
-        Timing.KillCoroutines(lifeHandle);
         BulletPool.ReturnToPool(gameObject);
     }
 
-    public void Init(LayerMask teamLayer, Vector3 shotOrigin, float projectileSpeed, float damage, float headMultiplier, float lagTime)
+    public void Init(LayerMask teamLayer, Vector3 origin, float projectileSpeed, float damage, float headMultiplier, float lagTime)
     {
         friendLayers = teamLayer;
-
-        this.shotOrigin = shotOrigin;
-        this.velocity = transform.forward * projectileSpeed;
+        shotOrigin = origin;
         this.damage = damage;
         this.headMultiplier = headMultiplier;
-
-        initialized = true;
-        if (lagTime > 0) AdvanceProjectile(lagTime);
 
         logicPos = transform.position;
         visualPrevPos = logicPos;
 
-        lifeHandle = Timing.RunCoroutine(LifeTimer());
-    }
-
-    private void AdvanceProjectile(float simulateTime)
-    {
-        Vector3 startPos = transform.position;
-
-        Vector3 simulatedVelocity = velocity;
-        simulatedVelocity.y += gravity * simulateTime;
-
-        simulatedVelocity *= Mathf.Exp(-drag * simulateTime);
-
-        Vector3 predictedPos = startPos + (velocity + simulatedVelocity) * 0.5f * simulateTime;
-
-        Vector3 dir = predictedPos - startPos;
-        float dist = dir.magnitude;
-
-        if (dist > 0.00001f)
+        BulletData data = new BulletData
         {
-            int count = Physics.RaycastNonAlloc(startPos, dir.normalized, hitBuffer, dist, hitMask | grazeMask);
+            IsActive = true,
+            Position = transform.position,
+            Velocity = transform.forward * projectileSpeed,
+            ShotOrigin = origin,
+            Gravity = gravity,
+            Drag = drag,
+            Damage = damage,
+            HeadMultiplier = headMultiplier,
+            RemainingLifeTime = lifeTime,
+            FriendLayers = teamLayer,
+            BulletIndex = -1
+        };
 
-            if (count > 0)
-            {
-                if (ProcessDamageHits(count)) return;
-            }
+        // Lag Compensation (lagTime만큼 미리 전진)
+        if (lagTime > 0)
+        {
+            data.Position += data.Velocity * lagTime;
+            logicPos = data.Position;
+            visualPrevPos = logicPos;
+            transform.position = logicPos;
         }
 
-        transform.position = predictedPos;
-        velocity = simulatedVelocity;
-        logicPos = transform.position;
+        _simulationIndex = BulletSimulator.Instance.RegisterBullet(this, data);
+
+        if (_simulationIndex != -1)
+        {
+            initialized = true;
+        }
+        else
+        {
+            Deactivate();
+        }
+    }
+
+    public void Deactivate()
+    {
+        initialized = false;
+        gameObject.SetActive(false);
+    }
+
+    public void SyncLogicPosition(Vector3 newPos)
+    {
+        visualPrevPos = logicPos;
+        logicPos = newPos;
     }
 
     private void Update()
     {
         if (!initialized) return;
+
         float interpolationFactor = (Time.time - Time.fixedTime) / Time.fixedDeltaTime;
         transform.position = Vector3.Lerp(visualPrevPos, logicPos, interpolationFactor);
-    }
 
-    private void FixedUpdate()
-    {
-        if (!initialized) return;
-
-        visualPrevPos = logicPos;
-
-        velocity.y += gravity * Time.fixedDeltaTime;
-        velocity *= Mathf.Exp(-drag * Time.fixedDeltaTime);
-
-        Vector3 nextLogicPos = logicPos + velocity * Time.fixedDeltaTime;
-        Vector3 dir = nextLogicPos - logicPos;
-        float dist = dir.magnitude;
-
-        if (dist > 0.00001f)
+        Vector3 dir = logicPos - visualPrevPos;
+        if (dir.sqrMagnitude > 0.0001f)
         {
-            int count = Physics.RaycastNonAlloc(logicPos, dir.normalized, hitBuffer, dist, hitMask | grazeMask);
-
-            if (count > 0)
-            {
-                if (NetworkServer.active) ProcessGrazingHits(count);
-                if (ProcessDamageHits(count)) return;
-            }
-        }
-        logicPos = nextLogicPos;
-    }
-
-    private void ProcessGrazingHits(int count)
-    {
-        for (int i = 0; i < count; i++)
-        {
-            var hit = hitBuffer[i];
-            var col = hit.collider;
-            int layer = col.gameObject.layer;
-
-            if ((grazeMask & (1 << layer)) == 0) continue;
-
-            if (col.TryGetComponent<GrazeListener>(out var listener))
-            {
-                listener.OnGraze(shotOrigin, friendLayers);
-            }
+            transform.rotation = Quaternion.LookRotation(dir);
         }
     }
 
-    private bool ProcessDamageHits(int count)
+    public bool IsValidHit(RaycastHit hit)
     {
-        System.Array.Sort(hitBuffer, 0, count, RaycastHitDistanceComparer.Instance);
+        int layer = hit.collider.gameObject.layer;
 
-        for (int i = 0; i < count; i++)
+        if (IsFriendly(layer)) return false;
+
+        return true;
+    }
+
+    public void OnGraze(RaycastHit hit)
+    {
+        if (IsFriendly(hit.collider.gameObject.layer)) return;
+
+        if (hit.collider.TryGetComponent<GrazeListener>(out var listener))
         {
-            var hit = hitBuffer[i];
-            int layer = hit.collider.gameObject.layer;
-
-            if (IsFriendly(layer) || (hitMask & (1 << layer)) == 0) continue;
-
-            ProcessDamageHit(hit.collider, hit.point, hit.normal);
-            return true;
+            listener.OnGraze(shotOrigin, friendLayers);
         }
+    }
 
-        return false;
+    public void OnHit(RaycastHit hit)
+    {
+        ProcessDamageHit(hit.collider, hit.point, hit.normal);
+        Deactivate();
     }
 
     private void ProcessDamageHit(Collider target, Vector3 hitPoint, Vector3 hitNormal)
@@ -180,7 +151,6 @@ public class Bullet : MonoBehaviour
 
         if (target.TryGetComponent<HitBox>(out var hitBox))
         {
-            // isServer가 false면 데미지 로직만 내부적으로 스킵됨
             hitBox.ApplyDamage(
                 damage,
                 headMultiplier,
@@ -198,11 +168,7 @@ public class Bullet : MonoBehaviour
             string vfxName = ((1 << target.gameObject.layer) & WorldManager.Instance.GetBleedLayers()) != 0 ? "Blood" : "Hit";
             owner.ServerReportHit(hitPoint, Quaternion.LookRotation(hitNormal), vfxName);
         }
-
-        Deactivate();
     }
 
     private bool IsFriendly(int layer) => (friendLayers.value & (1 << layer)) != 0;
-    private void Deactivate() { initialized = false; gameObject.SetActive(false); }
-    IEnumerator<float> LifeTimer() { yield return Timing.WaitForSeconds(lifeTime); gameObject.SetActive(false); }
 }

@@ -22942,6 +22942,7 @@ GameObject:
   m_Component:
   - component: {fileID: 596449160}
   - component: {fileID: 596449161}
+  - component: {fileID: 596449162}
   m_Layer: 0
   m_Name: BulletPoolManager
   m_TagString: Untagged
@@ -22979,6 +22980,26 @@ MonoBehaviour:
   _bulletPool:
     Bullet: {fileID: 1648555099801315958, guid: 36ba956664d8c524483e29bd15b0527d, type: 3}
     Size: 100
+--- !u!114 &596449162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 596449159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 298da56375554d34cb3a9d6be8416cf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxBullets: 2000
+  maxHitsPerBullet: 4
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 1096
+  grazeMask:
+    serializedVersion: 2
+    m_Bits: 2048
 --- !u!43 &597257237
 Mesh:
   m_ObjectHideFlags: 0
