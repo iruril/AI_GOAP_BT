@@ -51,7 +51,7 @@ public struct BulletMovementJob : IJobParallelFor
 
         Vector3 prevPos = bullet.Position;
 
-        bullet.Velocity.y += 9.81f * DeltaTime;
+        bullet.Velocity.y -= 9.81f * DeltaTime;
         bullet.Velocity *= Mathf.Exp(-bullet.Drag * DeltaTime);
         Vector3 nextPos = prevPos + bullet.Velocity * DeltaTime;
 
