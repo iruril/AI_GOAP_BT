@@ -10,7 +10,6 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float lifeTime = 5f;
 
     [Header("Ballistics")]
-    [SerializeField] private float gravity = 9.81f; // 기본값 예시
     [SerializeField] private float drag = 0.1f;
 
     private float damage = 1f;
@@ -64,7 +63,6 @@ public class Bullet : MonoBehaviour
             Position = transform.position,
             Velocity = transform.forward * projectileSpeed,
             ShotOrigin = origin,
-            Gravity = gravity,
             Drag = drag,
             Damage = damage,
             HeadMultiplier = headMultiplier,

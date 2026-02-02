@@ -5,12 +5,16 @@ using System.Linq;
 using RootMotion.FinalIK;
 using Mirror;
 using System;
+using Sound;
 
 public class GunHandler : NetworkBehaviour
 {
     public event Action<int> OnRoundChanged;
     public event Action OnFired;
     public event Action<float, float, float, float> OnGunRecoilChanged;
+
+    [Header("Gun 사운드 소스")]
+    [SerializeField] private AudioSource audioSource;
 
     [Header("Gun 트랜스폼 세팅")]
     [SerializeField] Transform gunPos;
@@ -306,6 +310,7 @@ public class GunHandler : NetworkBehaviour
     private void RpcPlayMuzzleFlash(Vector3 muzzlePos, Quaternion rot)
     {
         EffectPoolManager.SpawnFromPool("MuzzleFlash", muzzlePos, rot);
+        SoundManager.Instance.PlaySound(currentGun.GunInfo.SoundClipID, audioSource, 1.0f);
         if (isLocalPlayer) OnFired?.Invoke();
     }
 

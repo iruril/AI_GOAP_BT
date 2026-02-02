@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using MEC;
 using Mirror;
+using Sound;
 
 [Serializable]
 public struct KDA
@@ -246,6 +247,10 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     private void TargetReceiveHitFeedback(NetworkConnection target, uint victimNetId, float damage, bool isKilled)
     {
         InGameUI.Instance?.PlayHitMark(isKilled);
+        string clipKey = isKilled ? "SFX_Hit_Heavy" : "SFX_Hit_Light";
+
+        SoundManager.Instance.PlaySound(clipKey, SoundManager.Instance.feedbackSource);
+
         DamageStackUI.Instance?.PopDamageStack(victimNetId, damage, isKilled);
     }
 
@@ -254,6 +259,7 @@ public class Stat : NetworkBehaviour, IDamageable, IChatSender
     {
         if (!isLocalPlayer) return;
         InGameUI.Instance?.ShowDamageIndicator(attackerPos);
+        SoundManager.Instance.PlaySound("SFX_Damaged", SoundManager.Instance.feedbackSource);
         CameraManager.Instance?.PlayImpulse();
     }
 

@@ -74,8 +74,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967040
-  m_fontColor: {r: 0, g: 1, b: 1, a: 1}
+    rgba: 4281479730
+  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -210,8 +210,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967040
-  m_fontColor: {r: 0, g: 1, b: 1, a: 1}
+    rgba: 4281479730
+  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1394,8 +1394,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967040
-  m_fontColor: {r: 0, g: 1, b: 1, a: 1}
+    rgba: 4281479730
+  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2748,8 +2748,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967040
-  m_fontColor: {r: 0, g: 1, b: 1, a: 1}
+    rgba: 4281479730
+  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3532,7 +3532,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3624446227549752444, guid: 14cf5ca4bbab99c46ba2e718874b25c5, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3624446227549752444, guid: 14cf5ca4bbab99c46ba2e718874b25c5, type: 3}
       propertyPath: m_Value
@@ -3823,7 +3823,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6287618408672723814, guid: e7f4a4f6a28a5e243858a3cff99040e9, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6287618408672723814, guid: e7f4a4f6a28a5e243858a3cff99040e9, type: 3}
       propertyPath: m_Value
@@ -3952,7 +3952,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7814805836178021269, guid: 06768f380ebe7c24680f105e90304013, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.50000006
       objectReference: {fileID: 0}
     - target: {fileID: 7814805836178021269, guid: 06768f380ebe7c24680f105e90304013, type: 3}
       propertyPath: m_Value
@@ -4311,6 +4311,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4786524520950036073, guid: 0a0207c1a35925f429f7f631a2219655, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7284843026262625285, guid: 0a0207c1a35925f429f7f631a2219655, type: 3}
       propertyPath: m_Name
       value: FriendListPanel
@@ -4462,7 +4466,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4518519198833034631, guid: 63b6fbfaf4b756e409d3fdf966046f1a, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4518519198833034631, guid: 63b6fbfaf4b756e409d3fdf966046f1a, type: 3}
       propertyPath: m_Value
@@ -4474,7 +4478,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6941204062032623562, guid: 63b6fbfaf4b756e409d3fdf966046f1a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -219.99998
+      value: -219.99995
       objectReference: {fileID: 0}
     - target: {fileID: 7250979011824478865, guid: 63b6fbfaf4b756e409d3fdf966046f1a, type: 3}
       propertyPath: m_Name

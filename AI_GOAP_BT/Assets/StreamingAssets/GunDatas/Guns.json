@@ -19,7 +19,8 @@
           0,
           2
         ],
-        "HeadDamageMultiplier": 1.75
+        "HeadDamageMultiplier": 1.75,
+        "SoundClipID": "SFX_Shoot_AK12"
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
@@ -46,7 +47,8 @@
           0,
           2
         ],
-        "HeadDamageMultiplier": 1.5
+        "HeadDamageMultiplier": 1.5,
+        "SoundClipID": "SFX_Shoot_MPX"
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.472, 0.017, 0.086 ],

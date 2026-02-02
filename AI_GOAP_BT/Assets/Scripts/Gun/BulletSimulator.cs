@@ -11,7 +11,6 @@ public struct BulletData
     public Vector3 Velocity;
     public Vector3 ShotOrigin;
 
-    public float Gravity;
     public float Drag;
     public float Damage;
     public float HeadMultiplier;
@@ -52,7 +51,7 @@ public struct BulletMovementJob : IJobParallelFor
 
         Vector3 prevPos = bullet.Position;
 
-        bullet.Velocity.y += bullet.Gravity * DeltaTime;
+        bullet.Velocity.y += 9.81f * DeltaTime;
         bullet.Velocity *= Mathf.Exp(-bullet.Drag * DeltaTime);
         Vector3 nextPos = prevPos + bullet.Velocity * DeltaTime;
 
@@ -61,12 +60,7 @@ public struct BulletMovementJob : IJobParallelFor
 
         Vector3 rayDir = dist > 0.00001f ? dir / dist : Vector3.forward;
 
-        QueryParameters queryParams = new QueryParameters(
-            HitMask,                        // 감지할 레이어
-            false,                          // 다중 면 충돌 여부 (총알은 보통 false)
-            QueryTriggerInteraction.Collide, // 트리거 충돌 여부 (설정에 따라 Collide로 변경 가능)
-            false                           // 뒷면 충돌 여부
-        );
+        QueryParameters queryParams = new QueryParameters(HitMask, false, QueryTriggerInteraction.Collide, false);
 
         Commands[i] = new RaycastCommand(prevPos, rayDir, queryParams, dist);
 

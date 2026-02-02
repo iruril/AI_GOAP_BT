@@ -26,6 +26,7 @@ public class GunInfo
     public List<FireMode> FireModes { get; } = new();
     public float ShotInterval { get; }
     public float HeadDamageMultiplier { get; }
+    public string SoundClipID { get; }
 
     [JsonConstructor]
     public GunInfo(float TimeToADS,
@@ -40,7 +41,8 @@ public class GunInfo
         int RPM,
         float ProjectileSpeed,
         List<FireMode> FireModes,
-        float headDamageMultiplier)
+        float headDamageMultiplier,
+        string soundClipID)
     {
         this.TimeToADS = TimeToADS;
         this.RoundDamage = RoundDamage;
@@ -60,6 +62,7 @@ public class GunInfo
 
         ShotInterval = 60f / this.RPM;
         HeadDamageMultiplier = headDamageMultiplier;
+        SoundClipID = soundClipID;
     }
 }
 
