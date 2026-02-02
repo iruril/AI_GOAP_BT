@@ -32,6 +32,7 @@ namespace Player.FSM
         public PlayerIKHandler IKManager { get; private set; }
         public CorpseGenerator CorpseSpawner { get; private set; }
         public Stat MyStat { get; private set; }
+        private FootstepPlayer footstepPlayer;
 
         [Header("점프 최대 높이")]
         [SerializeField] private float maxJumpHeight = 1f;
@@ -64,6 +65,7 @@ namespace Player.FSM
             MyStat = GetComponent<Stat>();
             GroundChecker = GetComponent<GroundChecker>();
             CorpseSpawner = GetComponent<CorpseGenerator>();
+            footstepPlayer = GetComponent<FootstepPlayer>();
 
             PlayerCC.enabled = false;
             CamController.enabled = false;
@@ -208,6 +210,7 @@ namespace Player.FSM
             float currentWeight = Anim.GetFloat(AnimHash.CrouchWeight);
 
             Anim.SetFloat(AnimHash.CrouchWeight, Mathf.SmoothDamp(currentWeight, targetWeight, ref crouchRef, 0.08f));
+            footstepPlayer.OnCrouch = currentWeight > 0.8f;
         }
 
         public void CalculateOnAirSpeed()

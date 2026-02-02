@@ -34,14 +34,14 @@
       "GunInfo": {
         "TimeToADS": 0.18,
         "RoundDamage": 24,
-        "Stability": 25,
-        "Spread": 0.3,
+        "Stability": 30,
+        "Spread": 0.25,
         "RecoilPitch": -0.5,
         "RecoilYawLeft": 0.1,
         "RecoilYawRight": 0.2,
-        "RecoilRoll": 0.25,
+        "RecoilRoll": 0.35,
         "MagazineCapacity": 35,
-        "RPM": 900,
+        "RPM": 850,
         "ProjectileSpeed": 250,
         "FireModes": [
           0,

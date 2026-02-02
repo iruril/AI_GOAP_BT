@@ -21,8 +21,38 @@ MonoBehaviour:
     m_SerializedLabels:
     - Sound-Effect
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 236167649db081f45b2f812ddb7cf9c4
+    m_Address: SFX_Footstep_Crouch_4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sound-Effect
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2c4e7d0c15b147c4f9f3c1ae3cbe3980
+    m_Address: SFX_Footstep_Normal_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sound-Effect
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 38a573c333091c144ace53a0ad21dfaf
+    m_Address: SFX_Footstep_Crouch_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sound-Effect
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 41e63aa18003eec43a6d08e3ed70d8a6
     m_Address: SFX_Hit_Heavy
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sound-Effect
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 627bbd414c3300e4a9fe0f4ab82f8325
+    m_Address: SFX_Footstep_Crouch_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sound-Effect
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8b094469d0376ee40bac0018d35a08a4
+    m_Address: SFX_Footstep_Crouch_3
     m_ReadOnly: 0
     m_SerializedLabels:
     - Sound-Effect
@@ -39,14 +69,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - Sound-Effect
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e864f4e4ceae15a4486cdf501d452eda
-    m_Address: SFX_FootStep
+  - m_GUID: e6771f1390e21d64db58f0e4276b7056
+    m_Address: SFX_Footstep_Normal_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sound-Effect
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e878be16aa42a914497fab2426671609
+    m_Address: SFX_Footstep_Normal_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - Sound-Effect
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e93d6b3938771e84daf39bca2945505c
     m_Address: SFX_Hit_Light
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sound-Effect
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f25dcc08db3993d4a94ed25dcd7acf39
+    m_Address: SFX_Footstep_Normal_4
     m_ReadOnly: 0
     m_SerializedLabels:
     - Sound-Effect

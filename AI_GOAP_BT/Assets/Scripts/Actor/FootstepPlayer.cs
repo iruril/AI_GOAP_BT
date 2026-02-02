@@ -17,6 +17,11 @@ public class FootstepPlayer : MonoBehaviour
     private float lastLeftFootStepTime;
     private float lastRightFootStepTime;
 
+    private int _stepIndex = 1;
+    private const int MaxStepIndex = 4;
+
+    public bool OnCrouch = false;
+
     void Start()
     {
         fbbik = GetComponent<FullBodyBipedIK>(); 
@@ -69,7 +74,15 @@ public class FootstepPlayer : MonoBehaviour
     public void FootStep()
     {
         if (audioSource != null) audioSource.pitch = Random.Range(0.95f, 1.05f);
-        SoundManager.Instance.PlaySound("SFX_FootStep", audioSource);
+
+        string soundKey = OnCrouch 
+            ? $"SFX_Footstep_Crouch_{_stepIndex}" 
+            : $"SFX_Footstep_Normal_{_stepIndex}";
+
+        SoundManager.Instance.PlaySound(soundKey, audioSource);
+
+        _stepIndex++;
+        if (_stepIndex > MaxStepIndex) _stepIndex = 1;
     }
 
 #if UNITY_EDITOR
