@@ -76,8 +76,6 @@ public class BulletSimulator : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private int maxBullets = 2000;
     [SerializeField] private int maxHitsPerBullet = 4;
-
-    [Header("Masks")]
     [SerializeField] private LayerMask hitMask;   // 벽, 캐릭터 피격 박스
     [SerializeField] private LayerMask grazeMask; // 스침 감지용 박스
 
@@ -87,7 +85,6 @@ public class BulletSimulator : MonoBehaviour
 
     private Bullet[] _visuals;
     private Stack<int> _freeIndices;
-    
     private List<int> _activeIndices;
 
     private void Awake()
@@ -97,7 +94,6 @@ public class BulletSimulator : MonoBehaviour
         _bulletDatas = new NativeArray<BulletData>(maxBullets, Allocator.Persistent);
         _commands = new NativeArray<RaycastCommand>(maxBullets, Allocator.Persistent);
         _results = new NativeArray<RaycastHit>(maxBullets * maxHitsPerBullet, Allocator.Persistent);
-
         _visuals = new Bullet[maxBullets];
         _freeIndices = new Stack<int>(maxBullets); 
         _activeIndices = new List<int>(maxBullets);
@@ -110,11 +106,7 @@ public class BulletSimulator : MonoBehaviour
 
     public int RegisterBullet(Bullet visual, BulletData data)
     {
-        if (_freeIndices.Count == 0)
-        {
-            Debug.LogWarning("Bullet limit reached!");
-            return -1;
-        }
+        if (_freeIndices.Count == 0) return -1;
 
         int index = _freeIndices.Pop();
 
@@ -123,7 +115,6 @@ public class BulletSimulator : MonoBehaviour
 
         _bulletDatas[index] = data;
         _visuals[index] = visual;
-
         _activeIndices.Add(index);
 
         return index;
@@ -131,18 +122,23 @@ public class BulletSimulator : MonoBehaviour
 
     public void UnregisterBullet(int index)
     {
-        if (index < 0 || index >= maxBullets) return; 
+        if (index < 0 || index >= maxBullets) return;
         if (!_bulletDatas.IsCreated) return;
 
         BulletData data = _bulletDatas[index];
-        if (!data.IsActive) return;
+        if (data.BulletIndex == -1) return;
 
         data.IsActive = false;
+        data.BulletIndex = -1;
         _bulletDatas[index] = data;
-        _visuals[index] = null;
+
+        if (_visuals[index] != null)
+        {
+            _visuals[index].Deactivate();
+            _visuals[index] = null;
+        }
 
         _freeIndices.Push(index);
-
         _activeIndices.Remove(index);
     }
 
@@ -175,17 +171,7 @@ public class BulletSimulator : MonoBehaviour
         for (int i = _activeIndices.Count - 1; i >= 0; i--)
         {
             int bulletIndex = _activeIndices[i];
-
             BulletData data = _bulletDatas[bulletIndex];
-
-            if (!data.IsActive)
-            {
-                if (_visuals[bulletIndex] != null)
-                {
-                    _visuals[bulletIndex].Deactivate();
-                }
-                continue;
-            }
 
             if (_visuals[bulletIndex] == null)
             {
@@ -193,8 +179,13 @@ public class BulletSimulator : MonoBehaviour
                 continue;
             }
 
-            int resultStartIndex = bulletIndex * maxHitsPerBullet;
+            if (!data.IsActive)
+            {
+                UnregisterBullet(bulletIndex);
+                continue;
+            }
 
+            int resultStartIndex = bulletIndex * maxHitsPerBullet;
             float closestStopDist = float.MaxValue;
             RaycastHit stopHit = default;
             bool hasStopHit = false;
@@ -219,12 +210,10 @@ public class BulletSimulator : MonoBehaviour
             }
 
             bool bulletStopped = false;
-
             for (int h = 0; h < maxHitsPerBullet; h++)
             {
                 RaycastHit hit = _results[resultStartIndex + h];
                 if (hit.collider == null) continue;
-
                 if (hasStopHit && hit.distance > closestStopDist + 0.001f) continue;
 
                 if (IsInLayerMask(hit.collider.gameObject.layer, grazeMask))
@@ -236,6 +225,7 @@ public class BulletSimulator : MonoBehaviour
             if (hasStopHit)
             {
                 _visuals[bulletIndex].OnHit(stopHit);
+                UnregisterBullet(bulletIndex);
                 bulletStopped = true;
             }
 

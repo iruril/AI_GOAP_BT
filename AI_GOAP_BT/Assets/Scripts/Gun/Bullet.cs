@@ -36,14 +36,10 @@ public class Bullet : MonoBehaviour
 
     private void OnDisable()
     {
-        if (_simulationIndex != -1 && BulletSimulator.Instance != null)
-        {
-            BulletSimulator.Instance.UnregisterBullet(_simulationIndex);
-            _simulationIndex = -1;
-        }
-
         initialized = false;
         owner = null;
+        _simulationIndex = -1;
+
         BulletPool.ReturnToPool(gameObject);
     }
 
@@ -121,16 +117,13 @@ public class Bullet : MonoBehaviour
     public bool IsValidHit(RaycastHit hit)
     {
         int layer = hit.collider.gameObject.layer;
-
         if (IsFriendly(layer)) return false;
-
         return true;
     }
 
     public void OnGraze(RaycastHit hit)
     {
         if (IsFriendly(hit.collider.gameObject.layer)) return;
-
         if (hit.collider.TryGetComponent<GrazeListener>(out var listener))
         {
             listener.OnGraze(shotOrigin, friendLayers);
@@ -140,7 +133,6 @@ public class Bullet : MonoBehaviour
     public void OnHit(RaycastHit hit)
     {
         ProcessDamageHit(hit.collider, hit.point, hit.normal);
-        Deactivate();
     }
 
     private void ProcessDamageHit(Collider target, Vector3 hitPoint, Vector3 hitNormal)
