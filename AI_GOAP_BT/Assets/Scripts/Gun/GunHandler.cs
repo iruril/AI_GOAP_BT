@@ -7,6 +7,14 @@ using Mirror;
 using System;
 using Sound;
 
+[System.Serializable]
+public struct HitInfo
+{
+    public Vector3 Point;
+    public Quaternion Rotation;
+    public string VfxName;
+}
+
 public class GunHandler : NetworkBehaviour
 {
     public event Action<int> OnRoundChanged;
@@ -38,8 +46,9 @@ public class GunHandler : NetworkBehaviour
     private Dictionary<string, (Gun gun, GameObject instance)> gunHistory = new();
     private Dictionary<string, int> roundHistory = new();
 
-    private bool pendingFire = false; 
-    
+    private bool pendingFire = false;
+    private List<HitInfo> hitBuffer = new List<HitInfo>();
+
     // 플레이어용: 클라이언트가 계산한 muzzle 정보
     private Vector3 clientMuzzlePos;
     private Vector3 clientMuzzleDir;
@@ -49,6 +58,8 @@ public class GunHandler : NetworkBehaviour
     [SyncVar(hook = nameof(OnRoundUpdate))] public int CurrentRounds = 0;
     [SyncVar] public bool OnReload;
     CoroutineHandle reloadHandle;
+
+    CoroutineHandle spawnBatchHandle;
 
     RoomManager rm;
 
@@ -71,6 +82,7 @@ public class GunHandler : NetworkBehaviour
     {
         Timing.KillCoroutines(layerIkHandle);
         Timing.KillCoroutines(reloadHandle);
+        Timing.KillCoroutines(spawnBatchHandle);
     }
 
     public override void OnStopClient()
@@ -82,6 +94,17 @@ public class GunHandler : NetworkBehaviour
     {
         if (!isServer) return;
         SpreadHandle();
+    }
+
+    void FixedUpdate()
+    {
+        if (!isServer) return;
+
+        if (hitBuffer.Count > 0)
+        {
+            RpcSpawnBatchHitEffects(hitBuffer.ToArray());
+            hitBuffer.Clear();
+        }
     }
 
     [Server]
@@ -317,13 +340,43 @@ public class GunHandler : NetworkBehaviour
     [Server]
     public void ServerReportHit(Vector3 point, Quaternion rot, string vfxName)
     {
-        RpcSpawnHitEffect(point, rot, vfxName);
+        hitBuffer.Add(new HitInfo
+        {
+            Point = point,
+            Rotation = rot,
+            VfxName = vfxName
+        });
     }
 
     [ClientRpc]
-    private void RpcSpawnHitEffect(Vector3 point, Quaternion rot, string vfxName)
+    private void RpcSpawnBatchHitEffects(HitInfo[] hits)
     {
-        EffectPoolManager.SpawnFromPool(vfxName, point, rot);
+        if (hits.Length > 3)
+        {
+            spawnBatchHandle = Timing.RunCoroutine(SpawnBatchRoutine(hits));
+        }
+        else
+        {
+            for (int i = 0; i < hits.Length; i++)
+            {
+                SpawnEffect(hits[i]);
+            }
+        }
+    }
+
+    private IEnumerator<float> SpawnBatchRoutine(HitInfo[] hits)
+    {
+        for (int i = 0; i < hits.Length; i++)
+        {
+            SpawnEffect(hits[i]);
+
+            if (i % 3 == 0) yield return Timing.WaitForOneFrame;
+        }
+    }
+
+    private void SpawnEffect(HitInfo hit)
+    {
+        EffectPoolManager.SpawnFromPool(hit.VfxName, hit.Point, hit.Rotation);
     }
 
     public void OnDead()

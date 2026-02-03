@@ -87,6 +87,8 @@ public class BulletSimulator : MonoBehaviour
 
     private Bullet[] _visuals;
     private Stack<int> _freeIndices;
+    
+    private List<int> _activeIndices;
 
     private void Awake()
     {
@@ -97,7 +99,8 @@ public class BulletSimulator : MonoBehaviour
         _results = new NativeArray<RaycastHit>(maxBullets * maxHitsPerBullet, Allocator.Persistent);
 
         _visuals = new Bullet[maxBullets];
-        _freeIndices = new Stack<int>(maxBullets);
+        _freeIndices = new Stack<int>(maxBullets); 
+        _activeIndices = new List<int>(maxBullets);
 
         for (int i = maxBullets - 1; i >= 0; i--)
         {
@@ -121,6 +124,8 @@ public class BulletSimulator : MonoBehaviour
         _bulletDatas[index] = data;
         _visuals[index] = visual;
 
+        _activeIndices.Add(index);
+
         return index;
     }
 
@@ -137,6 +142,8 @@ public class BulletSimulator : MonoBehaviour
         _visuals[index] = null;
 
         _freeIndices.Push(index);
+
+        _activeIndices.Remove(index);
     }
 
     private void FixedUpdate()
@@ -165,27 +172,28 @@ public class BulletSimulator : MonoBehaviour
 
     private void ProcessResults()
     {
-        for (int i = 0; i < maxBullets; i++)
+        for (int i = _activeIndices.Count - 1; i >= 0; i--)
         {
-            BulletData data = _bulletDatas[i]; 
+            int bulletIndex = _activeIndices[i];
+
+            BulletData data = _bulletDatas[bulletIndex];
+
             if (!data.IsActive)
             {
-                if (_visuals[i] != null)
+                if (_visuals[bulletIndex] != null)
                 {
-                    _visuals[i].Deactivate();
+                    _visuals[bulletIndex].Deactivate();
                 }
                 continue;
             }
 
-            if (_visuals[i] == null)
+            if (_visuals[bulletIndex] == null)
             {
-                data.IsActive = false;
-                _bulletDatas[i] = data;
-                _freeIndices.Push(i);
+                UnregisterBullet(bulletIndex);
                 continue;
             }
 
-            int resultStartIndex = i * maxHitsPerBullet;
+            int resultStartIndex = bulletIndex * maxHitsPerBullet;
 
             float closestStopDist = float.MaxValue;
             RaycastHit stopHit = default;
@@ -198,7 +206,7 @@ public class BulletSimulator : MonoBehaviour
 
                 if (IsInLayerMask(hit.collider.gameObject.layer, hitMask))
                 {
-                    if (_visuals[i].IsValidHit(hit))
+                    if (_visuals[bulletIndex].IsValidHit(hit))
                     {
                         if (hit.distance < closestStopDist)
                         {
@@ -221,19 +229,19 @@ public class BulletSimulator : MonoBehaviour
 
                 if (IsInLayerMask(hit.collider.gameObject.layer, grazeMask))
                 {
-                    _visuals[i].OnGraze(hit);
+                    _visuals[bulletIndex].OnGraze(hit);
                 }
             }
 
             if (hasStopHit)
             {
-                _visuals[i].OnHit(stopHit);
+                _visuals[bulletIndex].OnHit(stopHit);
                 bulletStopped = true;
             }
 
             if (!bulletStopped)
             {
-                _visuals[i].SyncLogicPosition(data.Position);
+                _visuals[bulletIndex].SyncLogicPosition(data.Position);
             }
         }
     }
