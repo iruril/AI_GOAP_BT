@@ -167,8 +167,15 @@ public class BulletSimulator : MonoBehaviour
     {
         for (int i = 0; i < maxBullets; i++)
         {
-            BulletData data = _bulletDatas[i];
-            if (!data.IsActive) continue;
+            BulletData data = _bulletDatas[i]; 
+            if (!data.IsActive)
+            {
+                if (_visuals[i] != null)
+                {
+                    _visuals[i].Deactivate();
+                }
+                continue;
+            }
 
             if (_visuals[i] == null)
             {
