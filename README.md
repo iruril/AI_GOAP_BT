@@ -198,7 +198,7 @@ private void OnLobbyEntered(LobbyEnter_t callback) //로비 입장 성공 시 �
     * 따라서 **Raycast 및 Physics 연산** 부분에 필요한 데이터들을 구조체로 정의한 후 **NativeContainer**로 관리하고, 메인스레드의 연산 작업을 **Job System**과 **Burst**로 분리하는 하이브리드 방식을 채택했습니다.
 * **Solution (해결 방안):**
     * 총알의 로직을 `Struct` 기반 데이터로 변환하여 메모리 레이아웃을 최적화했습니다.
-    * 이동 및 충돌 처리를 `IJobParallelFor`로 병렬화하여, 물리 연산 비용을 평균 **7.80ms → 0.20ms**로 단축했습니다.
+    * 이동 및 충돌 처리를 `IJobParallelFor`로 병렬화하여, 대규모 투사체를 무리없이 실시간 처리할 수 있도록 했습니다.
 
 ### 2. AI 설계: 전략(GOAP)과 전술(BT)의 분리
 * **Problem (문제 상황):**
@@ -230,12 +230,31 @@ private void OnLobbyEntered(LobbyEnter_t callback) //로비 입장 성공 시 �
 
 | 최적화 항목 | 최적화 전 (MonoBehaviour) | 최적화 후 (Job + Burst) | 개선 결과 |
 |:---:|:---:|:---:|:---|
-| **CPU 점유 시간** | 7.80 ms (Main Thread) | **0.20 ms (Worker Thread)** | **약 97% 부하 감소** |
+| **Frame Rate** | 6.7 ~ 75 FPS (Unstable) | ** 144 FPS (Stable)** | **약 50% 부하 감소 및 안정화** |
 | **처리 방식** | 직렬 처리 (Sequential) | **병렬 처리 (Parallel)** | 멀티코어 활용 극대화 |
 | **메모리 관리** | GC Allocation 발생 | **NativeArray (Zero Alloc)** | GC Spike 제거 |
 
-> *테스트 환경: 연사력 850rpm 총기 사용, 8 vs 8 점령전 진행 기준.*
+> *테스트 환경: 탄속 250m/s의 Bullet을 0.1초 간격으로 사방으로 180개 지속적으로 발사.*
+<br>
 
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/abef75ea-4c37-429d-b3fa-96af21fca74c" alt="Before Optimization" width="450px" />
+      <br />
+      <strong>📉 최적화 전 (Before)</strong><br>
+      FPS: 6.7 (CPU: 149.6ms) - 불안정
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/85413d9b-682f-47d8-bd6e-2f7624d20224" alt="After Optimization" width="450px" />
+      <br />
+      <strong>📈 최적화 후 (After)</strong><br>
+      FPS: 144 (CPU: 6.9ms) - 안정적
+    </td>
+  </tr>
+</table>
+
+</br>
 ---
 
 ## 📸 Demo
