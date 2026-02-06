@@ -5,7 +5,7 @@
 
 > **"Steamworks.NET과 Mirror를 활용해 제작한 P2P 멀티플레이어 전술 슈팅 TPS 게임"**
 >
-> **Unity DOTS**를 활용한 **대규모 물리 투사체 연산**, 확장 가능한 **커스텀 GOAP**시스템이 적용된 AI(BOT), 그리고 **Mirror** 기반의 **Host-Authoritative**구조의 공정성 및 **Steam P2P**를 통한 안정적인 매치메이킹 환경 및 **Unity Addressables**와 **LRU 캐싱** 기반의 사운드 리소스 관리 시스템을 통합한 자체 구현 게임 프로젝트입니다.
+> **Unity DOTS**를 활용한 **대규모 물리 투사체 연산**, 확장 가능한 **커스텀 GOAP** 시스템이 적용된 AI(BOT), 그리고 **Mirror** 기반의 **Host-Authoritative** 구조의 공정성 및 **Steam P2P**를 통한 안정적인 매치메이킹 환경을 제공합니다. 또한 **Unity Addressables**와 **LRU 캐싱** 기반의 사운드 리소스 관리 시스템을 통합하여 최적화된 자체 구현 게임 프로젝트입니다.
 
 ---
 
@@ -17,7 +17,7 @@
     - [3. Resource Management (LRU Cache)](#3-resource-management-lru-cache)
     - [4. P2P Networking (Steamworks & Mirror)](#4-p2p-networking-steamworks--mirror)
 3. [기술적 도전 및 해결 (Troubleshooting & Optimization)](#-기술적-도전-및-해결-troubleshooting--optimization)
-    - [1. Bullet 물리 및 판정 연산 최적화: 왜 독립적인 Bullet Simulation인가?](#1-Bullet-물리-및-판정-연산-최적화-왜-독립적인-Bullet-Simulation인가)
+    - [1. Bullet 물리 및 판정 연산 최적화: 왜 독립적인 Bullet Simulation인가?](#1-bullet-물리-및-판정-연산-최적화-왜-독립적인-bullet-simulation인가)
     - [2. AI 설계: 전략(GOAP)과 전술(BT)의 분리](#2-ai-설계-전략goap과-전술bt의-분리)
     - [3. 네트워크 대역폭: Packet Batching](#3-네트워크-대역폭-packet-batching)
 4. [성능 최적화 성과 (Performance Optimization)](#-성능-최적화-성과-performance-optimization)
@@ -26,7 +26,7 @@
 ---
 
 ## 🚀 프로젝트 개요 (Overview)
-단순한 슈팅 메커니즘 구현을 넘어, 실제 유저들이 즐길 수 있는 **PvP/PvE 멀티플레이어 환경**을 구축하는 것을 목표로 했습니다. 2,000개 이상의 발사체가 오가는 전장에서도 60FPS를 방어하며, 봇(AI)과 플레이어가 함께 전투하는 하이브리드 매치를 목표합니다.
+단순한 슈팅 메커니즘 구현을 넘어, 실제 유저들이 즐길 수 있는 **PvP/PvE 멀티플레이어 환경**을 구축하는 것을 목표로 했습니다. 2,000개 이상의 발사체가 오가는 전장에서도 60FPS를 방어하며, 봇(AI)과 플레이어가 함께 전투하는 하이브리드 매치를 지향합니다.
 
 ### 🎯 주요 목표
 * **Steam Matchmaking:** 스팀 친구 초대 및 로비 시스템을 통한 간편한 P2P 접속.
@@ -40,7 +40,7 @@
 
 ### 1. Hybrid AI System (GOAP + BT + FSM)
 단일 AI 알고리즘의 한계를 극복하기 위해, 역할에 따라 세 가지 레이어로 분리된 **계층적 AI 아키텍처**를 구축했습니다.
-GOAP의 경우, 필요한 기능만을 구현하기 위해 직접 Generic 형태로 Gaol, Action, Brain을 구축했습니다.
+GOAP의 경우, 필요한 기능만을 구현하기 위해 직접 Generic 형태로 Goal, Action, Brain을 구축했습니다.
 
 * **Layer 1: Strategy (Custom GOAP)**
     * **역할:** 최상위 의사 결정 (Root Decision Making).
@@ -76,8 +76,8 @@ protected override void RegisterGoals()
 protected override void RegisterActions()
 {
     // GoapAction Class를 상속해 구현한 Action을 등록
-    Actions.Add(AssualtAction.IDLE, new IdleAction(this, AssualtAction.IDLE, 50));
-    Actions.Add(AssualtAction.MOVE_TO_CAPTURE, new MoveToCaptureAction(this, AssualtAction.MOVE_TO_CAPTURE, 20));
+    Actions.Add(AssaultAction.IDLE, new IdleAction(this, AssaultAction.IDLE, 50));
+    Actions.Add(AssaultAction.MOVE_TO_CAPTURE, new MoveToCaptureAction(this, AssaultAction.MOVE_TO_CAPTURE, 20));
 
     /* ... */
 }
@@ -107,7 +107,7 @@ public struct BulletMovementJob : IJobParallelFor
     {
         BulletData bullet = Bullets[i]; // 데이터 지향 설계: 객체 참조 없이 순수 데이터(struct)만으로 연산
 
-        /* ... */
+        /* ... 물리 연산 ... */
 
         // Raycast 명령 생성 (실제 Raycast는 메인 스레드 병목 없이 엔진 내부에서 일괄 처리됨)
         QueryParameters queryParams = new QueryParameters(HitMask, false, QueryTriggerInteraction.Collide, false);
@@ -160,7 +160,7 @@ private void CleanupLRUCache()
 
 ### 4. P2P Networking (Steamworks & Mirror)
 * **Steam Integration:** `SteamLobby` 클래스를 통해 로비 생성, 데이터 동기화, 친구 초대 기능을 완벽하게 지원합니다.
-* **Host Authority:** 데미지 판정, AI 로직 등 핵심 연산은 호스트(서버)에서만 수행하고 결과만 클라이언트에 `[SyncVar]`에 바인딩된 메소드를 통해 복제(Replicate)됩니다.
+* **Host Authority:** 데미지 판정, AI 로직 등 핵심 연산은 호스트(서버)에서만 수행하고 결과만 클라이언트에 `[SyncVar]`나 `[ClientRpc]`에 바인딩된 메소드를 통해 동기화됩니다.
 
 ```csharp
 // SteamLobby.cs (Partial)
@@ -207,18 +207,18 @@ private void OnLobbyEntered(LobbyEnter_t callback) //로비 입장 성공 시 �
     * **"큰 그림은 GOAP가 그리고, 디테일은 BT가 맡도록 하면 어떨까?"**
     * 상황에 따른 유동적인 목표 설정은 GOAP가 가장 강력하므로 이를 최상위 두뇌(Brain)로 사용하고, 정해진 절차대로 움직여야 하는 전투 행동은 BT에 위임하기로 결정했습니다.
 * **Solution (해결 방안):**
-    * **Custom GOAP:** 현재 Sensor의 상태(HP, 탄약, 거리)를 기반으로 `Combat`, `Cover`, `Reload`, `Capture` 중 가장 비용이 낮은 `Action`을 선택.
-    * **Behavior Designer:** `Combat` 액션이 선택되면, BT가 활성화되어 `Fire`(사격), `Positioning`(위치 선정) 등 세밀한 의사결정을 수행.
-    * **Custom FSM:** AI의 의사결정에 맞추어 애니메이션을 자연스럽게 연동하도록 적합한 State를 선택.
+    * **Custom GOAP:** 현재 Sensor의 상태(HP, 탄약, 거리)를 기반으로 `Combat`, `Cover`, `Reload`, `Capture` 중 가장 비용이 낮은 `Action`을 선택합니다.
+    * **Behavior Designer:** `Combat` 액션이 선택되면, BT가 활성화되어 `Fire`(사격), `Positioning`(위치 선정) 등 세밀한 의사결정을 수행합니다.
+    * **Custom FSM:** AI의 의사결정에 맞추어 애니메이션을 자연스럽게 연동하도록 적합한 State를 선택합니다.
     * 이 구조를 통해 AI 로직의 가독성과 확장성을 동시에 확보했습니다.
 
 ### 3. 네트워크 대역폭: Packet Batching
 * **Problem (문제 상황):**
-    * 만일 다수의 탄환을 한꺼번에 발사하는 총기가 추가된다면, 각 펠릿마다 개별적인 RPC를 호출하게 되므로 순간적으로 네트워크 패킷량이 폭주할 것으로 예측되었습니다.
+    * 만일 다수의 탄환을 한꺼번에 발사하는 총기가 추가된다면, 각 펠릿(Pellet)마다 개별적인 RPC를 호출하게 되므로 순간적으로 네트워크 패킷량이 폭주할 것으로 예측되었습니다.
 * **Decision (의사결정):**
     * 1프레임 내에서 발생한 사건들을 개별 전송할 경우 **패킷 헤더 오버헤드가 실제 데이터보다 커지는 비효율**이 발생합니다. 0.02초 미만의 배칭 지연은 사용자 경험(UX)을 해치지 않으므로, **'즉시성'보다는 '통신 효율성'**을 선택했습니다.
 * **Solution (해결 방안):**
-    * **Network Batching System:** `FixedUpdate` 주기 동안 발생한 모든 타격 이벤트를 버퍼에 수집하고, 프레임 말단에 **단 하나의 배열(Array) 패킷**으로 직렬화하여 전송했습니다. 이를 통해 네트워크 호출 빈도를 (1/탄환 수)로 줄여 대역폭 낭비를 막았습니다.
+    * **Network Batching System:** `FixedUpdate` 주기 동안 발생한 모든 타격 이벤트를 버퍼에 수집하고, 프레임 말단에 **단 하나의 배열(Array) 패킷**으로 직렬화하여 전송했습니다. 이를 통해 네트워크 호출 빈도를 (1/탄환 수)로 줄여 잠재적인 대역폭 낭비를 막았습니다.
 
 ---
 
@@ -249,10 +249,10 @@ private void OnLobbyEntered(LobbyEnter_t callback) //로비 입장 성공 시 �
 
 1. **빌드 및 설정 (Build & Setup)**
    - 프로젝트를 빌드합니다.
-   - 빌드된 폴더 안에 steam_appid.txt를 생성한 후, 내용에 '480'을 기입한 후 저장합니다.
+   - 빌드된 폴더 안에 `steam_appid.txt`를 생성한 후, 내용에 `480`을 기입한 후 저장합니다.
 
 2. **Steam 외부게임 등록 (Register .exe on Steam Client)**
-   - Steam 클라이언트 좌하단의 '외부 게임 등록'을 통해 빌드된 폴더 안의 .exe를 등록합니다.
+   - Steam 클라이언트 좌하단의 '외부 게임 등록'을 통해 빌드된 폴더 안의 `.exe`를 등록합니다.
    - 내부적으로 'Spacewar'라는 이름의 게임으로 Steam에 인식됩니다.
    
 3. **실행 (Start)**
