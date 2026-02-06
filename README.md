@@ -40,7 +40,7 @@
 
 <p align="center">
   <a href="https://youtu.be/ckruTif4FM8?si=Z2bvFnbgOAnGd9cy">
-    <img src="http://img.youtube.com/vi/Z2bvFnbgOAnGd9cy/0.jpg" width="60%">
+    <img src="http://img.youtube.com/vi/ckruTif4FM8/0.jpg" width="60%">
   </a>
   <br>
   <em>Click to Watch Demo Video</em>
