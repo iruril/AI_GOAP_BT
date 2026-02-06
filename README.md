@@ -10,18 +10,18 @@
 ---
 
 ## 목차
-1. [프로젝트 개요 (Overview)](#-프로젝트-개요-overview)
-2. [핵심 기술 및 구현 (Key Implementation)](#-핵심-기술-및-구현-key-implementation)
+1. [프로젝트 개요 (Overview)](#프로젝트-개요-overview)
+2. [핵심 기술 및 구현 (Key Implementation)](#핵심-기술-및-구현-key-implementation)
     - [1. Hybrid AI System (GOAP + BT + FSM)](#1-hybrid-ai-system-goap--bt--fsm)
     - [2. Data-Oriented Bullet Simulation (Job & Burst)](#2-data-oriented-bullet-simulation-job--burst)
     - [3. Resource Management (LRU Cache)](#3-resource-management-lru-cache)
     - [4. P2P Networking (Steamworks & Mirror)](#4-p2p-networking-steamworks--mirror)
-3. [기술적 도전 및 해결 (Troubleshooting & Optimization)](#-기술적-도전-및-해결-troubleshooting--optimization)
+3. [기술적 도전 및 해결 (Troubleshooting & Optimization)](#기술적-도전-및-해결-troubleshooting--optimization)
     - [1. Bullet 물리 및 판정 연산 최적화: 왜 독립적인 Bullet Simulation인가?](#1-bullet-물리-및-판정-연산-최적화-왜-독립적인-bullet-simulation인가)
     - [2. AI 설계: 전략(GOAP)과 전술(BT)의 분리](#2-ai-설계-전략goap과-전술bt의-분리)
     - [3. 네트워크 대역폭: Packet Batching](#3-네트워크-대역폭-packet-batching)
-4. [성능 최적화 성과 (Performance Optimization)](#-성능-최적화-성과-performance-optimization)
-5. [설치 및 사용법 (Installation)](#-설치-및-사용법-installation)
+4. [성능 최적화 성과 (Performance Optimization)](#성능-최적화-성과-performance-optimization)
+5. [설치 및 사용법 (Installation)](#설치-및-사용법-installation)
 
 ---
 
