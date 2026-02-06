@@ -36,6 +36,18 @@
 
 ---
 
+## Demo
+
+<p align="center">
+  <a href="https://youtu.be/ckruTif4FM8?si=Z2bvFnbgOAnGd9cy">
+    <img src="http://img.youtube.com/vi/Z2bvFnbgOAnGd9cy/0.jpg" width="60%">
+  </a>
+  <br>
+  <em>Click to Watch Demo Video</em>
+</p>
+
+---
+
 ## 핵심 기술 및 구현 (Key Implementation)
 
 ### 1. Hybrid AI System (GOAP + BT + FSM)
@@ -255,13 +267,6 @@ private void OnLobbyEntered(LobbyEnter_t callback) //로비 입장 성공 시 �
 </table>
 
 </br>
-
----
-
-## 📸 Demo
-
-### 플레이 영상
-[![Video Label](http://img.youtube.com/vi/J1d0SdvNlTk/0.jpg)](https://www.youtube.com/watch?v=J1d0SdvNlTk)
 
 ---
 
