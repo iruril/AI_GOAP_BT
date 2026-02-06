@@ -279,6 +279,7 @@ private void OnLobbyEntered(LobbyEnter_t callback) //로비 입장 성공 시 �
 2. **Steam 외부게임 등록 (Register .exe on Steam Client)**
    - Steam 클라이언트 좌하단의 '외부 게임 등록'을 통해 빌드된 폴더 안의 `.exe`를 등록합니다.
    - 내부적으로 'Spacewar'라는 이름의 게임으로 Steam에 인식됩니다.
+   - - *(참고: 480은 Steamworks 테스트용 공용 AppID인 'Spacewar'의 ID입니다.)*
    
 3. **실행 (Start)**
    - 라이브러리에 'Spacewar'과 'AI_GOAP_BT'라는 이름의 게임이 두가지 추가되었을 것입니다.
