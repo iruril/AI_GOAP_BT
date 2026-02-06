@@ -1,4 +1,4 @@
-# 🔫 Tactical Operations: P2P Multiplayer PVP Shooter
+# Tactical Operations: P2P Multiplayer PVP Shooter
 
 ![Unity](https://img.shields.io/badge/Unity-6000.0%2B-black?logo=unity) ![C#](https://img.shields.io/badge/Language-C%23-blue?style=flat&logo=csharp) ![Mirror](https://img.shields.io/badge/Network-Mirror-green?style=flat) ![Steamworks](https://img.shields.io/badge/Platform-Steamworks-blue?style=flat&logo=steam) ![JobSystem](https://img.shields.io/badge/Tech-Job%20System-red)
 ![BurstCompile](https://img.shields.io/badge/Tech-Burst%20Compile-red) ![Async](https://img.shields.io/badge/Tech-Addressables-blue) ![Async](https://img.shields.io/badge/Tech-Async%2FTask-blueviolet)
@@ -9,7 +9,7 @@
 
 ---
 
-## 📖 목차
+## 목차
 1. [프로젝트 개요 (Overview)](#-프로젝트-개요-overview)
 2. [핵심 기술 및 구현 (Key Implementation)](#-핵심-기술-및-구현-key-implementation)
     - [1. Hybrid AI System (GOAP + BT + FSM)](#1-hybrid-ai-system-goap--bt--fsm)
@@ -25,10 +25,10 @@
 
 ---
 
-## 🚀 프로젝트 개요 (Overview)
+## 프로젝트 개요 (Overview)
 단순한 슈팅 메커니즘 구현을 넘어, 실제 유저들이 즐길 수 있는 **PvP/PvE 멀티플레이어 환경**을 구축하는 것을 목표로 했습니다. 2,000개 이상의 발사체가 오가는 전장에서도 60FPS를 방어하며, 봇(AI)과 플레이어가 함께 전투하는 하이브리드 매치를 지향합니다.
 
-### 🎯 주요 목표
+### 주요 목표
 * **Steam Matchmaking:** 스팀 친구 초대 및 로비 시스템을 통한 간편한 P2P 접속.
 * **High Performance Projectile:** 실시간 게임플레이를 저해하지 않는 정밀한 고성능 투사체.
 * **Host Authority:** 클라이언트 변조 방지를 위한 서버 권한 검증 구조 (데미지, AI, 탄약 등).
@@ -36,7 +36,7 @@
 
 ---
 
-## 🛠 핵심 기술 및 구현 (Key Implementation)
+## 핵심 기술 및 구현 (Key Implementation)
 
 ### 1. Hybrid AI System (GOAP + BT + FSM)
 단일 AI 알고리즘의 한계를 극복하기 위해, 역할에 따라 세 가지 레이어로 분리된 **계층적 AI 아키텍처**를 구축했습니다.
@@ -186,7 +186,7 @@ private void OnLobbyEntered(LobbyEnter_t callback) //로비 입장 성공 시 �
 ```
 ---
 
-## 🧠 기술적 도전 및 해결 (Troubleshooting & Optimization)
+## 기술적 도전 및 해결 (Troubleshooting & Optimization)
 
 ### 1. Bullet 물리 및 판정 연산 최적화: 왜 독립적인 Bullet Simulation인가?
 * **Problem (문제 상황):**
@@ -216,21 +216,21 @@ private void OnLobbyEntered(LobbyEnter_t callback) //로비 입장 성공 시 �
 * **Problem (문제 상황):**
     * 만일 다수의 탄환을 한꺼번에 발사하는 총기가 추가된다면, 각 펠릿(Pellet)마다 개별적인 RPC를 호출하게 되므로 순간적으로 네트워크 패킷량이 폭주할 것으로 예측되었습니다.
 * **Decision (의사결정):**
-    * 1프레임 내에서 발생한 사건들을 개별 전송할 경우 **패킷 헤더 오버헤드가 실제 데이터보다 커지는 비효율**이 발생합니다. 0.02초 미만의 배칭 지연은 사용자 경험(UX)을 해치지 않으므로, **'즉시성'보다는 '통신 효율성'**을 선택했습니다.
+    * 1프레임 내에서 발생한 사건들을 개별 전송할 경우 **패킷 헤더 오버헤드가 실제 데이터보다 커지는 비효율**이 발생합니다. 0.02초 미만의 배칭 지연은 사용자 경험(UX)을 해치지 않으므로, **'즉시성'보다는 '통신 효율성'** 을 선택했습니다.
 * **Solution (해결 방안):**
     * **Network Batching System:** `FixedUpdate` 주기 동안 발생한 모든 타격 이벤트를 버퍼에 수집하고, 프레임 말단에 **단 하나의 배열(Array) 패킷**으로 직렬화하여 전송했습니다. 이를 통해 네트워크 호출 빈도를 (1/탄환 수)로 줄여 잠재적인 대역폭 낭비를 막았습니다.
 
 ---
 
-## ⚡ 성능 최적화 성과 (Performance Optimization)
+## 성능 최적화 성과 (Performance Optimization)
 
 가장 큰 성능 병목이었던 **물리 시뮬레이션** 파트에서 `Job System`과 `Burst Compiler` 도입 전후를 비교한 결과입니다.
 
-### 🧪 Hybrid Data-Oriented Bullet Simulation Benchmark
+### Hybrid Data-Oriented Bullet Simulation Benchmark
 
 | 최적화 항목 | 최적화 전 (MonoBehaviour) | 최적화 후 (Job + Burst) | 개선 결과 |
 |:---:|:---:|:---:|:---|
-| **Frame Rate** | 6.7 ~ 75 FPS (Unstable) | ** 144 FPS (Stable)** | **약 50% 부하 감소 및 안정화** |
+| **Frame Rate** | 6.7 ~ 75 FPS (Unstable) | **144 FPS (Stable)** | **약 50% 부하 감소 및 안정화** |
 | **처리 방식** | 직렬 처리 (Sequential) | **병렬 처리 (Parallel)** | 멀티코어 활용 극대화 |
 | **메모리 관리** | GC Allocation 발생 | **NativeArray (Zero Alloc)** | GC Spike 제거 |
 
@@ -265,7 +265,7 @@ private void OnLobbyEntered(LobbyEnter_t callback) //로비 입장 성공 시 �
 
 ---
 
-## 📂 설치 및 사용법 (Installation)
+## 설치 및 사용법 (Installation)
 
 1. **빌드 및 설정 (Build & Setup)**
    - 프로젝트를 빌드합니다.
@@ -281,7 +281,7 @@ private void OnLobbyEntered(LobbyEnter_t callback) //로비 입장 성공 시 �
 
 ---
 
-### 📬 Contact
+### Contact
 * **GitHub:** [https://github.com/iruril](https://github.com/iruril)
 * **Email:** [gksxodnr99@gmail.com](mailto:gksxodnr99@gmail.com)
 
