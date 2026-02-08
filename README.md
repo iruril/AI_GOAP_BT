@@ -246,7 +246,6 @@ private void OnLobbyEntered(LobbyEnter_t callback) //로비 입장 성공 시 �
 | **처리 방식** | 직렬 처리 (Sequential) | **병렬 처리 (Parallel)** | 멀티코어 활용 극대화 |
 | **메모리 관리** | GC Allocation 발생 | **NativeArray (Zero Alloc)** | GC Spike 제거 |
 
-> *테스트 환경: 탄속 250m/s의 Bullet을 0.1초 간격으로 사방으로 180개 지속적으로 발사.*
 <br>
 
 <table>
@@ -267,6 +266,10 @@ private void OnLobbyEntered(LobbyEnter_t callback) //로비 입장 성공 시 �
 </table>
 
 </br>
+
+> *테스트 환경 : 탄속 250m/s의 Bullet을 0.1초 간격으로 사방으로 180개 지속적으로 발사.*
+>
+> *참고 : 직렬 처리 시 초기 약 5초간 극심한 프레임 드랍(6.7PFS) 이후, 안정화 된 최대 수치가 75FPS. 그러나 병렬 처리 시 안정화 페이즈 없이 초기부터 꾸준한 144FPS 유지.*
 
 ---
 
