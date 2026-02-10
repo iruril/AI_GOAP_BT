@@ -95,6 +95,31 @@ protected override void RegisterActions()
 }
 ```
 
+```mermaid
+graph RL
+    subgraph Logic [Strategy & Tactic Layer]
+        direction LR
+        
+        L1[("Layer 1: Strategy (GOAP)
+        Select Goal / Action")]
+        
+        L2[("Layer 2: Tactics (BT)
+        Combat Logics")]
+        
+        L1 -->|Context Switch| L2
+    end
+
+    subgraph Visual [Visual Layer]
+        direction TB
+        L3[("Layer 3: Animation (FSM)
+        Sync Visuals")]
+    end
+
+    L3 -.->|"Observe Data
+    (Movement, Aim, State)"| Logic
+```
+> *GOAP(전략) / BT(전술) / FSM(시각적 동기화) 간의 역할 및 관계 흐름*
+
 ### 2. Data-Oriented Bullet Simulation (Job & Burst)
 Unity의 무거운 `Rigidbody`, `GameObject` 중심의 Bullet 구조를 탈피하고, **데이터 지향(DOD)** 설계를 적용하여 `Job`과 `Burst`를 사용해 독자적인 Bullet 시뮬레이터를 구현했습니다.
 초기에는 `Rigidbody`만 제거한 후 Bullet마다 FixedUpdate주기로 RaycastNonAlloc하는 방식을 사용했으나, 여전히 성능이 좋지 않아 다음과 같이 리팩토링했습니다.
@@ -130,6 +155,53 @@ public struct BulletMovementJob : IJobParallelFor
     }
 }
 ```
+
+```mermaid
+graph LR
+    subgraph Spawning [1. Spawning]
+        direction TB
+        Req[Spawn Request]
+        Pool[("Bullet Pool")]
+        DataReg[Register Data]
+    end
+
+    subgraph Physics ["2. Physics (Worker Threads)"]
+        direction TB
+        JobInput[("NativeArrays")]
+        Burst[["Burst Jobs
+        (Move + Raycast)"]]
+        JobOutput[("Hit Results")]
+    end
+
+    subgraph Logic ["3. Logic (Main Thread)"]
+        direction TB
+        Check{Hit Judge}
+        Resolve[Apply Damage / VFX]
+        Despawn[Return to Pool]
+        Sync[Sync Logic Pos]
+    end
+
+    subgraph Visual [4. Rendering]
+        Lerp[Smooth Interpolation]
+    end
+
+    Req --> Pool
+    Pool --> DataReg
+    DataReg -->|Write Data| JobInput
+
+    JobInput --> Burst
+    Burst -->|Parallel Calc| JobOutput
+    
+    JobOutput -->|Read Results| Check
+    
+    Check -- Hit/Graze --> Resolve
+    Resolve --> Despawn
+    Despawn -.->|Recycle| Pool
+
+    Check -- No Hit --> Sync
+    Sync -.->|Logic Pos| Lerp
+```
+> *BulletSimulator, BulletPool, Bullet간의 BulletData 처리 및 업데이트 흐름*
 
 ### 3. Resource Management (LRU Cache)
 추후 추가될 많은 양의 총기 사운드와 환경음 리소스들을 런타임 중 효율적으로 사용 및 관리하기 위해 **LRU(Least Recently Used)** 알고리즘을 적용했습니다.
@@ -169,6 +241,50 @@ private void CleanupLRUCache()
     /* ... */
 }
 ```
+
+```mermaid
+graph LR
+    subgraph Client [1. Request]
+        Call[Play Sound Request]
+    end
+
+    subgraph Manager [2. Resource Manager]
+        direction TB
+        
+        Cache[("Memory Cache
+        (SoundPool)")]
+        
+        subgraph AsyncLoad [Async Loading Pipeline]
+            direction TB
+            TaskCheck{{"Task Deduplication
+            (Check _loadingTasks)"}}
+            AddrLoad[["Addressables.Load
+            (Disk I/O)"]]
+        end
+    end
+
+    subgraph Audio [3. Execution]
+        Play[AudioSource.Play]
+    end
+
+    subgraph Service ["4. Maintenance (MEC)"]
+        Cleaner((LRU Cleanup
+        Loop))
+    end
+
+    Call --> Cache
+
+    Cache -- Hit --> Play
+
+    Cache -- Miss --> TaskCheck
+    TaskCheck -- Loading... / Await --> Cache
+    TaskCheck -- New Load --> AddrLoad
+    
+    AddrLoad -->|Cache Result| Cache
+
+    Cleaner -.->|Release Oldest| Cache
+```
+> *SoundManager의 Request 처리 시나리오 및 LRU 캐시 정책 흐름*
 
 ### 4. P2P Networking (Steamworks & Mirror)
 * **Steam Integration:** `SteamLobby` 클래스를 통해 로비 생성, 데이터 동기화, 친구 초대 기능을 완벽하게 지원합니다.
