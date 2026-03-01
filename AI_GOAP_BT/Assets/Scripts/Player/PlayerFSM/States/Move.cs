@@ -60,17 +60,8 @@ namespace Player.FSM
 
         private void RotatePlayer()
         {
-            float step = Time.deltaTime * 5f;
-            float yRotation;
-            yRotation = Vector3.SignedAngle(Vector3.forward, ctx.PlayerForward, Vector3.up);
-
-            ctx.transform.rotation =
-                Quaternion.Slerp
-                (
-                    ctx.transform.rotation,
-                    Quaternion.Euler(0, yRotation, 0),
-                    step
-                );
+            Quaternion targetRotation = Quaternion.LookRotation(ctx.PlayerForward, Vector3.up);
+            ctx.transform.rotation = Quaternion.Slerp(ctx.transform.rotation, targetRotation, Time.deltaTime * 5f);
         }
 
         private bool IsOnTurnOppsiteCondition()
