@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using AYellowpaper.SerializedCollections;
+using System.Collections;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -74,23 +76,13 @@ public class Corpse : MonoBehaviour
 
         foreach (Rigidbody rb in tempRigids)
         {
-            float massRate = 0.05f;
-            string name = rb.name.ToLower();
-
-            if (name.Contains("pelvis") || name.Contains("hips")) massRate = 0.2f;
-            else if (name.Contains("spine") || name.Contains("chest")) massRate = 0.2f;
-            else if (name.Contains("head")) massRate = 0.1f;
-            else if (name.Contains("thigh") || name.Contains("upperleg")) massRate = 0.11f;
-            else if (name.Contains("calf") || name.Contains("leg") || name.Contains("knee")) massRate = 0.1f;
-            else if (name.Contains("arm") || name.Contains("hand")) massRate = 0.065f;
-
-            rb.mass = totalMass * massRate;
+            rb.mass = totalMass / tempRigids.Count();
 
             rb.maxDepenetrationVelocity = 3.5f;
             rb.maxAngularVelocity = 15f;
-            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
             rb.interpolation = RigidbodyInterpolation.Interpolate; 
-            rb.solverIterations = 15;
+            rb.solverIterations = 12;
             rb.solverVelocityIterations = 8;
 
             if (!PhysicsBones.ContainsKey(rb.name))
@@ -99,30 +91,40 @@ public class Corpse : MonoBehaviour
 
         foreach (CharacterJoint joint in tempJoints)
         {
-            joint.autoConfigureConnectedAnchor = true;
+            joint.autoConfigureConnectedAnchor = false;
+
+            if (joint.connectedBody != null)
+            {
+                Vector3 worldAnchorPos = joint.transform.TransformPoint(joint.anchor);
+                joint.connectedAnchor = joint.connectedBody.transform.InverseTransformPoint(worldAnchorPos);
+            }
         }
     }
 #endif
 
-    public void PasteBoneTransforms(List<Transform> skeletons, string latestHittedPart, Vector3 shotOrigin, Vector3 velocity)
+    public void ActivateWithPhysics(List<Transform> skeletons, string latestHittedPart, Vector3 shotOrigin, Vector3 velocity)
+    {
+        MatchBones(skeletons);
+        ApplyPhysics(latestHittedPart, shotOrigin, velocity);
+    }
+
+    private void MatchBones(List<Transform> skeletons)
     {
         foreach (var pair in PhysicsBones)
+        {
             pair.Value.isKinematic = true;
+        }
 
         for (int i = 0; i < bones.Count; i++)
         {
             if (i >= skeletons.Count) break;
-
-            if (PhysicsBones.TryGetValue(bones[i].name, out Rigidbody rb))
-            {
-                rb.position = skeletons[i].position;
-                rb.rotation = skeletons[i].rotation;
-            }
-
             bones[i].position = skeletons[i].position;
             bones[i].rotation = skeletons[i].rotation;
         }
+    }
 
+    private void ApplyPhysics(string latestHittedPart, Vector3 shotOrigin, Vector3 velocity)
+    {
         foreach (var pair in PhysicsBones)
         {
             Rigidbody rb = pair.Value;
@@ -136,17 +138,12 @@ public class Corpse : MonoBehaviour
         if (PhysicsBones.TryGetValue(latestHittedPart, out Rigidbody hitRb))
         {
             Vector3 forceDir = (hitRb.worldCenterOfMass - shotOrigin).normalized;
-            Vector3 addVelocity = forceDir * 10f;
-            hitRb.linearVelocity += addVelocity;
+            hitRb.linearVelocity += forceDir * 10f;
         }
-        else
+        else if (PhysicsBones.TryGetValue(root.name, out Rigidbody rootRb))
         {
-            if (PhysicsBones.TryGetValue(root.name, out Rigidbody rootRb))
-            {
-                Vector3 forceDir = (rootRb.worldCenterOfMass - shotOrigin).normalized;
-                Vector3 addVelocity = forceDir * 10f;
-                rootRb.linearVelocity += addVelocity;
-            }
+            Vector3 forceDir = (rootRb.worldCenterOfMass - shotOrigin).normalized;
+            rootRb.linearVelocity += forceDir * 10f;
         }
     }
 

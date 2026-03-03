@@ -1,8 +1,9 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Mirror;
-using System;
 
 
 #if UNITY_EDITOR
@@ -66,7 +67,7 @@ public class CorpseGenerator : NetworkBehaviour
         corpse.transform.position = transform.position;
         corpse.transform.rotation = transform.rotation;
         corpse.gameObject.SetActive(true);
-        corpse.PasteBoneTransforms(bones, LatestHittedPart, ShotOrigin, owner.ServerVelocity);
+        corpse.ActivateWithPhysics(bones, LatestHittedPart, ShotOrigin, owner.ServerVelocity);
     }
 
     public void DespawnCorpse()
