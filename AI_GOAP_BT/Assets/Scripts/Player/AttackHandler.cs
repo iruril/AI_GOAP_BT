@@ -11,7 +11,7 @@ namespace Player
         [SyncVar] private Vector3 syncedAimTarget;
         [SyncVar] private float syncedAimWeight;
 
-        private float rateOfFireTime = 0;
+        private bool wasTriggered = false;
 
         private void Awake()
         {
@@ -60,7 +60,6 @@ namespace Player
             if (!isLocalPlayer) return;
 
             UpdateAimValues();
-            UpdateRateOfFire();
             TryShoot(); 
             TryReload();
         }
@@ -90,45 +89,27 @@ namespace Player
             player.IKManager.LookIK.solver.IKPositionWeight = player.IKManager.AimIK.solver.IKPositionWeight;
         }
 
-        private void UpdateRateOfFire()
-        {
-            if (rateOfFireTime <= 0f)
-                return;
-
-            rateOfFireTime -= Time.deltaTime;
-
-            if (rateOfFireTime < 0f)
-                rateOfFireTime = 0f;
-        }
-
         private void TryShoot()
         {
-            if (!player.Input.Trigger)
-                return;
+            bool isHeld = player.Input.Trigger;
+            bool isPressed = isHeld && !wasTriggered;
+            wasTriggered = isHeld;
+
+            if (!isHeld && !isPressed) return;
 
             if (player.IKManager.AimIK.solver.IKPositionWeight < 0.99f)
-                return;
-
-            if (rateOfFireTime > 0f)
                 return;
 
             var gun = player.GunController;
 
             if (gun.CurrentRounds > 0)
             {
-                rateOfFireTime = gun.CurrentGun.GunInfo.ShotInterval;
-                Shoot();
+                gun.TryFire(isPressed, isHeld);
             }
-            else
+            else if (isPressed)
             {
                 TryReload(true);
             }
-        }
-
-        private void Shoot()
-        {
-            if (player.GunController.CurrentRounds <= 0) return;
-            player.GunController.Fire();
         }
 
         private void TryReload(bool forceByEmptyFire = false)

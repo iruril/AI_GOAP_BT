@@ -47,6 +47,11 @@ public class GunHandler : NetworkBehaviour
     private Dictionary<string, int> roundHistory = new();
 
     private IGunFireStrategy currentFireStrategy;
+    public FireMode CurrentFireMode { get; private set; }
+    private float lastFireTime = 0f;
+    
+    private int currentBurstCount = 0;
+
     private bool pendingFire = false;
     private List<HitInfo> hitBuffer = new List<HitInfo>();
 
@@ -172,6 +177,17 @@ public class GunHandler : NetworkBehaviour
 
         ApplyGunTransforms(currentGun);
         currentFireStrategy = FireStrategyFactory.GetStrategy(currentGun.GunInfo.GunType);
+
+        if (currentGun.GunInfo.FireModes != null && currentGun.GunInfo.FireModes.Count > 0)
+        {
+            CurrentFireMode = currentGun.GunInfo.FireModes.Last();
+        }
+        else
+        {
+            CurrentFireMode = FireMode.Single;
+        }
+
+        lastFireTime = 0f;
         currentGunModel.SetActive(true);
     }
 
@@ -215,10 +231,46 @@ public class GunHandler : NetworkBehaviour
         currentSpread = Mathf.Clamp(currentSpread, 0f, currentGun.GunInfo.Spread);
     }
 
-    public void Fire()
+    /// <summary>
+    /// 입력 스크립트에서 매 프레임 호출
+    /// isPressed = Input.GetMouseButtonDown(0)
+    /// isHeld = Input.GetMouseButton(0)
+    /// </summary>
+    public void TryFire(bool isPressed, bool isHeld)
     {
-        if (CurrentRounds <= 0) return;
-        pendingFire = true;
+        if (CurrentRounds <= 0 || OnReload) return;
+
+        if (isPressed && CurrentFireMode == FireMode.Burst)
+        {
+            currentBurstCount = 0;
+        }
+
+        if (Time.time - lastFireTime < currentGun.GunInfo.ShotInterval) return;
+
+        bool canFire = false;
+
+        switch (CurrentFireMode)
+        {
+            case FireMode.Single:
+                canFire = isPressed; // 단발: 마우스를 '클릭한 순간'에만 발사
+                break;
+            case FireMode.Auto:
+                canFire = isHeld;    // 연사: 마우스를 '누르고 있는 동안' 계속 발사
+                break;
+            case FireMode.Burst:
+                if (isHeld && currentBurstCount < currentGun.GunInfo.BurstCount)
+                {
+                    canFire = true;
+                    currentBurstCount++;
+                }
+                break;
+        }
+
+        if (canFire)
+        {
+            lastFireTime = Time.time;
+            pendingFire = true;
+        }
     }
 
     public void ClientFireCallback()

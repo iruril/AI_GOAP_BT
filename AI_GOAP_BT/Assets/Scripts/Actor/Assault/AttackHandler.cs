@@ -174,14 +174,17 @@ namespace GOAP.Assualt
             while (fireCount > 0)
             {
                 if (!myBrain.MotionController.Shootable()) break;
-                if (gunStat.CurrentRounds <= 0) break; 
-                
+                if (gunStat.CurrentRounds <= 0)
+                {
+                    break;
+                }
+
                 float distance = Vector3.Distance(transform.position, SyncedAimTarget);
                 float distanceMultiplier = distance / 10f;
 
                 visualAimOffset = Random.insideUnitSphere * (currentSpread * distanceMultiplier);
 
-                myBrain.GunController.Fire();
+                myBrain.GunController.TryFire(isPressed: true, isHeld: true);
                 fireCount--;
 
                 currentSpread = Mathf.Min(currentSpread + spreadPerShot, maxSpread);

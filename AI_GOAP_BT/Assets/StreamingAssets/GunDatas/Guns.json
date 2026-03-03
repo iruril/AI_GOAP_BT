@@ -17,12 +17,14 @@
         "ProjectileSpeed": 350,
         "FireModes": [
           0,
+          1,
           2
         ],
         "HeadDamageMultiplier": 1.75,
         "SoundClipID": "SFX_Shoot_AK12",
-        "GunType": 1,
-        "PelletCount": 1
+        "GunType": 0,
+        "PelletCount": 1,
+        "BurstCount": 2
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
@@ -47,12 +49,14 @@
         "ProjectileSpeed": 250,
         "FireModes": [
           0,
+          1,
           2
         ],
         "HeadDamageMultiplier": 1.5,
         "SoundClipID": "SFX_Shoot_MPX",
-        "GunType": 1,
-        "PelletCount": 1
+        "GunType": 0,
+        "PelletCount": 1,
+        "BurstCount": 3
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.472, 0.017, 0.086 ],

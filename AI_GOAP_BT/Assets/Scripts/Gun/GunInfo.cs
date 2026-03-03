@@ -8,11 +8,11 @@ public enum FireMode
     Burst = 1,
     Auto = 2
 }
+
 public enum GunType
 {
-    Single = 0,   // ´Ü¹ßÃÑ (½º³ªÀÌÆÛ, DMR µî)
-    Repeater = 1, // ¿¬¹ßÃÑ (AR, SMG µî)
-    Shotgun = 2   // »êÅºÃÑ
+    Standard = 0,   // ´Ü¹ßÃÑ (½º³ªÀÌÆÛ, DMR µî)
+    Shotgun = 1   // »êÅºÃÑ
 }
 
 [System.Serializable]
@@ -29,7 +29,8 @@ public class GunInfo
     public int MagazineCapacity { get; }
     public int RPM { get; }
     public float ProjectileSpeed { get; }
-    public List<FireMode> FireModes { get; } = new();
+    public List<FireMode> FireModes { get; } = new(); 
+    public int BurstCount { get; }
     public float ShotInterval { get; }
     public float HeadDamageMultiplier { get; }
     public string SoundClipID { get; }
@@ -46,8 +47,9 @@ public class GunInfo
         List<FireMode> FireModes,
         float headDamageMultiplier,
         string soundClipID,
-        GunType gunType = GunType.Repeater,
-        int pelletCount = 1)
+        GunType gunType = GunType.Standard,
+        int pelletCount = 1,
+        int BurstCount = 3)
     {
         this.TimeToADS = TimeToADS;
         this.RoundDamage = RoundDamage;
@@ -70,6 +72,7 @@ public class GunInfo
         SoundClipID = soundClipID; 
         this.GunType = gunType;
         this.PelletCount = pelletCount;
+        this.BurstCount = BurstCount;
     }
 }
 
