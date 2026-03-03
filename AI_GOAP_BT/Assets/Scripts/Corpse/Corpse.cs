@@ -112,6 +112,13 @@ public class Corpse : MonoBehaviour
         for (int i = 0; i < bones.Count; i++)
         {
             if (i >= skeletons.Count) break;
+
+            if (PhysicsBones.TryGetValue(bones[i].name, out Rigidbody rb))
+            {
+                rb.position = skeletons[i].position;
+                rb.rotation = skeletons[i].rotation;
+            }
+
             bones[i].position = skeletons[i].position;
             bones[i].rotation = skeletons[i].rotation;
         }
