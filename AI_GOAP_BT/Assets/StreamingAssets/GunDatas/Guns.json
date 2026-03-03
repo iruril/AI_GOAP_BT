@@ -20,7 +20,9 @@
           2
         ],
         "HeadDamageMultiplier": 1.75,
-        "SoundClipID": "SFX_Shoot_AK12"
+        "SoundClipID": "SFX_Shoot_AK12",
+        "GunType": 1,
+        "PelletCount": 1
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
@@ -48,7 +50,9 @@
           2
         ],
         "HeadDamageMultiplier": 1.5,
-        "SoundClipID": "SFX_Shoot_MPX"
+        "SoundClipID": "SFX_Shoot_MPX",
+        "GunType": 1,
+        "PelletCount": 1
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.472, 0.017, 0.086 ],

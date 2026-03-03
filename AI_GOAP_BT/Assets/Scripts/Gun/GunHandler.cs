@@ -46,6 +46,7 @@ public class GunHandler : NetworkBehaviour
     private Dictionary<string, (Gun gun, GameObject instance)> gunHistory = new();
     private Dictionary<string, int> roundHistory = new();
 
+    private IGunFireStrategy currentFireStrategy;
     private bool pendingFire = false;
     private List<HitInfo> hitBuffer = new List<HitInfo>();
 
@@ -55,6 +56,7 @@ public class GunHandler : NetworkBehaviour
     CoroutineHandle layerIkHandle;
 
     private float currentSpread = 0;
+    public float CurrentSpread => currentSpread;
     [SyncVar(hook = nameof(OnRoundUpdate))] public int CurrentRounds = 0;
     [SyncVar] public bool OnReload;
     CoroutineHandle reloadHandle;
@@ -169,6 +171,7 @@ public class GunHandler : NetworkBehaviour
         currentGunModel.transform.localRotation = Quaternion.identity;
 
         ApplyGunTransforms(currentGun);
+        currentFireStrategy = FireStrategyFactory.GetStrategy(currentGun.GunInfo.GunType);
         currentGunModel.SetActive(true);
     }
 
@@ -257,63 +260,31 @@ public class GunHandler : NetworkBehaviour
     private void ServerExecuteFire(Vector3 muzzlePos, Vector3 muzzleDir, float lagTime)
     {
         if ((Muzzle.position - muzzlePos).sqrMagnitude > 2f) return;
-        if (CurrentRounds == 0) return;
+        if (CurrentRounds <= 0) return;
 
         CurrentRounds = Mathf.Clamp(CurrentRounds - 1, 0, int.MaxValue);
 
-        float spreadRad = currentSpread * Mathf.Deg2Rad;
-        Vector2 error = MathUtility.SampleGaussian2D(spreadRad); 
-        Vector3 localDir = new Vector3(error.x, error.y, 1f);
-        localDir.Normalize();
-        Quaternion basis = Quaternion.LookRotation(muzzleDir);
-        Vector3 finalDir = basis * localDir;
+        currentFireStrategy.ExecuteFire(this, muzzlePos, muzzleDir, lagTime);
 
-        Quaternion bulletRotation = Quaternion.LookRotation(finalDir); 
-        int ignoreLayerMask = rm.FriendlyFire
-            ? 0 
-            : 1 << gameObject.layer;
+        RpcPlayMuzzleFlash(muzzlePos, Quaternion.LookRotation(muzzleDir));
+        currentSpread += 1f / currentGun.GunInfo.Stability;
+    }
+
+    public void SpawnAndBroadcastBullet(Vector3 muzzlePos, Vector3 finalDir, float lagTime)
+    {
+        Quaternion bulletRotation = Quaternion.LookRotation(finalDir);
+        int ignoreLayerMask = rm.FriendlyFire ? 0 : 1 << gameObject.layer;
         float speed = currentGun.GunInfo.ProjectileSpeed;
         float damage = currentGun.GunInfo.RoundDamage;
         float headMultiplier = currentGun.GunInfo.HeadDamageMultiplier;
 
-        BulletPool.SpawnBullet(
-            muzzlePos,
-            bulletRotation,
-            ignoreLayerMask,
-            muzzlePos,      // shotOrigin
-            speed,          // ÃÑ¾Ë ¼Óµµ
-            damage,
-            headMultiplier,
-            lagTime,
-            this
-        );
-
-        RpcSpawnBullet(
-            muzzlePos,
-            bulletRotation,
-            ignoreLayerMask,
-            muzzlePos,      // shotOrigin
-            speed,          // ÃÑ¾Ë ¼Óµµ
-            damage,
-            headMultiplier,
-            lagTime
-        );
-
-        RpcPlayMuzzleFlash(muzzlePos, Quaternion.LookRotation(muzzleDir));
-
-        currentSpread += 1f / currentGun.GunInfo.Stability;
+        BulletPool.SpawnBullet(muzzlePos, bulletRotation, ignoreLayerMask, muzzlePos, speed, damage, headMultiplier, lagTime, this);
+        RpcSpawnBullet(muzzlePos, bulletRotation, ignoreLayerMask, muzzlePos, speed, damage, headMultiplier, lagTime);
     }
 
     [ClientRpc]
-    private void RpcSpawnBullet(
-        Vector3 position,
-        Quaternion rotation,
-        LayerMask myTeamLayer,
-        Vector3 origin,
-        float projectileSpeed,
-        float damage,
-        float headMultiplier,
-        float lagTime)
+    private void RpcSpawnBullet(Vector3 position, Quaternion rotation, LayerMask myTeamLayer, Vector3 origin,
+        float projectileSpeed, float damage, float headMultiplier, float lagTime)
     {
         if (isServer) return;
 

@@ -8,6 +8,12 @@ public enum FireMode
     Burst = 1,
     Auto = 2
 }
+public enum GunType
+{
+    Single = 0,   // ´Ü¹ßÃÑ (½º³ªÀÌÆÛ, DMR µî)
+    Repeater = 1, // ¿¬¹ßÃÑ (AR, SMG µî)
+    Shotgun = 2   // »êÅºÃÑ
+}
 
 [System.Serializable]
 public class GunInfo
@@ -27,22 +33,21 @@ public class GunInfo
     public float ShotInterval { get; }
     public float HeadDamageMultiplier { get; }
     public string SoundClipID { get; }
+    public GunType GunType { get; }
+    public int PelletCount { get; }
 
     [JsonConstructor]
-    public GunInfo(float TimeToADS,
-        int RoundDamage,
-        float Stability,
-        float Spread,
-        float RecoilPitch,
-        float RecoilYawLeft,
-        float RecoilYawRight,
-        float RecoilRoll,
+    public GunInfo(float TimeToADS, int RoundDamage,
+        float Stability, float Spread,
+        float RecoilPitch, float RecoilYawLeft, float RecoilYawRight, float RecoilRoll,
         int MagazineCapacity,
         int RPM,
         float ProjectileSpeed,
         List<FireMode> FireModes,
         float headDamageMultiplier,
-        string soundClipID)
+        string soundClipID,
+        GunType gunType = GunType.Repeater,
+        int pelletCount = 1)
     {
         this.TimeToADS = TimeToADS;
         this.RoundDamage = RoundDamage;
@@ -62,7 +67,9 @@ public class GunInfo
 
         ShotInterval = 60f / this.RPM;
         HeadDamageMultiplier = headDamageMultiplier;
-        SoundClipID = soundClipID;
+        SoundClipID = soundClipID; 
+        this.GunType = gunType;
+        this.PelletCount = pelletCount;
     }
 }
 

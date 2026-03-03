@@ -17,4 +17,4 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 9f548486a0494bb418c69d9dcff086a1, type: 2}
   - {fileID: 2100000, guid: 4522fad2c4becd04baa40634f789b98b, type: 2}
   - {fileID: 2100000, guid: 43923a31077d0024498b345fd1be457a, type: 2}
-  corpseObject: {fileID: 128733551774196011, guid: 85ee78f2c7072464aa991f23ca29dec5, type: 3}
+  corpseObject: {fileID: 5430069989801907361, guid: 85ee78f2c7072464aa991f23ca29dec5, type: 3}
