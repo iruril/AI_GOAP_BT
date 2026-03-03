@@ -62,16 +62,17 @@ public class CorpseGenerator : NetworkBehaviour
 
     public void SpawnCorpse()
     {
+        corpse.transform.SetParent(null, false);
+        corpse.transform.position = transform.position;
+        corpse.transform.rotation = transform.rotation;
         corpse.gameObject.SetActive(true);
-        corpse.transform.parent = null;
-        corpse.transform.position = this.transform.position;
-        corpse.transform.rotation = this.transform.rotation;
         corpse.PasteBoneTransforms(bones, LatestHittedPart, ShotOrigin, owner.ServerVelocity);
     }
 
     public void DespawnCorpse()
     {
-        corpse.transform.parent = transform;
+        corpse.ResetPhysics();
+        corpse.transform.SetParent(transform, false);
         corpse.transform.localPosition = Vector3.zero;
         corpse.transform.localRotation = Quaternion.identity;
         corpse.gameObject.SetActive(false);

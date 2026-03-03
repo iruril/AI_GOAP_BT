@@ -119,7 +119,7 @@ CharacterJoint:
     limit: 0
     bounciness: 0
     contactDistance: 0.02
-  m_EnableProjection: 1
+  m_EnableProjection: 0
   m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
@@ -251,7 +251,7 @@ CharacterJoint:
     limit: 30
     bounciness: 0
     contactDistance: 0.02
-  m_EnableProjection: 1
+  m_EnableProjection: 0
   m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
@@ -1004,7 +1004,7 @@ CharacterJoint:
     limit: 30
     bounciness: 0
     contactDistance: 0.02
-  m_EnableProjection: 1
+  m_EnableProjection: 0
   m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
@@ -1458,7 +1458,7 @@ CharacterJoint:
     limit: 0
     bounciness: 0
     contactDistance: 0.02
-  m_EnableProjection: 1
+  m_EnableProjection: 0
   m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
@@ -1748,7 +1748,7 @@ CharacterJoint:
     limit: 0
     bounciness: 0
     contactDistance: 0.02
-  m_EnableProjection: 1
+  m_EnableProjection: 0
   m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
@@ -2178,7 +2178,7 @@ CharacterJoint:
     limit: 0
     bounciness: 0
     contactDistance: 0.02
-  m_EnableProjection: 1
+  m_EnableProjection: 0
   m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
@@ -2593,7 +2593,7 @@ CharacterJoint:
     limit: 0
     bounciness: 0
     contactDistance: 0.02
-  m_EnableProjection: 1
+  m_EnableProjection: 0
   m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
@@ -2826,7 +2826,7 @@ CharacterJoint:
     limit: 0
     bounciness: 0
     contactDistance: 0.02
-  m_EnableProjection: 1
+  m_EnableProjection: 0
   m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
@@ -3149,7 +3149,7 @@ CharacterJoint:
     limit: 0
     bounciness: 0
     contactDistance: 0.02
-  m_EnableProjection: 1
+  m_EnableProjection: 0
   m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity
@@ -3375,7 +3375,7 @@ CharacterJoint:
     limit: 0
     bounciness: 0
     contactDistance: 0.02
-  m_EnableProjection: 1
+  m_EnableProjection: 0
   m_ProjectionDistance: 0.01
   m_ProjectionAngle: 2
   m_BreakForce: Infinity

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using MEC;
 using AYellowpaper.SerializedCollections;
 
 #if UNITY_EDITOR
@@ -41,15 +40,20 @@ public class Corpse : MonoBehaviour
     [SerializedDictionary("Bone Name", "RigidBody")]
     public SerializedDictionary<string, Rigidbody> PhysicsBones = new();
 
-    private struct JointData
-    {
-        public CharacterJoint joint;
-        public Rigidbody connectedBody;
-        public Rigidbody rb;
-        public Transform transform;
-    }
+    private Vector3[] initialLocalPositions;
+    private Quaternion[] initialLocalRotations;
 
-    private List<JointData> _jointDataList = new();
+    private void Awake()
+    {
+        initialLocalPositions = new Vector3[bones.Count];
+        initialLocalRotations = new Quaternion[bones.Count];
+
+        for (int i = 0; i < bones.Count; i++)
+        {
+            initialLocalPositions[i] = bones[i].localPosition;
+            initialLocalRotations[i] = bones[i].localRotation;
+        }
+    }
 
 #if UNITY_EDITOR
     public void GetBones()
@@ -86,85 +90,30 @@ public class Corpse : MonoBehaviour
             rb.maxAngularVelocity = 15f;
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             rb.interpolation = RigidbodyInterpolation.Interpolate; 
-            rb.solverIterations = 25;
-            rb.solverVelocityIterations = 15;
+            rb.solverIterations = 15;
+            rb.solverVelocityIterations = 8;
 
             if (!PhysicsBones.ContainsKey(rb.name))
                 PhysicsBones.Add(rb.name, rb);
         }
 
-        SoftJointLimitSpring swinglimit = new SoftJointLimitSpring { spring = 1000, damper = 100 };
-        SoftJointLimitSpring twistlimit = new SoftJointLimitSpring { spring = 1000, damper = 100 };
-
         foreach (CharacterJoint joint in tempJoints)
         {
-            joint.enableProjection = true;
-            joint.projectionDistance = 0.01f;
-            joint.projectionAngle = 2.0f;
-            joint.enablePreprocessing = false; 
-            joint.enableCollision = false; 
-            
-            joint.swingLimitSpring = swinglimit;
-            joint.twistLimitSpring = twistlimit;
-        }
-
-        IgnoreInternalCollisions();
-        CacheJointData();
-    }
-
-    private void IgnoreInternalCollisions()
-    {
-        var colliders = root.GetComponentsInChildren<Collider>();
-        for (int i = 0; i < colliders.Length; i++)
-            for (int j = i + 1; j < colliders.Length; j++)
-                Physics.IgnoreCollision(colliders[i], colliders[j]);
-    }
-
-    private void CacheJointData()
-    {
-        _jointDataList.Clear();
-        foreach (var pair in PhysicsBones)
-        {
-            Rigidbody rb = pair.Value;
-            CharacterJoint joint = rb.GetComponent<CharacterJoint>();
-            if (joint != null && joint.connectedBody != null)
-            {
-                _jointDataList.Add(new JointData
-                {
-                    joint = joint,
-                    connectedBody = joint.connectedBody,
-                    rb = rb,
-                    transform = rb.transform
-                });
-            }
+            joint.autoConfigureConnectedAnchor = true;
         }
     }
 #endif
 
-    private void OnDisable()
-    {
-        foreach (var pair in PhysicsBones)
-        {
-            Rigidbody rb = pair.Value;
-            rb.isKinematic = true;
-            rb.useGravity = false;
-        }
-    }
-
     public void PasteBoneTransforms(List<Transform> skeletons, string latestHittedPart, Vector3 shotOrigin, Vector3 velocity)
     {
-        root.gameObject.SetActive(false);
+        foreach (var pair in PhysicsBones)
+            pair.Value.isKinematic = true;
 
         for (int i = 0; i < bones.Count; i++)
         {
             if (i >= skeletons.Count) break;
             bones[i].position = skeletons[i].position;
             bones[i].rotation = skeletons[i].rotation;
-        }
-
-        foreach (var data in _jointDataList)
-        {
-            data.joint.connectedAnchor = data.transform.InverseTransformPoint(data.connectedBody.position);
         }
 
         foreach (var pair in PhysicsBones)
@@ -176,8 +125,6 @@ public class Corpse : MonoBehaviour
             rb.linearVelocity = velocity;
             rb.angularVelocity = Vector3.zero;
         }
-
-        root.gameObject.SetActive(true);
 
         if (PhysicsBones.TryGetValue(latestHittedPart, out Rigidbody hitRb))
         {
@@ -191,8 +138,35 @@ public class Corpse : MonoBehaviour
             {
                 Vector3 forceDir = (rootRb.worldCenterOfMass - shotOrigin).normalized;
                 Vector3 addVelocity = forceDir * 10f;
-                hitRb.linearVelocity += addVelocity;
+                rootRb.linearVelocity += addVelocity;
             }
+        }
+    }
+
+    public void ResetPhysics()
+    {
+        foreach (var pair in PhysicsBones)
+        {
+            var rb = pair.Value;
+
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.Sleep();
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
+
+        ResetToBindPose();
+    }
+
+    private void ResetToBindPose()
+    {
+        if (initialLocalPositions == null || initialLocalRotations == null) return;
+
+        for (int i = 0; i < bones.Count; i++)
+        {
+            bones[i].localPosition = initialLocalPositions[i];
+            bones[i].localRotation = initialLocalRotations[i];
         }
     }
 }
