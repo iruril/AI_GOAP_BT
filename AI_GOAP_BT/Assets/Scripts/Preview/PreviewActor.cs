@@ -21,6 +21,7 @@ public class PreviewActor : MonoBehaviour
     [Header("Gun 트랜스폼 세팅")]
     [SerializeField] Transform gunPos;
     [SerializeField] Transform leftHandIKTarget;
+    [SerializeField] Transform leftArmIKHint;
 
     private Gun currentGun;
     private GameObject currentGunModel;
@@ -43,6 +44,7 @@ public class PreviewActor : MonoBehaviour
     private void Start()
     {
         ik.solver.leftHandEffector.target = leftHandIKTarget;
+        ik.solver.GetBendConstraint(FullBodyBipedChain.LeftArm).bendGoal = leftArmIKHint;
         OnUpdated += () => 
         {
             transform.rotation = originRotation;
@@ -66,6 +68,8 @@ public class PreviewActor : MonoBehaviour
     {
         float weight = anim.GetFloat("LHandIK");
         ik.solver.leftHandEffector.positionWeight = weight;
+        ik.solver.leftHandEffector.rotationWeight = weight;
+        ik.solver.GetBendConstraint(FullBodyBipedChain.LeftArm).weight = weight;
     }
 
     private void LateUpdate()
@@ -142,6 +146,9 @@ public class PreviewActor : MonoBehaviour
 
         leftHandIKTarget.localPosition = currentGun.LeftHandIKPosition;
         leftHandIKTarget.localEulerAngles = currentGun.LeftHandIKRotation;
+
+        leftArmIKHint.localPosition = currentGun.LeftArmIKHint;
+
         currentGunModel.SetActive(false);
         return true;
     }

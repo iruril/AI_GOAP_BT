@@ -2099,6 +2099,7 @@ MonoBehaviour:
   audioSource: {fileID: 3650258010131318588}
   gunPos: {fileID: 5334469523889394733}
   leftHandIKTarget: {fileID: 7063086038202589735}
+  leftArmIKHint: {fileID: 7664891030397857179}
   muzzle: {fileID: 2255073588551578324}
   aimIKStandard: {fileID: 9067361331686458294}
   aimIKTarget: {fileID: 1252107706366356699}
@@ -3164,6 +3165,7 @@ MonoBehaviour:
   groundCastLength: 0.2
   footStepMinimumGap: 0.2
   audioSource: {fileID: 3470113946668026441}
+  OnCrouch: 0
 --- !u!114 &7508166357094421360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4150,6 +4152,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2419792409107627451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5067787339003047202
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7664891030397857179}
+  m_Layer: 0
+  m_Name: LeftArmIKHint
+  m_TagString: Gun
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7664891030397857179
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5067787339003047202}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5334469523889394733}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5349604924441175021
 GameObject:
   m_ObjectHideFlags: 0
@@ -4287,6 +4320,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -5517,6 +5551,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7063086038202589735}
+  - {fileID: 7664891030397857179}
   - {fileID: 2255073588551578324}
   - {fileID: 9067361331686458294}
   m_Father: {fileID: 6250794610025120080}

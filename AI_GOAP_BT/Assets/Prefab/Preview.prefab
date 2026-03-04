@@ -891,11 +891,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterMeshRenderer: {fileID: 7259353662963317879}
   rotateSensitivity: 0.2
-  returnSpeed: 120
   returnDelay: 2
   returnDamping: 6
   gunPos: {fileID: 7999835099828617719}
   leftHandIKTarget: {fileID: 1490805250792996642}
+  leftArmIKHint: {fileID: 3098778978146067220}
 --- !u!1 &1068066172371258943
 GameObject:
   m_ObjectHideFlags: 0
@@ -1866,6 +1866,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 3098778978146067220}
   - {fileID: 1490805250792996642}
   m_Father: {fileID: 7712247711886493426}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2801,6 +2802,37 @@ Transform:
   m_Children:
   - {fileID: 1438524997019647393}
   m_Father: {fileID: 7712247711886493426}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8191908809522600310
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3098778978146067220}
+  m_Layer: 0
+  m_Name: LeftArmIKHint
+  m_TagString: Gun
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3098778978146067220
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8191908809522600310}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7999835099828617719}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8535919072825463734
 GameObject:

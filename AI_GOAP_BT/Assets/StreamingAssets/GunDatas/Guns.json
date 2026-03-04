@@ -7,7 +7,7 @@
         "TimeToADS": 0.25,
         "RoundDamage": 30,
         "Stability": 20,
-        "Spread": 0.5,
+        "Spread": 0.4,
         "RecoilPitch": -1.0,
         "RecoilYawLeft": 0.15,
         "RecoilYawRight": 0.6,
@@ -29,8 +29,9 @@
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
       "AimStandardPosition": [ -0.07, 0.017, 0.078 ],
-      "LeftHandIKPosition": [ -0.249, 0.063, 0.025 ],
-      "LeftHandIKRotation": [ 0, 0, 0 ]
+      "LeftHandIKPosition": [ -0.2821, 0.0635, 0.0595 ],
+      "LeftHandIKRotation": [146.742, -43.591, -35.45898],
+      "LeftArmIKHint": [-0.265, 0.384, -0.176]
     },
     {
       "GunID": "weapon_smg_mpx",
@@ -39,7 +40,7 @@
         "TimeToADS": 0.18,
         "RoundDamage": 24,
         "Stability": 30,
-        "Spread": 0.25,
+        "Spread": 0.2,
         "RecoilPitch": -0.5,
         "RecoilYawLeft": 0.1,
         "RecoilYawRight": 0.2,
@@ -61,8 +62,73 @@
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.472, 0.017, 0.086 ],
       "AimStandardPosition": [ -0.069, 0.017, 0.086 ],
-      "LeftHandIKPosition": [ -0.201, 0.063, 0.028 ],
-      "LeftHandIKRotation": [ 0, 0, 0 ]
+      "LeftHandIKPosition": [ -0.2535, 0.0639, 0.0663 ],
+      "LeftHandIKRotation": [144.918, -43.23999, -28.26199],
+      "LeftArmIKHint": [-0.265, 0.384, -0.176]
+    },
+    {
+      "GunID": "weapon_ar_ar15",
+      "GunName": "AR-15",
+      "GunInfo": {
+        "TimeToADS": 0.225,
+        "RoundDamage": 25,
+        "Stability": 25,
+        "Spread": 0.25,
+        "RecoilPitch": -0.65,
+        "RecoilYawLeft": 0.1,
+        "RecoilYawRight": 0.3,
+        "RecoilRoll": 0.35,
+        "MagazineCapacity": 30,
+        "RPM": 850,
+        "ProjectileSpeed": 350,
+        "FireModes": [
+          0,
+          1,
+          2
+        ],
+        "HeadDamageMultiplier": 1.5,
+        "SoundClipID": "SFX_Shoot_AK12",
+        "GunType": 0,
+        "PelletCount": 1,
+        "BurstCount": 3
+      },
+      "GunPosition": [ 0, 0, 0 ],
+      "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
+      "AimStandardPosition": [ -0.07, 0.017, 0.078 ],
+      "LeftHandIKPosition": [ -0.3415, 0.069, 0.097 ],
+      "LeftHandIKRotation": [17.2, 135.7, 145.6],
+      "LeftArmIKHint": [-0.265, 0.384, -0.176]
+    },
+    {
+      "GunID": "weapon_sg_m3",
+      "GunName": "M3",
+      "GunInfo": {
+        "TimeToADS": 0.21,
+        "RoundDamage": 18,
+        "Stability": 20,
+        "Spread": 0.7,
+        "RecoilPitch": -1.6,
+        "RecoilYawLeft": 0.15,
+        "RecoilYawRight": 0.6,
+        "RecoilRoll": 0.35,
+        "MagazineCapacity": 7,
+        "RPM": 100,
+        "ProjectileSpeed": 150,
+        "FireModes": [
+          0
+        ],
+        "HeadDamageMultiplier": 1.1,
+        "SoundClipID": "SFX_Shoot_AK12",
+        "GunType": 1,
+        "PelletCount": 9,
+        "BurstCount": 1
+      },
+      "GunPosition": [ 0, 0, 0 ],
+      "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
+      "AimStandardPosition": [ -0.07, 0.017, 0.078 ],
+      "LeftHandIKPosition": [ -0.3773, 0.0491, 0.0884 ],
+      "LeftHandIKRotation": [45.7, 118.3, 145.2],
+      "LeftArmIKHint": [-0.265, 0.384, -0.176]
     }
   ]
 }

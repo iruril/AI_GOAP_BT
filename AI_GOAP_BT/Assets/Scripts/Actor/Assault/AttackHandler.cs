@@ -1,7 +1,8 @@
-using UnityEngine;
 using MEC;
-using System.Collections.Generic;
 using Mirror;
+using RootMotion.FinalIK;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace GOAP.Assualt
 {
@@ -69,6 +70,8 @@ namespace GOAP.Assualt
             myBrain.MotionController.AimIK.solver.IKPositionWeight = 0f;
             myBrain.MotionController.FBBIK.solver.leftHandEffector.target = myBrain.GunController.LeftHandIKTarget;
             myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 1f;
+            myBrain.MotionController.FBBIK.solver.GetBendConstraint(FullBodyBipedChain.LeftArm).bendGoal = myBrain.GunController.LeftArmIKHint;
+            myBrain.MotionController.FBBIK.solver.GetBendConstraint(FullBodyBipedChain.LeftArm).weight = 1f;
         }
 
         public override void OnStopServer()
@@ -119,6 +122,7 @@ namespace GOAP.Assualt
                 SyncedAimTarget = realTargetPos;
                 serverAimVel = Vector3.zero;
             }
+
             float safeLag = Mathf.Max(0.01f, aimTrackingLag);
             SyncedAimTarget = Vector3.SmoothDamp(
                     SyncedAimTarget,
@@ -169,31 +173,57 @@ namespace GOAP.Assualt
             currentSpread = baseSpread;
 
             var gunStat = myBrain.GunController;
-            int fireCount = burstCount;
+            int targetShots = burstCount;
+            int lastAmmo = gunStat.CurrentRounds;
 
-            while (fireCount > 0)
+            float timeSinceLastShot = 0f;
+            bool isTriggerPressed = true;
+
+            UpdateVisualAimOffset();
+
+            while (targetShots > 0)
             {
-                if (!myBrain.MotionController.Shootable()) break;
-                if (gunStat.CurrentRounds <= 0)
+                if (!myBrain.MotionController.Shootable() || gunStat.CurrentRounds <= 0) break;
+
+                myBrain.GunController.TryFire(isPressed: isTriggerPressed, isHeld: true);
+                isTriggerPressed = false;
+
+                if (gunStat.CurrentRounds < lastAmmo)
                 {
-                    break;
+                    int shotsFiredNow = lastAmmo - gunStat.CurrentRounds;
+                    targetShots -= shotsFiredNow;
+                    lastAmmo = gunStat.CurrentRounds;
+
+                    currentSpread = Mathf.Min(currentSpread + spreadPerShot, maxSpread);
+                    timeSinceLastShot = 0f;
+
+                    UpdateVisualAimOffset();
+                }
+                else
+                {
+                    timeSinceLastShot += Time.deltaTime;
                 }
 
-                float distance = Vector3.Distance(transform.position, SyncedAimTarget);
-                float distanceMultiplier = distance / 10f;
+                float gracePeriod = gunStat.CurrentGun.GunInfo.ShotInterval + 0.05f;
+                if (timeSinceLastShot > gracePeriod)
+                {
+                    isTriggerPressed = true;
+                }
 
-                visualAimOffset = Random.insideUnitSphere * (currentSpread * distanceMultiplier);
-
-                myBrain.GunController.TryFire(isPressed: true, isHeld: true);
-                fireCount--;
-
-                currentSpread = Mathf.Min(currentSpread + spreadPerShot, maxSpread);
-
-                yield return Timing.WaitForSeconds(myBrain.GunController.CurrentGun.GunInfo.ShotInterval);
+                yield return Timing.WaitForOneFrame;
             }
+
             visualAimOffset = Vector3.zero;
             isBursting = false;
             currentSpread = baseSpread;
+        }
+
+        private void UpdateVisualAimOffset()
+        {
+            Vector3 realTargetPos = myBrain.Sensor.LastSeenPosition;
+            float distance = Vector3.Distance(transform.position, realTargetPos);
+            float distanceMultiplier = distance / 10f;
+            visualAimOffset = Random.insideUnitSphere * (currentSpread * distanceMultiplier);
         }
 
         private void OnDead()

@@ -95,6 +95,37 @@ Transform:
   - {fileID: 1899441865438695084}
   m_Father: {fileID: 9017204513393028021}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &154027967420315163
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7620808932521870500}
+  m_Layer: 0
+  m_Name: LeftArmIKHint
+  m_TagString: Gun
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7620808932521870500
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 154027967420315163}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1089842371789189729}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &445967944616612424
 GameObject:
   m_ObjectHideFlags: 0
@@ -356,6 +387,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4836991792604949143}
+  - {fileID: 7620808932521870500}
   - {fileID: 2724882029711215099}
   - {fileID: 7848820335465023840}
   m_Father: {fileID: 1244985772061916008}
@@ -2044,6 +2076,7 @@ MonoBehaviour:
   audioSource: {fileID: 7210542724391902865}
   gunPos: {fileID: 1089842371789189729}
   leftHandIKTarget: {fileID: 4836991792604949143}
+  leftArmIKHint: {fileID: 7620808932521870500}
   muzzle: {fileID: 2724882029711215099}
   aimIKStandard: {fileID: 7848820335465023840}
   aimIKTarget: {fileID: 7175498607167974741}
@@ -2975,6 +3008,7 @@ MonoBehaviour:
   groundCastLength: 0.2
   footStepMinimumGap: 0.2
   audioSource: {fileID: 4444446648594896159}
+  OnCrouch: 0
 --- !u!114 &5029229617567992135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5194,6 +5228,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0

@@ -27,7 +27,9 @@ public class GunHandler : NetworkBehaviour
     [Header("Gun 트랜스폼 세팅")]
     [SerializeField] Transform gunPos;
     [SerializeField] Transform leftHandIKTarget;
+    [SerializeField] Transform leftArmIKHint;
     public Transform LeftHandIKTarget { get { return leftHandIKTarget; } }
+    public Transform LeftArmIKHint { get { return leftArmIKHint; } }
     [SerializeField] Transform muzzle;
 
     [Header("Aim IK Target 세팅")]
@@ -212,6 +214,8 @@ public class GunHandler : NetworkBehaviour
 
         leftHandIKTarget.localPosition = gunData.LeftHandIKPosition;
         leftHandIKTarget.localEulerAngles = gunData.LeftHandIKRotation;
+
+        leftArmIKHint.localPosition = gunData.LeftArmIKHint;
     }
 
     private void OnRoundUpdate(int oldRounds, int newRounds)
@@ -468,6 +472,7 @@ public class GunHandler : NetworkBehaviour
 
         Animator anim = GetComponent<Animator>();
         IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
+        IKConstraintBend leftBend = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.GetBendConstraint(FullBodyBipedChain.LeftArm);
 
         anim.CrossFade(AnimHash.Reload, 0.1f);
 
@@ -475,7 +480,7 @@ public class GunHandler : NetworkBehaviour
         float elapsed = (float)(now - serverStartTime);
 
         Timing.KillCoroutines(layerIkHandle);
-        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 0f, 1f, 0.25f, elapsed));
+        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, leftBend, 0f, 1f, 0.25f, elapsed));
     }
 
     [ClientRpc]
@@ -485,14 +490,16 @@ public class GunHandler : NetworkBehaviour
 
         Animator anim = GetComponent<Animator>();
         IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
+        IKConstraintBend leftBend = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.GetBendConstraint(FullBodyBipedChain.LeftArm);
+        
         double now = NetworkTime.time;
         float elapsed = (float)(now - serverCompleteTime);
 
         Timing.KillCoroutines(layerIkHandle);
-        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, 1f, 0f, 0.25f, elapsed));
+        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, leftBend, 1f, 0f, 0.25f, elapsed));
     }
 
-    private IEnumerator<float> LerpIKAndLayer(Animator anim, IKEffector leftHand,
+    private IEnumerator<float> LerpIKAndLayer(Animator anim, IKEffector leftHand, IKConstraintBend leftBend,
         float targetIK, float targetLayer, float duration, float startOffset)
     {
         float t = Mathf.Clamp(startOffset, 0f, duration);
@@ -500,6 +507,8 @@ public class GunHandler : NetworkBehaviour
         if (t >= duration)
         {
             leftHand.positionWeight = targetIK;
+            leftHand.rotationWeight = targetIK;
+            leftBend.weight = targetIK;
             anim.SetLayerWeight(1, targetLayer);
             yield break;
         }
@@ -513,14 +522,18 @@ public class GunHandler : NetworkBehaviour
         {
             t += Timing.DeltaTime;
             float k = Mathf.Clamp01(t / duration);
-
-            leftHand.positionWeight = Mathf.Lerp(startIK, targetIK, k);
+            float lerpT = Mathf.Lerp(startIK, targetIK, k);
+            leftHand.positionWeight = lerpT;
+            leftHand.rotationWeight = lerpT;
+            leftBend.weight = lerpT;
             anim.SetLayerWeight(1, Mathf.Lerp(startLayer, targetLayer, k));
 
             yield return Timing.WaitForOneFrame;
         }
 
         leftHand.positionWeight = targetIK;
+        leftHand.rotationWeight = targetIK;
+        leftBend.weight = targetIK;
         anim.SetLayerWeight(1, targetLayer);
     }
 }

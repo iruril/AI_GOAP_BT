@@ -87,11 +87,12 @@ public class Gun
     public Vector3 AimStandardPosition { get; }
     public Vector3 LeftHandIKPosition { get; }
     public Vector3 LeftHandIKRotation { get; }
+    public Vector3 LeftArmIKHint { get; }
 
     [JsonConstructor]
     public Gun(string GunID, string GunName, GunInfo GunInfo,
     float[] GunPosition, float[] MuzzlePosition, float[] AimStandardPosition,
-    float[] LeftHandIKPosition, float[] LeftHandIKRotation)
+    float[] LeftHandIKPosition, float[] LeftHandIKRotation, float[] LeftArmIKHint)
     {
         this.GunID = GunID;
         this.GunName = GunName;
@@ -101,5 +102,6 @@ public class Gun
         this.AimStandardPosition = MathUtility.ArrayToVector3(AimStandardPosition);
         this.LeftHandIKPosition = MathUtility.ArrayToVector3(LeftHandIKPosition);
         this.LeftHandIKRotation = MathUtility.ArrayToVector3(LeftHandIKRotation);
+        this.LeftArmIKHint = MathUtility.ArrayToVector3(LeftArmIKHint);
     }
 }
