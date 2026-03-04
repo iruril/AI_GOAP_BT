@@ -15,6 +15,12 @@ public enum GunType
     Shotgun = 1   // ªÍ≈∫√—
 }
 
+public enum ReloadType
+{
+    Magazine = 0,   // ¿œπ›¿˚¿Œ ≈∫√¢ ±≥√º
+    Tube = 1        // º¶∞« («— πﬂæø ª¿‘)
+}
+
 [System.Serializable]
 public class GunInfo
 {
@@ -36,6 +42,7 @@ public class GunInfo
     public string SoundClipID { get; }
     public GunType GunType { get; }
     public int PelletCount { get; }
+    public ReloadType ReloadType { get; }
 
     [JsonConstructor]
     public GunInfo(float TimeToADS, int RoundDamage,
@@ -49,7 +56,8 @@ public class GunInfo
         string soundClipID,
         GunType gunType = GunType.Standard,
         int pelletCount = 1,
-        int BurstCount = 3)
+        int BurstCount = 3,
+        ReloadType reloadType = ReloadType.Magazine)
     {
         this.TimeToADS = TimeToADS;
         this.RoundDamage = RoundDamage;
@@ -73,6 +81,7 @@ public class GunInfo
         this.GunType = gunType;
         this.PelletCount = pelletCount;
         this.BurstCount = BurstCount;
+        this.ReloadType = reloadType;
     }
 }
 

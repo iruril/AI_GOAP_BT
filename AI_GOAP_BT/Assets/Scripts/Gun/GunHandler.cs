@@ -48,7 +48,9 @@ public class GunHandler : NetworkBehaviour
     private Dictionary<string, (Gun gun, GameObject instance)> gunHistory = new();
     private Dictionary<string, int> roundHistory = new();
 
-    private IGunFireStrategy currentFireStrategy;
+    private IGunFireStrategy currentFireStrategy; 
+    private IGunReloadStrategy currentReloadStrategy;
+
     public FireMode CurrentFireMode { get; private set; }
     private float lastFireTime = 0f;
     
@@ -179,6 +181,7 @@ public class GunHandler : NetworkBehaviour
 
         ApplyGunTransforms(currentGun);
         currentFireStrategy = FireStrategyFactory.GetStrategy(currentGun.GunInfo.GunType);
+        currentReloadStrategy = ReloadStrategyFactory.GetStrategy(currentGun.GunInfo.ReloadType);
 
         if (currentGun.GunInfo.FireModes != null && currentGun.GunInfo.FireModes.Count > 0)
         {
@@ -242,7 +245,27 @@ public class GunHandler : NetworkBehaviour
     /// </summary>
     public void TryFire(bool isPressed, bool isHeld)
     {
-        if (CurrentRounds <= 0 || OnReload) return;
+        if (CurrentRounds <= 0) return; 
+
+        if (OnReload)
+        {
+            // 튜브형 샷건인데 마우스를 클릭했다면? -> 장전 강제 취소
+            if (currentGun.GunInfo.ReloadType == ReloadType.Tube && isPressed)
+            {
+                OnReload = false; 
+                
+                Timing.KillCoroutines(reloadHandle);
+
+                PerformReloadAnimation(AnimHash.AimIdle, 1f, 0f, NetworkTime.time, 0.1f);
+                RpcUpdateReloadAnimation(AnimHash.AimIdle, 1f, 0f, NetworkTime.time, 0.1f);
+
+                return;
+            }
+            else
+            {
+                return;
+            }
+        }
 
         if (isPressed && CurrentFireMode == FireMode.Burst)
         {
@@ -436,67 +459,40 @@ public class GunHandler : NetworkBehaviour
     [Command]
     private void CmdRequestReload()
     {
-        double startTime = NetworkTime.time;
-        reloadHandle = Timing.RunCoroutine(ServerReloadRoutine(startTime));
+        double startTime = NetworkTime.time; 
+        reloadHandle = Timing.RunCoroutine(currentReloadStrategy.ExecuteReload(this, startTime));
     }
 
     [Server]
     private void StartReloadServerSide()
     {
-        double startTime = NetworkTime.time;
-        reloadHandle = Timing.RunCoroutine(ServerReloadRoutine(startTime));
-    }
-
-    private IEnumerator<float> ServerReloadRoutine(double serverStartTime)
-    {
-        OnReload = true;
-
-        RpcStartReload(serverStartTime);
-
-        yield return Timing.WaitForSeconds(1.66f);
-
-        int newRounds = (CurrentRounds == 0)
-            ? currentGun.GunInfo.MagazineCapacity
-            : currentGun.GunInfo.MagazineCapacity + 1;
-
-        CurrentRounds = newRounds;
-        OnReload = false;
-
-        RpcCompleteReload(serverStartTime + 1.66f);
+        double startTime = NetworkTime.time; 
+        reloadHandle = Timing.RunCoroutine(currentReloadStrategy.ExecuteReload(this, startTime));
     }
 
     [ClientRpc]
-    private void RpcStartReload(double serverStartTime)
+    public void RpcUpdateReloadAnimation(int animHash, float targetIK, float targetLayer, double serverTime, float blendDuration)
     {
-        if (!isClient) return;
+        if (isServer) return;
+        PerformReloadAnimation(animHash, targetIK, targetLayer, serverTime, blendDuration);
+    }
 
+    public void PerformReloadAnimation(int animHash, float targetIK, float targetLayer, double serverTime, float blendDuration)
+    {
         Animator anim = GetComponent<Animator>();
         IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
         IKConstraintBend leftBend = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.GetBendConstraint(FullBodyBipedChain.LeftArm);
 
-        anim.CrossFade(AnimHash.Reload, 0.1f);
+        if (animHash != 0)
+        {
+            anim.CrossFade(animHash, 0.25f, 1, 0f);
+        }
 
         double now = NetworkTime.time;
-        float elapsed = (float)(now - serverStartTime);
+        float elapsed = (float)(now - serverTime);
 
         Timing.KillCoroutines(layerIkHandle);
-        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, leftBend, 0f, 1f, 0.25f, elapsed));
-    }
-
-    [ClientRpc]
-    private void RpcCompleteReload(double serverCompleteTime)
-    {
-        if (!isClient) return;
-
-        Animator anim = GetComponent<Animator>();
-        IKEffector leftHand = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.leftHandEffector;
-        IKConstraintBend leftBend = GetComponent<RootMotion.FinalIK.FullBodyBipedIK>().solver.GetBendConstraint(FullBodyBipedChain.LeftArm);
-        
-        double now = NetworkTime.time;
-        float elapsed = (float)(now - serverCompleteTime);
-
-        Timing.KillCoroutines(layerIkHandle);
-        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, leftBend, 1f, 0f, 0.25f, elapsed));
+        layerIkHandle = Timing.RunCoroutine(LerpIKAndLayer(anim, leftHand, leftBend, targetIK, targetLayer, blendDuration, elapsed));
     }
 
     private IEnumerator<float> LerpIKAndLayer(Animator anim, IKEffector leftHand, IKConstraintBend leftBend,

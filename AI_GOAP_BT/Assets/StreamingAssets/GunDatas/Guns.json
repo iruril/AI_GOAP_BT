@@ -24,7 +24,8 @@
         "SoundClipID": "SFX_Shoot_AK12",
         "GunType": 0,
         "PelletCount": 1,
-        "BurstCount": 2
+        "BurstCount": 2,
+        "ReloadType": 0
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
@@ -57,7 +58,8 @@
         "SoundClipID": "SFX_Shoot_MPX",
         "GunType": 0,
         "PelletCount": 1,
-        "BurstCount": 3
+        "BurstCount": 3,
+        "ReloadType": 0
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.472, 0.017, 0.086 ],
@@ -90,7 +92,8 @@
         "SoundClipID": "SFX_Shoot_AK12",
         "GunType": 0,
         "PelletCount": 1,
-        "BurstCount": 3
+        "BurstCount": 3,
+        "ReloadType": 0
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
@@ -104,10 +107,10 @@
       "GunName": "M3",
       "GunInfo": {
         "TimeToADS": 0.21,
-        "RoundDamage": 18,
+        "RoundDamage": 16,
         "Stability": 20,
-        "Spread": 0.7,
-        "RecoilPitch": -1.6,
+        "Spread": 0.8,
+        "RecoilPitch": -3.0,
         "RecoilYawLeft": 0.15,
         "RecoilYawRight": 0.6,
         "RecoilRoll": 0.35,
@@ -117,11 +120,12 @@
         "FireModes": [
           0
         ],
-        "HeadDamageMultiplier": 1.1,
+        "HeadDamageMultiplier": 1.05,
         "SoundClipID": "SFX_Shoot_AK12",
         "GunType": 1,
         "PelletCount": 9,
-        "BurstCount": 1
+        "BurstCount": 1,
+        "ReloadType": 1
       },
       "GunPosition": [ 0, 0, 0 ],
       "MuzzlePosition": [ -0.647, 0.017, 0.078 ],

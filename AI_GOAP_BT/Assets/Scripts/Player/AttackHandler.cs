@@ -100,10 +100,14 @@ namespace Player
 
             if (!isHeld && !isPressed) return;
 
-            if (player.IKManager.AimIK.solver.IKPositionWeight < 0.99f)
-                return;
-
             var gun = player.GunController;
+
+            bool isShotgunCancel = gun.OnReload 
+                && gun.CurrentGun.GunInfo.ReloadType == ReloadType.Tube 
+                && isPressed;
+
+            if (!isShotgunCancel && player.IKManager.AimIK.solver.IKPositionWeight < 0.99f)
+                return;
 
             if (gun.CurrentRounds > 0)
             {
