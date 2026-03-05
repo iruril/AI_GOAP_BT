@@ -5,11 +5,18 @@ using UnityEngine;
 
 public interface IGunReloadStrategy
 {
+    bool TryInterrupt(GunHandler handler, bool isPressed);
     IEnumerator<float> ExecuteReload(GunHandler handler, double startTime);
 }
 
 public class MagazineReloadStrategy : IGunReloadStrategy
 {
+    public bool TryInterrupt(GunHandler handler, bool isPressed)
+    {
+        // 탄창식은 중간에 절대 캔슬할 수 없음!
+        return false;
+    }
+
     public IEnumerator<float> ExecuteReload(GunHandler handler, double startTime)
     {
         handler.OnReload = true;
@@ -30,6 +37,20 @@ public class MagazineReloadStrategy : IGunReloadStrategy
 
 public class TubeReloadStrategy : IGunReloadStrategy
 {
+    public bool TryInterrupt(GunHandler handler, bool isPressed)
+    {
+        if (isPressed)
+        {
+            handler.OnReload = false;
+            Timing.KillCoroutines(handler.reloadHandle);
+
+            handler.PerformReloadAnimation(AnimHash.AimIdle, 1f, 0f, NetworkTime.time, 0.1f);
+            handler.RpcUpdateReloadAnimation(AnimHash.AimIdle, 1f, 0f, NetworkTime.time, 0.1f);
+            return true; // 캔슬 성공!
+        }
+        return false;
+    }
+
     public IEnumerator<float> ExecuteReload(GunHandler handler, double startTime)
     {
         handler.OnReload = true;

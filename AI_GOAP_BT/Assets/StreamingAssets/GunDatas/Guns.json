@@ -6,7 +6,7 @@
       "GunInfo": {
         "TimeToADS": 0.25,
         "RoundDamage": 30,
-        "Stability": 20,
+        "Stability": 15,
         "Spread": 0.4,
         "RecoilPitch": -1.0,
         "RecoilYawLeft": 0.15,
@@ -40,7 +40,7 @@
       "GunInfo": {
         "TimeToADS": 0.18,
         "RoundDamage": 24,
-        "Stability": 30,
+        "Stability": 25,
         "Spread": 0.2,
         "RecoilPitch": -0.5,
         "RecoilYawLeft": 0.1,
@@ -74,7 +74,7 @@
       "GunInfo": {
         "TimeToADS": 0.225,
         "RoundDamage": 25,
-        "Stability": 25,
+        "Stability": 20,
         "Spread": 0.25,
         "RecoilPitch": -0.65,
         "RecoilYawLeft": 0.1,
@@ -108,7 +108,7 @@
       "GunInfo": {
         "TimeToADS": 0.21,
         "RoundDamage": 18,
-        "Stability": 20,
+        "Stability": 8,
         "Spread": 0.8,
         "RecoilPitch": -3.0,
         "RecoilYawLeft": 0.15,

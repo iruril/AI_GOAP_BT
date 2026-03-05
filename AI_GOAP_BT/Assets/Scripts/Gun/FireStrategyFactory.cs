@@ -10,8 +10,13 @@ public class StandardFireStrategy : IGunFireStrategy
 {
     public virtual void ExecuteFire(GunHandler handler, Vector3 muzzlePos, Vector3 muzzleDir, float lagTime)
     {
+        handler.ConsumeAmmo(1);
+        handler.AddSpread(1f / handler.CurrentGun.GunInfo.Stability);
+
         float currentSpreadRad = handler.CurrentSpread * Mathf.Deg2Rad;
         SpawnSingleBullet(handler, muzzlePos, muzzleDir, currentSpreadRad, lagTime);
+
+        handler.RpcPlayMuzzleFlash(muzzlePos, Quaternion.LookRotation(muzzleDir));
     }
 
     protected void SpawnSingleBullet(GunHandler handler, Vector3 muzzlePos, Vector3 muzzleDir, float spreadRad, float lagTime)
@@ -30,6 +35,9 @@ public class ShotgunFireStrategy : StandardFireStrategy
 {
     public override void ExecuteFire(GunHandler handler, Vector3 muzzlePos, Vector3 muzzleDir, float lagTime)
     {
+        handler.ConsumeAmmo(1);
+        handler.AddSpread(1f / handler.CurrentGun.GunInfo.Stability);
+
         int pelletCount = handler.CurrentGun.GunInfo.PelletCount;
         float maxSpreadRad = handler.CurrentGun.GunInfo.Spread * Mathf.Deg2Rad;
 
@@ -37,6 +45,8 @@ public class ShotgunFireStrategy : StandardFireStrategy
         {
             SpawnSingleBullet(handler, muzzlePos, muzzleDir, maxSpreadRad, lagTime);
         }
+
+        handler.RpcPlayMuzzleFlash(muzzlePos, Quaternion.LookRotation(muzzleDir));
     }
 }
 

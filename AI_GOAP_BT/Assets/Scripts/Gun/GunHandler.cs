@@ -49,12 +49,11 @@ public class GunHandler : NetworkBehaviour
     private Dictionary<string, int> roundHistory = new();
 
     private IGunFireStrategy currentFireStrategy; 
-    private IGunReloadStrategy currentReloadStrategy;
+    private IGunReloadStrategy currentReloadStrategy; 
+    private IFireModeStrategy currentFireModeStrategy;
+    public FireMode CurrentFireMode => currentFireModeStrategy.Mode;
 
-    public FireMode CurrentFireMode { get; private set; }
     private float lastFireTime = 0f;
-    
-    private int currentBurstCount = 0;
 
     private bool pendingFire = false;
     private List<HitInfo> hitBuffer = new List<HitInfo>();
@@ -68,7 +67,7 @@ public class GunHandler : NetworkBehaviour
     public float CurrentSpread => currentSpread;
     [SyncVar(hook = nameof(OnRoundUpdate))] public int CurrentRounds = 0;
     [SyncVar] public bool OnReload;
-    CoroutineHandle reloadHandle;
+    public CoroutineHandle reloadHandle;
 
     CoroutineHandle spawnBatchHandle;
 
@@ -183,14 +182,12 @@ public class GunHandler : NetworkBehaviour
         currentFireStrategy = FireStrategyFactory.GetStrategy(currentGun.GunInfo.GunType);
         currentReloadStrategy = ReloadStrategyFactory.GetStrategy(currentGun.GunInfo.ReloadType);
 
+        FireMode initialMode = FireMode.Single;
         if (currentGun.GunInfo.FireModes != null && currentGun.GunInfo.FireModes.Count > 0)
         {
-            CurrentFireMode = currentGun.GunInfo.FireModes.Last();
+            initialMode = currentGun.GunInfo.FireModes.Last();
         }
-        else
-        {
-            CurrentFireMode = FireMode.Single;
-        }
+        currentFireModeStrategy = FireModeStrategyFactory.CreateStrategy(initialMode);
 
         lastFireTime = 0f;
         currentGunModel.SetActive(true);
@@ -209,7 +206,7 @@ public class GunHandler : NetworkBehaviour
         LoadGun(gunName);
     }
 
-    void ApplyGunTransforms(Gun gunData)
+    private void ApplyGunTransforms(Gun gunData)
     {
         gunPos.localPosition = gunData.GunPosition;
         muzzle.localPosition = gunData.MuzzlePosition;
@@ -238,6 +235,36 @@ public class GunHandler : NetworkBehaviour
         currentSpread = Mathf.Clamp(currentSpread, 0f, currentGun.GunInfo.Spread);
     }
 
+    public void ToggleFireMode()
+    {
+        var fireModes = currentGun.GunInfo.FireModes;
+
+        if (fireModes == null || fireModes.Count <= 1) return;
+
+        int currentIndex = fireModes.IndexOf(CurrentFireMode);
+        int nextIndex = (currentIndex + 1) % fireModes.Count;
+        FireMode nextMode = fireModes[nextIndex];
+
+        currentFireModeStrategy = FireModeStrategyFactory.CreateStrategy(nextMode);
+
+        // UI 업데이트
+        if (isLocalPlayer)
+        {
+            // TODO: UI에 현재 발사 모드 아이콘을 갱신하는 함수 호출
+            // WeaponHUD.Instance.UpdateFireModeUI(nextMode);
+        }
+    }
+
+    public void ConsumeAmmo(int amount)
+    {
+        CurrentRounds = Mathf.Clamp(CurrentRounds - amount, 0, int.MaxValue);
+    }
+
+    public void AddSpread(float amount)
+    {
+        currentSpread += amount;
+    }
+
     /// <summary>
     /// 입력 스크립트에서 매 프레임 호출
     /// isPressed = Input.GetMouseButtonDown(0)
@@ -249,16 +276,9 @@ public class GunHandler : NetworkBehaviour
 
         if (OnReload)
         {
-            // 튜브형 샷건인데 마우스를 클릭했다면? -> 장전 강제 취소
-            if (currentGun.GunInfo.ReloadType == ReloadType.Tube && isPressed)
+            if (currentReloadStrategy.TryInterrupt(this, isPressed))
             {
-                OnReload = false; 
-                
-                Timing.KillCoroutines(reloadHandle);
-
-                PerformReloadAnimation(AnimHash.AimIdle, 1f, 0f, NetworkTime.time, 0.1f);
-                RpcUpdateReloadAnimation(AnimHash.AimIdle, 1f, 0f, NetworkTime.time, 0.1f);
-
+                OnReload = false;
                 return;
             }
             else
@@ -267,31 +287,8 @@ public class GunHandler : NetworkBehaviour
             }
         }
 
-        if (isPressed && CurrentFireMode == FireMode.Burst)
-        {
-            currentBurstCount = 0;
-        }
-
-        if (Time.time - lastFireTime < currentGun.GunInfo.ShotInterval) return;
-
-        bool canFire = false;
-
-        switch (CurrentFireMode)
-        {
-            case FireMode.Single:
-                canFire = isPressed; // 단발: 마우스를 '클릭한 순간'에만 발사
-                break;
-            case FireMode.Auto:
-                canFire = isHeld;    // 연사: 마우스를 '누르고 있는 동안' 계속 발사
-                break;
-            case FireMode.Burst:
-                if (isHeld && currentBurstCount < currentGun.GunInfo.BurstCount)
-                {
-                    canFire = true;
-                    currentBurstCount++;
-                }
-                break;
-        }
+        bool isCooldownReady = (Time.time - lastFireTime) >= currentGun.GunInfo.ShotInterval;
+        bool canFire = currentFireModeStrategy.CheckCanFire(isPressed, isHeld, isCooldownReady, currentGun.GunInfo);
 
         if (canFire)
         {
@@ -341,12 +338,7 @@ public class GunHandler : NetworkBehaviour
         if ((Muzzle.position - muzzlePos).sqrMagnitude > 2f) return;
         if (CurrentRounds <= 0) return;
 
-        CurrentRounds = Mathf.Clamp(CurrentRounds - 1, 0, int.MaxValue);
-
         currentFireStrategy.ExecuteFire(this, muzzlePos, muzzleDir, lagTime);
-
-        RpcPlayMuzzleFlash(muzzlePos, Quaternion.LookRotation(muzzleDir));
-        currentSpread += 1f / currentGun.GunInfo.Stability;
     }
 
     public void SpawnAndBroadcastBullet(Vector3 muzzlePos, Vector3 finalDir, float lagTime)
@@ -380,7 +372,7 @@ public class GunHandler : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcPlayMuzzleFlash(Vector3 muzzlePos, Quaternion rot)
+    public void RpcPlayMuzzleFlash(Vector3 muzzlePos, Quaternion rot)
     {
         EffectPoolManager.SpawnFromPool("MuzzleFlash", muzzlePos, rot);
         SoundManager.Instance.PlaySound(currentGun.GunInfo.SoundClipID, audioSource, 1.0f);
