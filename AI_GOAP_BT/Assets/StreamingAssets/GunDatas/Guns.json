@@ -96,9 +96,9 @@
         "ReloadType": 0
       },
       "GunPosition": [ 0, 0, 0 ],
-      "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
-      "AimStandardPosition": [ -0.07, 0.017, 0.078 ],
-      "LeftHandIKPosition": [ -0.3415, 0.069, 0.097 ],
+      "MuzzlePosition": [ -0.61589998, 0.0186000001, 0.0913000032 ],
+      "AimStandardPosition": [ -0.0700000003, 0.0186000001, 0.0913000032 ],
+      "LeftHandIKPosition": [ -0.3412, 0.069, 0.0883 ],
       "LeftHandIKRotation": [17.2, 135.7, 145.6],
       "LeftArmIKHint": [-0.265, 0.384, -0.176]
     },
@@ -107,7 +107,7 @@
       "GunName": "M3",
       "GunInfo": {
         "TimeToADS": 0.21,
-        "RoundDamage": 16,
+        "RoundDamage": 18,
         "Stability": 20,
         "Spread": 0.8,
         "RecoilPitch": -3.0,
@@ -128,10 +128,10 @@
         "ReloadType": 1
       },
       "GunPosition": [ 0, 0, 0 ],
-      "MuzzlePosition": [ -0.647, 0.017, 0.078 ],
-      "AimStandardPosition": [ -0.07, 0.017, 0.078 ],
-      "LeftHandIKPosition": [ -0.3773, 0.0491, 0.0884 ],
-      "LeftHandIKRotation": [45.7, 118.3, 145.2],
+      "MuzzlePosition": [ -0.707199991, 0.0179999992, 0.109999999 ],
+      "AimStandardPosition": [ -0.0700000003,0.0178999994,0.109899998 ],
+      "LeftHandIKPosition": [ -0.364, 0.054, 0.081 ],
+      "LeftHandIKRotation": [131.76, -75.776, -50.89801],
       "LeftArmIKHint": [-0.265, 0.384, -0.176]
     }
   ]

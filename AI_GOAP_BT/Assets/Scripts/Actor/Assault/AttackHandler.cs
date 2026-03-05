@@ -70,6 +70,7 @@ namespace GOAP.Assualt
             myBrain.MotionController.AimIK.solver.IKPositionWeight = 0f;
             myBrain.MotionController.FBBIK.solver.leftHandEffector.target = myBrain.GunController.LeftHandIKTarget;
             myBrain.MotionController.FBBIK.solver.leftHandEffector.positionWeight = 1f;
+            myBrain.MotionController.FBBIK.solver.leftHandEffector.rotationWeight = 1f;
             myBrain.MotionController.FBBIK.solver.GetBendConstraint(FullBodyBipedChain.LeftArm).bendGoal = myBrain.GunController.LeftArmIKHint;
             myBrain.MotionController.FBBIK.solver.GetBendConstraint(FullBodyBipedChain.LeftArm).weight = 1f;
         }

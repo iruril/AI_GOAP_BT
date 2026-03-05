@@ -41,7 +41,8 @@ namespace Player
             player.IKManager.AimIK.solver.IKPositionWeight = 0f;
             player.IKManager.LookIK.solver.IKPositionWeight = 0f;
             player.IKManager.FBBIK.solver.leftHandEffector.target = player.GunController.LeftHandIKTarget;
-            player.IKManager.FBBIK.solver.leftHandEffector.positionWeight = 1f;
+            player.IKManager.FBBIK.solver.leftHandEffector.positionWeight = 1f; 
+            player.IKManager.FBBIK.solver.leftHandEffector.rotationWeight = 1f;
             player.IKManager.FBBIK.solver.GetBendConstraint(FullBodyBipedChain.LeftArm).bendGoal = player.GunController.LeftArmIKHint;
             player.IKManager.FBBIK.solver.GetBendConstraint(FullBodyBipedChain.LeftArm).weight = 1f;
         }
