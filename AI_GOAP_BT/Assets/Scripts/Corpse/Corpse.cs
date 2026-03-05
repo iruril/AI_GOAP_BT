@@ -76,12 +76,26 @@ public class Corpse : MonoBehaviour
 
         foreach (Rigidbody rb in tempRigids)
         {
-            rb.mass = totalMass / tempRigids.Count();
+            Collider col = rb.GetComponent<Collider>();
 
-            rb.maxDepenetrationVelocity = 3.5f;
+            if (col == null)
+            {
+                // 콜라이더가 없더라도 최소 1.0f는 유지하여 조인트 안정성 확보
+                rb.mass = 1f;
+            }
+            else
+            {
+                // 부위별 비율 계산 후, 최소값 1.0f 보장
+                float calculatedMass = totalMass * GetBoneMassRatio(rb.name);
+                rb.mass = Mathf.Max(calculatedMass, 1.0f);
+            }
+
+            rb.maxDepenetrationVelocity = 2.0f;
+            rb.linearDamping = 0.05f;
+            rb.angularDamping = 0.3f;
             rb.maxAngularVelocity = 15f;
             rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
-            rb.interpolation = RigidbodyInterpolation.Interpolate; 
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
             rb.solverIterations = 12;
             rb.solverVelocityIterations = 8;
 
@@ -99,6 +113,30 @@ public class Corpse : MonoBehaviour
                 joint.connectedAnchor = joint.connectedBody.transform.InverseTransformPoint(worldAnchorPos);
             }
         }
+    }
+
+    private float GetBoneMassRatio(string boneName)
+    {
+        string name = boneName.ToLower();
+
+        // 몸통 및 골반 (약 48%)
+        if (name.Contains("pelvis") || name.Contains("hip")) return 0.15f; // 골반 15%
+        if (name.Contains("spine")) return 0.11f; // Spine 3개 각각 약 11% (총 33%)
+
+        // 머리 및 목 (약 8%)
+        if (name.Contains("head")) return 0.05f; // 머리 5%
+        if (name.Contains("neck")) return 0.03f; // 목 3%
+
+        // 다리 (약 33%)
+        if (name.Contains("upleg") || name.Contains("thigh")) return 0.10f; // 허벅지 각각 10%
+        if (name.Contains("leg") || name.Contains("calf")) return 0.047f;   // 종아리 각각 4.7%
+
+        // 팔 (약 11%)
+        if (name.Contains("forearm")) return 0.03f;  // 하박(팔뚝) 각각 3%
+        if (name.Contains("upperarm") || name.Contains("arm")) return 0.026f; // 상박 각각 2.6%
+
+        // 기본값 (분류되지 않은 뼈대)
+        return 0.01f;
     }
 #endif
 
@@ -138,12 +176,12 @@ public class Corpse : MonoBehaviour
         if (PhysicsBones.TryGetValue(latestHittedPart, out Rigidbody hitRb))
         {
             Vector3 forceDir = (hitRb.worldCenterOfMass - shotOrigin).normalized;
-            hitRb.linearVelocity += forceDir * 10f;
+            hitRb.linearVelocity += forceDir * 5f;
         }
         else if (PhysicsBones.TryGetValue(root.name, out Rigidbody rootRb))
         {
             Vector3 forceDir = (rootRb.worldCenterOfMass - shotOrigin).normalized;
-            rootRb.linearVelocity += forceDir * 10f;
+            rootRb.linearVelocity += forceDir * 5f;
         }
     }
 
