@@ -122,6 +122,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SelectFireMode",
+                    "type": "Button",
+                    "id": "2780ba2d-94de-4a51-93f2-b2e1e88560d6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -463,6 +472,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "LeanR",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cac938f6-9b29-4b07-ba69-7c9d6c08a9a7",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "SelectFireMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

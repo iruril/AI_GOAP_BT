@@ -350,6 +350,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 38e63320-413f-49ed-b340-bf53f74ff62f
     m_ActionName: 'Player/LeanR[/Keyboard/e]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: -9083412935549270331}
+        m_TargetAssemblyTypeName: Player.Input.InputRecorder, Assembly-CSharp
+        m_MethodName: OnSelectFireModeInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 2780ba2d-94de-4a51-93f2-b2e1e88560d6
+    m_ActionName: 'Player/SelectFireMode[/Keyboard/b]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

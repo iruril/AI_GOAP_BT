@@ -54,6 +54,7 @@ namespace Player.Input
         public bool Tab { get; set; } = false;
         public bool LeanLeft { get; set; } = false;
         public bool Crouch { get; set; } = false;
+        public bool SelectFireMode { get; set; } = false;
 
         public UIState CurrentUIState { get; set; } = UIState.None;
         public bool IsOnStaticUI => CurrentUIState != UIState.None && CurrentUIState != UIState.Scoreboard;
@@ -186,6 +187,23 @@ namespace Player.Input
                 return;
             }
             Crouch = context.performed;
+        }
+
+        public void OnSelectFireModeInput(InputAction.CallbackContext context)
+        {
+            if (IsOnStaticUI)
+            {
+                SelectFireMode = false;
+                return;
+            }
+            SelectFireMode = context.performed;
+        }
+
+        public bool ConsumeSelectFireMode()
+        {
+            if (!SelectFireMode) return false;
+            SelectFireMode = false;
+            return true;
         }
 
         public bool ConsumeChatKeyDown()

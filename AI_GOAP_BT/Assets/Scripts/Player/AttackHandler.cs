@@ -66,6 +66,7 @@ namespace Player
             UpdateAimValues();
             TryShoot(); 
             TryReload();
+            TryChangeFireMode();
         }
 
         private void UpdateAimValues()
@@ -132,6 +133,14 @@ namespace Player
                 return;
 
             gun.Reload();
+        }
+
+        private void TryChangeFireMode()
+        {
+            if (player.Input.ConsumeSelectFireMode())
+            {
+                player.GunController.ToggleFireMode();
+            }
         }
     }
 }
