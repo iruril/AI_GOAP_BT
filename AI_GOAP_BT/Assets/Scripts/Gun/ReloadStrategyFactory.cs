@@ -41,7 +41,6 @@ public class MagazineReloadStrategy : IGunReloadStrategy
 
 public class TubeReloadStrategy : IGunReloadStrategy
 {
-    private bool isPumpOpen = false;
     private bool isUncancelable = false;
 
     public bool TryInterrupt(GunHandler handler, bool isPressed)
@@ -50,9 +49,10 @@ public class TubeReloadStrategy : IGunReloadStrategy
         if (isUncancelable) return false;
 
         Timing.KillCoroutines(handler.reloadHandle);
-        if (isPumpOpen)
+
+        if (handler.IsChamberOpen)
         {
-            isPumpOpen = false;
+            handler.IsChamberOpen = false;
             handler.reloadHandle = Timing.RunCoroutine(PumpCloseRoutine(handler));
             return false;
         }
@@ -83,8 +83,8 @@ public class TubeReloadStrategy : IGunReloadStrategy
 
     public IEnumerator<float> ExecuteReload(GunHandler handler, double startTime)
     {
-        handler.OnReload = true; 
-        isPumpOpen = false;
+        handler.OnReload = true;
+        handler.IsChamberOpen = false;
         isUncancelable = false;
 
         bool isTactical = handler.CurrentRounds > 0;
@@ -95,7 +95,7 @@ public class TubeReloadStrategy : IGunReloadStrategy
             handler.RpcUpdateReloadAnimation(AnimHash.TubeReloadStart, 0f, 1f, startTime, 0.25f);
             yield return Timing.WaitForSeconds(0.3f);
 
-            isPumpOpen = true;
+            handler.IsChamberOpen = true;
             isUncancelable = false;
         }
 
@@ -110,10 +110,10 @@ public class TubeReloadStrategy : IGunReloadStrategy
             handler.CurrentRounds++;
         }
 
-        if (isPumpOpen)
+        if (handler.IsChamberOpen)
         {
             isUncancelable = true;
-            isPumpOpen = false;
+            handler.IsChamberOpen = false;
 
             handler.PerformReloadAnimation(AnimHash.TubeReloadEnd, 0f, 1f, NetworkTime.time, 0.25f);
             handler.RpcUpdateReloadAnimation(AnimHash.TubeReloadEnd, 0f, 1f, NetworkTime.time, 0.25f);

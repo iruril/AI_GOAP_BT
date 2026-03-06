@@ -60,6 +60,8 @@ public class GunHandler : NetworkBehaviour
     private bool pendingFire = false;
     private List<HitInfo> hitBuffer = new List<HitInfo>();
 
+    [SyncVar] public bool IsChamberOpen = false;
+
     // 플레이어용: 클라이언트가 계산한 muzzle 정보
     private Vector3 clientMuzzlePos;
     private Vector3 clientMuzzleDir;
@@ -292,20 +294,21 @@ public class GunHandler : NetworkBehaviour
     /// </summary>
     public void TryFire(bool isPressed, bool isHeld)
     {
-        if (CurrentRounds <= 0) return; 
-
         if (OnReload)
         {
-            if (currentReloadStrategy.TryInterrupt(this, isPressed))
+            if (isPressed && !isServer)
             {
-                OnReload = false;
-                return;
+                CmdTryInterruptReload(isPressed);
             }
-            else
+            else if (isPressed && isServer)
             {
-                return;
+                // 호스트일 경우 직접 실행
+                currentReloadStrategy.TryInterrupt(this, isPressed);
             }
+            return;
         }
+
+        if (CurrentRounds <= 0) return; 
 
         bool isCooldownReady = (Time.time - lastFireTime) >= currentGun.GunInfo.ShotInterval;
         bool canFire = currentFireModeStrategy.CheckCanFire(isPressed, isHeld, isCooldownReady, currentGun.GunInfo);
@@ -315,6 +318,12 @@ public class GunHandler : NetworkBehaviour
             lastFireTime = Time.time;
             pendingFire = true;
         }
+    }
+
+    [Command]
+    public void CmdTryInterruptReload(bool isPressed)
+    {
+        currentReloadStrategy.TryInterrupt(this, isPressed);
     }
 
     public void ClientFireCallback()
@@ -457,6 +466,7 @@ public class GunHandler : NetworkBehaviour
     public void Reload()
     {
         if (OnReload) return;
+        OnReload = true;
 
         if (isServer) // 서버 authority
         {
@@ -471,6 +481,8 @@ public class GunHandler : NetworkBehaviour
     [Command]
     private void CmdRequestReload()
     {
+        if (OnReload) return;
+
         double startTime = NetworkTime.time; 
         reloadHandle = Timing.RunCoroutine(currentReloadStrategy.ExecuteReload(this, startTime));
     }
