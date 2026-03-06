@@ -465,7 +465,7 @@ ModelImporter:
     second: MotusMan_v55
   - first:
       74: 7400000
-    second: W2_Stand_Aim_Reload
+    second: MagazineReloadNormal
   - first:
       95: 9500000
     second: //RootNode
@@ -500,7 +500,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: W2_Stand_Aim_Reload
+      name: MagazineReloadNormal
       takeName: W2_Stand_Aim_Reload
       internalID: 0
       firstFrame: 0

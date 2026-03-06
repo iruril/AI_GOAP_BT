@@ -30,7 +30,8 @@ public static class AnimHash
     public static readonly int Land = Animator.StringToHash("Land");
 
     public static readonly int AimIdle = Animator.StringToHash("AimIdle");
-    public static readonly int MagazineReload = Animator.StringToHash("Reload");
+    public static readonly int MagazineReloadNormal = Animator.StringToHash("MagazineReloadNormal");
+    public static readonly int MagazineReloadTactical = Animator.StringToHash("MagazineReloadTactical");
     public static readonly int TubeReloadStart = Animator.StringToHash("TubeReloadPump");
     public static readonly int TubeReloadInsert = Animator.StringToHash("TubeReloadInsert");
     public static readonly int TubeReloadEnd = Animator.StringToHash("TubeReloadPump");

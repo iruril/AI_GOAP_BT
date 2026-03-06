@@ -48,8 +48,10 @@ public class GunHandler : NetworkBehaviour
     private Dictionary<string, (Gun gun, GameObject instance)> gunHistory = new();
     private Dictionary<string, int> roundHistory = new();
 
-    private IGunFireStrategy currentFireStrategy; 
-    private IGunReloadStrategy currentReloadStrategy; 
+    private Dictionary<FireMode, IFireModeStrategy> fireModeStrategies = new();
+    private IGunFireStrategy currentFireStrategy;
+    private Dictionary<ReloadType, IGunReloadStrategy> reloadStrategies = new();
+    private IGunReloadStrategy currentReloadStrategy;
     private IFireModeStrategy currentFireModeStrategy;
     public FireMode CurrentFireMode => currentFireModeStrategy.Mode;
 
@@ -180,14 +182,26 @@ public class GunHandler : NetworkBehaviour
 
         ApplyGunTransforms(currentGun);
         currentFireStrategy = FireStrategyFactory.GetStrategy(currentGun.GunInfo.GunType);
-        currentReloadStrategy = ReloadStrategyFactory.GetStrategy(currentGun.GunInfo.ReloadType);
+
+        ReloadType rType = currentGun.GunInfo.ReloadType;
+        if (!reloadStrategies.ContainsKey(rType))
+        {
+            reloadStrategies[rType] = ReloadStrategyFactory.CreateStrategy(rType);
+        }
+        currentReloadStrategy = reloadStrategies[rType];
 
         FireMode initialMode = FireMode.Single;
         if (currentGun.GunInfo.FireModes != null && currentGun.GunInfo.FireModes.Count > 0)
         {
             initialMode = currentGun.GunInfo.FireModes.Last();
         }
-        currentFireModeStrategy = FireModeStrategyFactory.CreateStrategy(initialMode);
+
+        if (!fireModeStrategies.ContainsKey(initialMode))
+        {
+            fireModeStrategies[initialMode] = FireModeStrategyFactory.CreateStrategy(initialMode);
+        }
+        currentFireModeStrategy = fireModeStrategies[initialMode];
+        currentFireModeStrategy.ResetState();
 
         lastFireTime = 0f;
         currentGunModel.SetActive(true);
@@ -245,7 +259,13 @@ public class GunHandler : NetworkBehaviour
         int nextIndex = (currentIndex + 1) % fireModes.Count;
         FireMode nextMode = fireModes[nextIndex];
 
-        currentFireModeStrategy = FireModeStrategyFactory.CreateStrategy(nextMode);
+        if (!fireModeStrategies.ContainsKey(nextMode))
+        {
+            fireModeStrategies[nextMode] = FireModeStrategyFactory.CreateStrategy(nextMode);
+        }
+
+        currentFireModeStrategy = fireModeStrategies[nextMode];
+        currentFireModeStrategy.ResetState();
 
         // UI 업데이트
         if (isLocalPlayer)
@@ -477,7 +497,7 @@ public class GunHandler : NetworkBehaviour
 
         if (animHash != 0)
         {
-            anim.CrossFade(animHash, 0.25f, 1, 0f);
+            anim.CrossFade(animHash, 0.2f, 1, 0f);
         }
 
         double now = NetworkTime.time;
