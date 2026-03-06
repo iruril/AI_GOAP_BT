@@ -247,8 +247,7 @@ namespace AnimControl.Assault
         public bool Shootable()
         {
             return AimIK.solver.IKPositionWeight >= 0.99f 
-                && MyBrain.Sensor.TargetVisible
-                && (MyBrain.Sensor.CurrentTargetAimPoint.position - MyBrain.GunController.AimIKTarget.position).sqrMagnitude <= 4;
+                && MyBrain.Sensor.TargetVisible;
         }
 
         private void OnDead()

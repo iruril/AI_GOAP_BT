@@ -127,7 +127,7 @@
         "BurstCount": 1,
         "ReloadType": 1
       },
-      "GunPosition": [ 0, 0, 0 ],
+      "GunPosition": [ 0.0088, 0, -0.0239 ],
       "MuzzlePosition": [ -0.707199991, 0.0179999992, 0.109999999 ],
       "AimStandardPosition": [ -0.0700000003,0.0178999994,0.109899998 ],
       "LeftHandIKPosition": [ -0.364, 0.054, 0.081 ],

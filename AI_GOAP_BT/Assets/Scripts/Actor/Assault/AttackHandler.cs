@@ -12,7 +12,6 @@ namespace GOAP.Assualt
 
         [Header("Shoot Interval")]
         [SerializeField] private float attackCooldown = 2.5f;
-        private int burstCount = 3; 
         
         [Header("Reaction Settings")]
         [SerializeField] private float reactionTime = 0.5f;
@@ -20,16 +19,13 @@ namespace GOAP.Assualt
 
         [Header("Accuracy Settings")]
         [SerializeField] private float baseSpread = 0.5f;
-        [SerializeField] private float spreadPerShot = 0.2f;
-        [SerializeField] private float maxSpread = 1.5f;
         [SerializeField] private float aimTrackingLag = 0.1f;
 
-        private float currentSpread = 0f;
         private Vector3 visualAimOffset;
 
         private float cooldownTimer = 0f;
-        private bool isBursting = false;
-        private CoroutineHandle burstHandle;
+        private bool isFiring = false;
+        private CoroutineHandle fireHandle;
 
         [Header("SyncVar")]
         [SyncVar] public Vector3 SyncedAimTarget;
@@ -51,18 +47,6 @@ namespace GOAP.Assualt
             myBrain.Sensor.MyStat.OnDead += OnDead;
             myBrain.Sensor.MyStat.OnDead += myBrain.GunController.OnDead;
             myBrain.MotionController.AimIK.solver.OnPostUpdate += myBrain.GunController.FireCallback;
-
-            Timing.RunCoroutine(WaitForGunInitialization());
-        }
-
-        private IEnumerator<float> WaitForGunInitialization()
-        {
-            while (myBrain.GunController.CurrentGun == null)
-            {
-                yield return Timing.WaitForOneFrame;
-            }
-
-            OnGunChanged();
         }
 
         public override void OnStartClient()
@@ -80,16 +64,20 @@ namespace GOAP.Assualt
             myBrain.Sensor.MyStat.OnDead -= OnDead;
             myBrain.Sensor.MyStat.OnDead -= myBrain.GunController.OnDead;
             myBrain.MotionController.AimIK.solver.OnPostUpdate -= myBrain.GunController.FireCallback;
-            Timing.KillCoroutines(burstHandle);
+            Timing.KillCoroutines(fireHandle);
         }
 
         private void Update()
         {
             if (isServer)
             {
-                cooldownTimer += Time.deltaTime;
-                ServerUpdateAimValues(); 
-                
+                if (!isFiring)
+                {
+                    cooldownTimer += Time.deltaTime;
+                }
+
+                ServerUpdateAimValues();
+
                 if (myBrain.Sensor.TargetVisible && myBrain.Sensor.HasTarget)
                 {
                     recognitionTimer += Time.deltaTime;
@@ -160,42 +148,39 @@ namespace GOAP.Assualt
         {
             if (!isServer) return;
             if (!myBrain.MotionController.Shootable()) return;
-            if (cooldownTimer < attackCooldown) return;
-            if (isBursting) return; 
+            if (cooldownTimer < attackCooldown) return; 
+            if (isFiring) return;
             if (recognitionTimer < reactionTime) return;
 
-            burstHandle = Timing.RunCoroutine(BurstRoutine());
+            fireHandle = Timing.RunCoroutine(AutoFireRoutine());
         }
 
-        private IEnumerator<float> BurstRoutine()
+        private IEnumerator<float> AutoFireRoutine()
         {
-            isBursting = true;
+            isFiring = true;
             cooldownTimer = 0f;
-            currentSpread = baseSpread;
 
             var gunStat = myBrain.GunController;
-            int targetShots = burstCount;
             int lastAmmo = gunStat.CurrentRounds;
-
             float timeSinceLastShot = 0f;
             bool isTriggerPressed = true;
 
             UpdateVisualAimOffset();
 
-            while (targetShots > 0)
+            while (true)
             {
-                if (!myBrain.MotionController.Shootable() || gunStat.CurrentRounds <= 0) break;
+                if (!myBrain.Sensor.HasTarget || !myBrain.Sensor.TargetVisible ||
+                    !myBrain.MotionController.Shootable() || gunStat.CurrentRounds <= 0)
+                {
+                    break;
+                }
 
                 myBrain.GunController.TryFire(isPressed: isTriggerPressed, isHeld: true);
                 isTriggerPressed = false;
 
                 if (gunStat.CurrentRounds < lastAmmo)
                 {
-                    int shotsFiredNow = lastAmmo - gunStat.CurrentRounds;
-                    targetShots -= shotsFiredNow;
                     lastAmmo = gunStat.CurrentRounds;
-
-                    currentSpread = Mathf.Min(currentSpread + spreadPerShot, maxSpread);
                     timeSinceLastShot = 0f;
 
                     UpdateVisualAimOffset();
@@ -205,7 +190,8 @@ namespace GOAP.Assualt
                     timeSinceLastShot += Time.deltaTime;
                 }
 
-                float gracePeriod = gunStat.CurrentGun.GunInfo.ShotInterval + 0.05f;
+                float gracePeriod = gunStat.CurrentGun.GunInfo.ShotInterval;
+
                 if (timeSinceLastShot > gracePeriod)
                 {
                     isTriggerPressed = true;
@@ -215,8 +201,8 @@ namespace GOAP.Assualt
             }
 
             visualAimOffset = Vector3.zero;
-            isBursting = false;
-            currentSpread = baseSpread;
+            isFiring = false;
+            cooldownTimer = 0f;
         }
 
         private void UpdateVisualAimOffset()
@@ -224,23 +210,14 @@ namespace GOAP.Assualt
             Vector3 realTargetPos = myBrain.Sensor.LastSeenPosition;
             float distance = Vector3.Distance(transform.position, realTargetPos);
             float distanceMultiplier = distance / 10f;
-            visualAimOffset = Random.insideUnitSphere * (currentSpread * distanceMultiplier);
+            visualAimOffset = Random.insideUnitSphere * (baseSpread * distanceMultiplier);
         }
 
         private void OnDead()
         {
             cooldownTimer = 0f;
-            visualAimOffset = Vector3.zero;
-            isBursting = false;
-            currentSpread = baseSpread;
-            Timing.KillCoroutines(burstHandle);
-        }
-
-        private void OnGunChanged()
-        {
-            // 다 맞아도 죽지 않을 정도로만 격발
-            int rounds = Mathf.CeilToInt(myBrain.Sensor.MyStat.MaxHP / (float)myBrain.GunController.CurrentGun.GunInfo.RoundDamage);
-            burstCount = Mathf.Max(1, rounds - 1);
+            visualAimOffset = Vector3.zero; isFiring = false;
+            Timing.KillCoroutines(fireHandle);
         }
     }
 }
