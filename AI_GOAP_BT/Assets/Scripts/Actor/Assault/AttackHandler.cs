@@ -209,8 +209,18 @@ namespace GOAP.Assualt
         {
             Vector3 realTargetPos = myBrain.Sensor.LastSeenPosition;
             float distance = Vector3.Distance(transform.position, realTargetPos);
-            float distanceMultiplier = distance / 10f;
-            visualAimOffset = Random.insideUnitSphere * (baseSpread * distanceMultiplier);
+
+            float distanceMultiplier = Mathf.Clamp(distance / 10f, 0.25f, 2.0f);
+
+            float currentSpread = baseSpread * distanceMultiplier;
+
+            Vector2 gaussianOffset = MathUtility.SampleGaussian2D(currentSpread);
+
+            Vector3 directionToTarget = (realTargetPos - transform.position).normalized;
+            Vector3 right = Vector3.Cross(Vector3.up, directionToTarget).normalized;
+            Vector3 up = Vector3.Cross(directionToTarget, right).normalized;
+
+            visualAimOffset = (right * gaussianOffset.x) + (up * gaussianOffset.y);
         }
 
         private void OnDead()
