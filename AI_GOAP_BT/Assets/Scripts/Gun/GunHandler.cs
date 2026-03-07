@@ -17,10 +17,13 @@ public struct HitInfo
 
 public class GunHandler : NetworkBehaviour
 {
+    #region Events
     public event Action<int> OnRoundChanged;
     public event Action OnFired;
     public event Action<float, float, float, float> OnGunRecoilChanged;
+    #endregion
 
+    #region Inspector Settings (Transforms & Audio)
     [Header("Gun 사운드 소스")]
     [SerializeField] private AudioSource audioSource;
 
@@ -39,8 +42,14 @@ public class GunHandler : NetworkBehaviour
     public Transform Muzzle { get { return muzzle; } }
     public Transform AimIKTarget { get { return aimIKTarget; } }
     public Transform AimIKStandard { get { return aimIKStandard; } }
+    #endregion
 
+    #region Network SyncVars & State Variables
     [SyncVar(hook = nameof(OnGunNameChanged))] public string syncedGunName;
+    [SyncVar(hook = nameof(OnRoundUpdate))] public int CurrentRounds = 0;
+    [SyncVar] public bool IsChamberOpen = false;
+    [SyncVar] public bool OnReload;
+
     private Gun currentGun;
     public Gun CurrentGun { get { return currentGun; } }
     private GameObject currentGunModel;
@@ -48,35 +57,35 @@ public class GunHandler : NetworkBehaviour
     private Dictionary<string, (Gun gun, GameObject instance)> gunHistory = new();
     private Dictionary<string, int> roundHistory = new();
 
+    // Strategies
     private Dictionary<FireMode, IFireModeStrategy> fireModeStrategies = new();
     private IGunFireStrategy currentFireStrategy;
     private Dictionary<ReloadType, IGunReloadStrategy> reloadStrategies = new();
     private IGunReloadStrategy currentReloadStrategy;
     private IFireModeStrategy currentFireModeStrategy;
     public FireMode CurrentFireMode => currentFireModeStrategy.Mode;
-
+    
+    // Fire & Spread State
     private float lastFireTime = 0f;
-
     private bool pendingFire = false;
+    private float currentSpread = 0; 
+    private float currentSpreadRef = 0;
+    public float CurrentSpread => currentSpread;
+    
+    // Hit & Position Buffer
     private List<HitInfo> hitBuffer = new List<HitInfo>();
-
-    [SyncVar] public bool IsChamberOpen = false;
-
-    // 플레이어용: 클라이언트가 계산한 muzzle 정보
     private Vector3 clientMuzzlePos;
     private Vector3 clientMuzzleDir;
-    CoroutineHandle layerIkHandle;
 
-    private float currentSpread = 0;
-    public float CurrentSpread => currentSpread;
-    [SyncVar(hook = nameof(OnRoundUpdate))] public int CurrentRounds = 0;
-    [SyncVar] public bool OnReload;
+    // Coroutine Handles
     public CoroutineHandle reloadHandle;
+    private CoroutineHandle layerIkHandle;
+    private CoroutineHandle spawnBatchHandle;
 
-    CoroutineHandle spawnBatchHandle;
+    private RoomManager rm;
+    #endregion
 
-    RoomManager rm;
-
+    #region Unity & Mirror Callbacks
     public override void OnStartServer()
     {
         rm = NetworkManager.singleton as RoomManager;
@@ -120,7 +129,9 @@ public class GunHandler : NetworkBehaviour
             hitBuffer.Clear();
         }
     }
+    #endregion
 
+    #region Gun Loading & Weapon Management
     [Server]
     public void LoadGun(string gunName)
     {
@@ -143,6 +154,9 @@ public class GunHandler : NetworkBehaviour
                 currentGun.GunName,
                 currentGun.GunInfo.MagazineCapacity + 1
             );
+
+            WeaponHUD.Instance.OnSelectorChanged(CurrentFireMode);
+
             OnGunRecoilChanged?.Invoke(
                 currentGun.GunInfo.RecoilPitch,
                 currentGun.GunInfo.RecoilYawLeft,
@@ -210,7 +224,7 @@ public class GunHandler : NetworkBehaviour
     }
 
     [Server]
-    void SaveGun()
+    private void SaveGun()
     {
         roundHistory[currentGun.GunName] = CurrentRounds;
     }
@@ -233,7 +247,9 @@ public class GunHandler : NetworkBehaviour
 
         leftArmIKHint.localPosition = gunData.LeftArmIKHint;
     }
+    #endregion
 
+    #region Ammo, Spread & Fire Modes
     private void OnRoundUpdate(int oldRounds, int newRounds)
     {
         OnRoundChanged?.Invoke(newRounds);
@@ -244,7 +260,6 @@ public class GunHandler : NetworkBehaviour
         }
     }
 
-    private float currentSpreadRef = 0;
     private void SpreadHandle()
     {
         currentSpread = Mathf.SmoothDamp(currentSpread, 0f, ref currentSpreadRef, 0.5f);
@@ -269,11 +284,9 @@ public class GunHandler : NetworkBehaviour
         currentFireModeStrategy = fireModeStrategies[nextMode];
         currentFireModeStrategy.ResetState();
 
-        // UI 업데이트
         if (isLocalPlayer)
         {
-            // TODO: UI에 현재 발사 모드 아이콘을 갱신하는 함수 호출
-            // WeaponHUD.Instance.UpdateFireModeUI(nextMode);
+            WeaponHUD.Instance.OnSelectorChanged(nextMode);
         }
     }
 
@@ -286,12 +299,9 @@ public class GunHandler : NetworkBehaviour
     {
         currentSpread += amount;
     }
+    #endregion
 
-    /// <summary>
-    /// 입력 스크립트에서 매 프레임 호출
-    /// isPressed = Input.GetMouseButtonDown(0)
-    /// isHeld = Input.GetMouseButton(0)
-    /// </summary>
+    #region Shooting & Fire Control
     public void TryFire(bool isPressed, bool isHeld)
     {
         if (OnReload)
@@ -302,13 +312,12 @@ public class GunHandler : NetworkBehaviour
             }
             else if (isPressed && isServer)
             {
-                // 호스트일 경우 직접 실행
-                currentReloadStrategy.TryInterrupt(this, isPressed);
+                currentReloadStrategy.TryInterrupt(this, isPressed); // 호스트일 경우 직접 실행
             }
             return;
         }
 
-        if (CurrentRounds <= 0) return; 
+        if (CurrentRounds <= 0) return;
 
         bool isCooldownReady = (Time.time - lastFireTime) >= currentGun.GunInfo.ShotInterval;
         bool canFire = currentFireModeStrategy.CheckCanFire(isPressed, isHeld, isCooldownReady, currentGun.GunInfo);
@@ -320,19 +329,13 @@ public class GunHandler : NetworkBehaviour
         }
     }
 
-    [Command]
-    public void CmdTryInterruptReload(bool isPressed)
-    {
-        currentReloadStrategy.TryInterrupt(this, isPressed);
-    }
-
     public void ClientFireCallback()
     {
         if (!pendingFire) return;
         pendingFire = false;
 
         clientMuzzlePos = muzzle.position;
-        clientMuzzleDir = muzzle.forward; 
+        clientMuzzleDir = muzzle.forward;
 
         CmdFire(clientMuzzlePos, clientMuzzleDir);
     }
@@ -399,7 +402,9 @@ public class GunHandler : NetworkBehaviour
             lagTime
         );
     }
+    #endregion
 
+    #region Hit Detection & VFX
     [ClientRpc]
     public void RpcPlayMuzzleFlash(Vector3 muzzlePos, Quaternion rot)
     {
@@ -449,20 +454,9 @@ public class GunHandler : NetworkBehaviour
     {
         EffectPoolManager.SpawnFromPool(hit.VfxName, hit.Point, hit.Rotation);
     }
+    #endregion
 
-    public void OnDead()
-    {
-        pendingFire = false;
-        OnReload = false;
-        Timing.KillCoroutines(reloadHandle); 
-        
-        foreach (var key in roundHistory.Keys.ToList())
-        {
-            roundHistory[key] = gunHistory[key].gun.GunInfo.MagazineCapacity;
-        }
-        CurrentRounds = currentGun.GunInfo.MagazineCapacity;
-    }
-
+    #region Reloading & IK Animation
     public void Reload()
     {
         if (OnReload) return;
@@ -483,15 +477,21 @@ public class GunHandler : NetworkBehaviour
     {
         if (OnReload) return;
 
-        double startTime = NetworkTime.time; 
+        double startTime = NetworkTime.time;
         reloadHandle = Timing.RunCoroutine(currentReloadStrategy.ExecuteReload(this, startTime));
     }
 
     [Server]
     private void StartReloadServerSide()
     {
-        double startTime = NetworkTime.time; 
+        double startTime = NetworkTime.time;
         reloadHandle = Timing.RunCoroutine(currentReloadStrategy.ExecuteReload(this, startTime));
+    }
+
+    [Command]
+    public void CmdTryInterruptReload(bool isPressed)
+    {
+        currentReloadStrategy.TryInterrupt(this, isPressed);
     }
 
     [ClientRpc]
@@ -556,4 +556,20 @@ public class GunHandler : NetworkBehaviour
         leftBend.weight = targetIK;
         anim.SetLayerWeight(1, targetLayer);
     }
+    #endregion
+
+    #region Player State Management
+    public void OnDead()
+    {
+        pendingFire = false;
+        OnReload = false;
+        Timing.KillCoroutines(reloadHandle);
+
+        foreach (var key in roundHistory.Keys.ToList())
+        {
+            roundHistory[key] = gunHistory[key].gun.GunInfo.MagazineCapacity;
+        }
+        CurrentRounds = currentGun.GunInfo.MagazineCapacity;
+    }
+    #endregion
 }

@@ -8,6 +8,7 @@ public class WeaponHUD : MonoBehaviour
 
     [SerializeField] RawImage gunImage;
     [SerializeField] TextMeshProUGUI gunName;
+    [SerializeField] TextMeshProUGUI fireMode;
     [SerializeField] TextMeshProUGUI currentRound;
     [SerializeField] TextMeshProUGUI maxRound;
 
@@ -33,5 +34,21 @@ public class WeaponHUD : MonoBehaviour
     public void OnRoundChanged(int newRound)
     {
         currentRound.text = newRound.ToString();
+    }
+
+    public void OnSelectorChanged(FireMode fireMode)
+    {
+        switch (fireMode)
+        {
+            case FireMode.Single:
+                this.fireMode.text = "Selector : Single";
+                break;
+            case FireMode.Auto:
+                this.fireMode.text = "Selector : Auto";
+                break;
+            case FireMode.Burst:
+                this.fireMode.text = "Selector : Burst";
+                break;
+        }
     }
 }
